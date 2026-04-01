@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/meditation.js": {
+      "maxDuration": 60
+    },
+    "api/audio.js": {
+      "maxDuration": 300
+    }
+  }
+}
