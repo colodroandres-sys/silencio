@@ -6,17 +6,10 @@ const state = {
   userInput: '',
   duration: '5',
   voice: 'feminine',
-  sound: 'rain',
   isPlaying: false,
   currentSec: 0,
   totalSec: 0,
-  timer: null,
   audioBlobUrl: null
-};
-
-const SOUND_NAMES = {
-  rain: 'Lluvia', ocean: 'Mar',
-  forest: 'Bosque', birds: 'Pájaros', silence: 'Silencio'
 };
 
 const VOICE_NAMES = {
@@ -88,12 +81,6 @@ function selectPill(el, groupId, key) {
   state[key] = el.dataset.value;
 }
 
-function selectSound(el) {
-  document.querySelectorAll('#grp-sound .sound-card').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  state.sound = el.dataset.value;
-}
-
 // =============================================
 //  GENERACIÓN — llamadas a la API
 // =============================================
@@ -101,7 +88,6 @@ async function generateMeditation() {
   // Actualizar info del reproductor
   document.getElementById('meta-duration').textContent = `${state.duration} min`;
   document.getElementById('meta-voice').textContent = VOICE_NAMES[state.voice];
-  document.getElementById('meta-sound').textContent = SOUND_NAMES[state.sound];
   state.totalSec = parseInt(state.duration) * 60;
   state.currentSec = 0;
   document.getElementById('time-end').textContent = formatTime(state.totalSec);
@@ -118,8 +104,7 @@ async function generateMeditation() {
       body: JSON.stringify({
         userInput: state.userInput,
         duration: state.duration,
-        voice: state.voice,
-        sound: state.sound
+        voice: state.voice
       })
     });
 
@@ -179,7 +164,6 @@ function togglePlay() {
 
   if (state.isPlaying) {
     audio.pause();
-    clearInterval(state.timer);
     state.isPlaying = false;
     wrap.classList.add('paused');
     document.getElementById('icon-play').style.display  = 'block';
@@ -215,7 +199,6 @@ function seekTo(event) {
 }
 
 function handleEnd() {
-  clearInterval(state.timer);
   state.isPlaying  = false;
   state.currentSec = state.totalSec;
   updateProgress();
@@ -225,7 +208,6 @@ function handleEnd() {
 }
 
 function newMeditation() {
-  clearInterval(state.timer);
   state.isPlaying  = false;
   state.currentSec = 0;
 
@@ -242,7 +224,16 @@ function newMeditation() {
   document.getElementById('time-now').textContent = '0:00';
   document.getElementById('icon-play').style.display  = 'block';
   document.getElementById('icon-pause').style.display = 'none';
-  document.getElementById('breathing-player').classList.remove('paused');
+  document.getElementById('breathing-player').classList.add('paused');
+
+  // Resetear pills a valores por defecto
+  document.querySelectorAll('#grp-duration .pill').forEach(p => p.classList.remove('active'));
+  document.querySelector('#grp-duration .pill[data-value="5"]').classList.add('active');
+  state.duration = '5';
+
+  document.querySelectorAll('#grp-voice .pill').forEach(p => p.classList.remove('active'));
+  document.querySelector('#grp-voice .pill[data-value="feminine"]').classList.add('active');
+  state.voice = 'feminine';
 
   document.getElementById('input-free').value = '';
   document.getElementById('guided-1').value   = '';
@@ -271,6 +262,16 @@ function connectAudio(url) {
     document.getElementById('time-end').textContent = formatTime(state.totalSec);
     updateProgress();
   };
+
+  // Auto-reproducir al llegar al player
+  audio.play().then(() => {
+    state.isPlaying = true;
+    document.getElementById('breathing-player').classList.remove('paused');
+    document.getElementById('icon-play').style.display  = 'none';
+    document.getElementById('icon-pause').style.display = 'block';
+  }).catch(() => {
+    // Autoplay bloqueado por el navegador — el usuario verá el botón play
+  });
 }
 
 // =============================================

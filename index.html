@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Silencio — Meditación personalizada</title>
+  <title>Silencio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,168 +14,163 @@
   <div class="bg-glow"></div>
 
   <!-- Pantalla 1: Input -->
-  <div class="screen active" id="screen-input">
+  <div id="screen-input" class="screen active">
     <div class="screen-inner">
+
       <div class="logo">
         <div class="logo-dot"></div>
-        <span>silencio</span>
+        <span>Silencio</span>
       </div>
-      <p class="tagline">Tu meditación. Este momento.<br>Solo tuyo.</p>
+
+      <p class="tagline">Describe tu momento y te creo<br>una meditación única para ahora.</p>
 
       <div class="mode-toggle">
-        <button class="mode-btn active" id="btn-free" onclick="setMode('free')">Texto libre</button>
-        <button class="mode-btn" id="btn-guided" onclick="setMode('guided')">Guía paso a paso</button>
+        <button id="btn-free" class="mode-btn active" onclick="setMode('free')">Texto libre</button>
+        <button id="btn-guided" class="mode-btn" onclick="setMode('guided')">Guiado</button>
       </div>
 
       <div id="mode-free" class="input-block">
-        <label class="field-label">¿Cómo te sientes ahora mismo?</label>
-        <textarea
-          id="input-free"
-          class="textarea-main"
-          placeholder="Describe tu momento con libertad — puede ser breve o detallado, lo que salga..."
-          rows="5"
-        ></textarea>
+        <label class="field-label">¿Cómo estás ahora?</label>
+        <textarea id="input-free" class="textarea-main" placeholder="Cuéntame cómo te sientes, qué está pasando o qué quieres lograr con esta meditación..."></textarea>
       </div>
 
       <div id="mode-guided" class="input-block hidden">
         <div class="guided-item">
-          <label class="field-label">¿Cómo te sientes ahora?</label>
-          <textarea id="guided-1" class="textarea-small" placeholder="Ej: ansioso, cansado, disperso..."></textarea>
+          <label class="field-label">¿Cómo te sientes ahora mismo?</label>
+          <textarea id="guided-1" class="textarea-small" placeholder="Ej: estresado, cansado, ansioso, bien pero disperso..."></textarea>
         </div>
         <div class="guided-item">
           <label class="field-label">¿Qué quieres lograr?</label>
-          <textarea id="guided-2" class="textarea-small" placeholder="Ej: dormir, calmarme, tomar una decisión..."></textarea>
+          <textarea id="guided-2" class="textarea-small" placeholder="Ej: relajarme antes de dormir, calmar la ansiedad, enfocarme..."></textarea>
         </div>
         <div class="guided-item">
-          <label class="field-label">¿Algo que te preocupa? <span class="optional">(opcional)</span></label>
-          <textarea id="guided-3" class="textarea-small" placeholder="Deja en blanco si no aplica"></textarea>
+          <label class="field-label">¿Algo más que quieras compartir? <span class="optional">(opcional)</span></label>
+          <textarea id="guided-3" class="textarea-small" placeholder="Ej: tuve un día muy difícil, mañana tengo algo importante..."></textarea>
         </div>
       </div>
 
       <button class="btn-primary" onclick="goToPreferences()">
         Continuar
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </button>
+
     </div>
   </div>
 
   <!-- Pantalla 2: Preferencias -->
-  <div class="screen" id="screen-preferences">
+  <div id="screen-preferences" class="screen">
     <div class="screen-inner">
+
       <button class="btn-back" onclick="showScreen('screen-input')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M11 4L6 9l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </button>
 
       <div class="logo small">
         <div class="logo-dot"></div>
-        <span>silencio</span>
+        <span>Silencio</span>
       </div>
 
       <div class="pref-section">
-        <label class="pref-label">Duración</label>
-        <div class="pill-row" id="grp-duration">
-          <button class="pill active" data-value="5" onclick="selectPill(this,'grp-duration','duration')">5 min</button>
-          <button class="pill" data-value="10" onclick="selectPill(this,'grp-duration','duration')">10 min</button>
-          <button class="pill" data-value="15" onclick="selectPill(this,'grp-duration','duration')">15 min</button>
+        <span class="pref-label">Duración</span>
+        <div id="grp-duration" class="pill-row">
+          <button class="pill active" data-value="5"  onclick="selectPill(this, 'grp-duration', 'duration')">5 min</button>
+          <button class="pill"        data-value="10" onclick="selectPill(this, 'grp-duration', 'duration')">10 min</button>
+          <button class="pill"        data-value="15" onclick="selectPill(this, 'grp-duration', 'duration')">15 min</button>
         </div>
       </div>
 
       <div class="pref-section">
-        <label class="pref-label">Voz</label>
-        <div class="pill-row" id="grp-voice">
-          <button class="pill active" data-value="feminine" onclick="selectPill(this,'grp-voice','voice')">♀ Femenina</button>
-          <button class="pill" data-value="masculine" onclick="selectPill(this,'grp-voice','voice')">♂ Masculina</button>
-        </div>
-      </div>
-
-      <div class="pref-section">
-        <label class="pref-label">Sonido de fondo</label>
-        <div class="sound-grid" id="grp-sound">
-          <button class="sound-card active" data-value="rain" onclick="selectSound(this)">
-            <span class="sound-emoji">🌧️</span>
-            <span class="sound-name">Lluvia</span>
-          </button>
-          <button class="sound-card" data-value="ocean" onclick="selectSound(this)">
-            <span class="sound-emoji">🌊</span>
-            <span class="sound-name">Mar</span>
-          </button>
-          <button class="sound-card" data-value="forest" onclick="selectSound(this)">
-            <span class="sound-emoji">🌿</span>
-            <span class="sound-name">Bosque</span>
-          </button>
-          <button class="sound-card" data-value="birds" onclick="selectSound(this)">
-            <span class="sound-emoji">🐦</span>
-            <span class="sound-name">Pájaros</span>
-          </button>
-          <button class="sound-card" data-value="silence" onclick="selectSound(this)">
-            <span class="sound-emoji silence-icon">·</span>
-            <span class="sound-name">Silencio</span>
-          </button>
+        <span class="pref-label">Voz</span>
+        <div id="grp-voice" class="pill-row">
+          <button class="pill active" data-value="feminine"  onclick="selectPill(this, 'grp-voice', 'voice')">Voz femenina</button>
+          <button class="pill"        data-value="masculine" onclick="selectPill(this, 'grp-voice', 'voice')">Voz masculina</button>
         </div>
       </div>
 
       <button class="btn-primary" onclick="generateMeditation()">
-        Generar mi meditación
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+        Crear mi meditación
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 2l1.5 4.5H14l-3.8 2.8 1.5 4.5L8 11.1l-3.7 2.7 1.5-4.5L2 6.5h4.5L8 2z" fill="currentColor"/>
+        </svg>
       </button>
+
     </div>
   </div>
 
-  <!-- Pantalla 3: Cargando -->
-  <div class="screen" id="screen-loading">
+  <!-- Pantalla 3: Carga -->
+  <div id="screen-loading" class="screen">
     <div class="screen-inner center">
-      <div class="breathing-wrap loading-mode" id="loading-animation">
+
+      <div class="logo small">
+        <div class="logo-dot"></div>
+        <span>Silencio</span>
+      </div>
+
+      <div class="breathing-wrap loading-mode">
         <div class="b-ring r1"></div>
         <div class="b-ring r2"></div>
         <div class="b-ring r3"></div>
         <div class="b-core"></div>
       </div>
-      <p class="loading-title" id="loading-title">Creando tu meditación</p>
-      <p class="loading-sub" id="loading-sub">Analizando tu momento y generando algo único para ti...</p>
-      <button class="btn-ghost" id="btn-retry" style="display:none" onclick="retryFromError()">
-        Intentar de nuevo
-      </button>
+
+      <p id="loading-title" class="loading-title">Escribiendo tu meditación</p>
+      <p id="loading-sub" class="loading-sub">Analizando tu momento y diseñando algo único para ti...</p>
+
+      <button id="btn-retry" class="btn-ghost" onclick="retryFromError()" style="display:none">Intentar de nuevo</button>
+
     </div>
   </div>
 
   <!-- Pantalla 4: Reproductor -->
-  <div class="screen" id="screen-player">
+  <div id="screen-player" class="screen">
     <div class="screen-inner center">
 
-      <div class="session-meta">
-        <span id="meta-duration">10 min</span>
-        <span class="meta-dot">·</span>
-        <span id="meta-voice">Voz femenina</span>
-        <span class="meta-dot">·</span>
-        <span id="meta-sound">Lluvia</span>
+      <div class="logo small">
+        <div class="logo-dot"></div>
+        <span>Silencio</span>
       </div>
 
-      <div class="breathing-wrap player-mode" id="breathing-player">
+      <div id="breathing-player" class="breathing-wrap player-mode paused">
         <div class="b-ring r1"></div>
         <div class="b-ring r2"></div>
         <div class="b-ring r3"></div>
         <div class="b-core">
-          <button class="play-pause-btn" id="btn-play" onclick="togglePlay()">
-            <svg id="icon-play" width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v14l11-7-11-7z"/></svg>
-            <svg id="icon-pause" width="30" height="30" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+          <button class="play-pause-btn" onclick="togglePlay()">
+            <svg id="icon-play" width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <path d="M10 7l12 7-12 7V7z" fill="currentColor"/>
+            </svg>
+            <svg id="icon-pause" width="28" height="28" viewBox="0 0 28 28" fill="none" style="display:none">
+              <rect x="8"  y="6" width="4" height="16" rx="1.5" fill="currentColor"/>
+              <rect x="16" y="6" width="4" height="16" rx="1.5" fill="currentColor"/>
+            </svg>
           </button>
         </div>
       </div>
 
-      <div class="progress-area">
-        <span class="time" id="time-now">0:00</span>
-        <div class="progress-track" onclick="seekTo(event)">
-          <div class="progress-fill" id="progress-fill"></div>
-        </div>
-        <span class="time" id="time-end">10:00</span>
+      <div class="session-meta">
+        <span id="meta-duration"></span>
+        <span class="meta-dot">·</span>
+        <span id="meta-voice"></span>
       </div>
 
-      <!-- Audio — conectar src con URL de ElevenLabs cuando esté la API -->
-      <audio id="audio" onended="handleEnd()"></audio>
+      <div class="progress-area">
+        <span id="time-now" class="time">0:00</span>
+        <div class="progress-track" onclick="seekTo(event)">
+          <div id="progress-fill" class="progress-fill"></div>
+        </div>
+        <span id="time-end" class="time">0:00</span>
+      </div>
 
       <button class="btn-ghost" onclick="newMeditation()">Nueva meditación</button>
+
     </div>
   </div>
+
+  <audio id="audio" onended="handleEnd()"></audio>
 
   <script src="app.js"></script>
 </body>
