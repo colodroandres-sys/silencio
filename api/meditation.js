@@ -55,10 +55,13 @@ module.exports = async (req, res) => {
 
 Contexto de la sesión:
 - Duración: ${duration} minutos
-- Sonido de fondo que estará sonando: ${soundContext}
 - Longitud objetivo: aproximadamente ${targetWords} palabras
 
-Genera una meditación completamente personalizada para este momento exacto. Solo el texto de la meditación, sin títulos, sin explicaciones, sin nada más.`;
+Devuelve únicamente un objeto JSON válido con este formato exacto (sin texto adicional antes ni después):
+{"title": "título de 3-5 palabras en español", "text": "texto completo de la meditación aquí"}
+
+El campo "title" debe capturar en pocas palabras la esencia de esta sesión (ej: "Para soltar el día", "Antes de dormir", "Calmar la tormenta interior").
+El campo "text" debe contener solo el texto de la meditación, sin títulos ni explicaciones.`;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -83,13 +86,31 @@ Genera una meditación completamente personalizada para este momento exacto. Sol
     }
 
     const data = await response.json();
-    const text = data.content?.[0]?.text;
+    let raw = data.content?.[0]?.text?.trim() || '';
+
+    if (!raw) {
+      return res.status(502).json({ error: 'Respuesta vacía de Claude API' });
+    }
+
+    // Quitar markdown fences si Claude los incluyó
+    raw = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+
+    let title, text;
+    try {
+      const parsed = JSON.parse(raw);
+      title = parsed.title || 'Tu meditación';
+      text  = parsed.text;
+    } catch {
+      // Fallback si la respuesta no es JSON válido
+      title = 'Tu meditación';
+      text  = raw;
+    }
 
     if (!text) {
       return res.status(502).json({ error: 'Respuesta vacía de Claude API' });
     }
 
-    return res.status(200).json({ text });
+    return res.status(200).json({ title, text });
 
   } catch (err) {
     console.error('Error interno en /api/meditation:', err);

@@ -12,10 +12,8 @@ const state = {
   audioBlobUrl: null
 };
 
-const VOICE_NAMES = {
-  feminine: 'Voz femenina',
-  masculine: 'Voz masculina'
-};
+let abortController = null;
+let slowTimer = null;
 
 // =============================================
 //  NAVEGACIÓN
@@ -84,23 +82,44 @@ function selectPill(el, groupId, key) {
 // =============================================
 //  GENERACIÓN — llamadas a la API
 // =============================================
+function enableGenerateBtn() {
+  const btn = document.getElementById('btn-generate');
+  if (btn) btn.disabled = false;
+}
+
+function cancelGeneration() {
+  if (abortController) { abortController.abort(); abortController = null; }
+  if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
+  enableGenerateBtn();
+  showScreen('screen-preferences');
+}
+
 async function generateMeditation() {
-  // Actualizar info del reproductor
-  document.getElementById('meta-duration').textContent = `${state.duration} min`;
-  document.getElementById('meta-voice').textContent = VOICE_NAMES[state.voice];
+  const btn = document.getElementById('btn-generate');
+  btn.disabled = true;
+
   state.totalSec = parseInt(state.duration) * 60;
   state.currentSec = 0;
   document.getElementById('time-end').textContent = formatTime(state.totalSec);
 
-  // Mostrar pantalla de carga
   setLoadingState('normal', 'Escribiendo tu meditación', 'Analizando tu momento y diseñando algo único para ti...');
   showScreen('screen-loading');
+
+  // Aviso de tiempo si tarda más de 10 segundos
+  slowTimer = setTimeout(() => {
+    document.getElementById('loading-sub').textContent = 'Esto puede tardar hasta 60 segundos. Gracias por tu paciencia.';
+    slowTimer = null;
+  }, 10000);
+
+  abortController = new AbortController();
+  const { signal } = abortController;
 
   try {
     // ── Paso 1: Generar texto con Claude ──────────────────────────
     const meditationRes = await fetch('/api/meditation', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      signal,
       body: JSON.stringify({
         userInput: state.userInput,
         duration: state.duration,
@@ -113,7 +132,8 @@ async function generateMeditation() {
       throw new Error(err.error || `Error ${meditationRes.status} en /api/meditation`);
     }
 
-    const { text } = await meditationRes.json();
+    const { title, text } = await meditationRes.json();
+    document.getElementById('session-title').textContent = title;
 
     // ── Paso 2: Convertir a audio con ElevenLabs ──────────────────
     setLoadingState('normal', 'Creando el audio', 'Convirtiendo el texto a voz personalizada...');
@@ -121,6 +141,7 @@ async function generateMeditation() {
     const audioRes = await fetch('/api/audio', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      signal,
       body: JSON.stringify({ text, voice: state.voice })
     });
 
@@ -131,7 +152,9 @@ async function generateMeditation() {
 
     const audioBlob = await audioRes.blob();
 
-    // Liberar URL anterior si existe
+    if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
+    abortController = null;
+
     if (state.audioBlobUrl) URL.revokeObjectURL(state.audioBlobUrl);
     state.audioBlobUrl = URL.createObjectURL(audioBlob);
 
@@ -139,19 +162,26 @@ async function generateMeditation() {
     showScreen('screen-player');
 
   } catch (err) {
+    if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
+    abortController = null;
+
+    if (err.name === 'AbortError') return; // usuario canceló
     console.error('Error generando meditación:', err);
+    enableGenerateBtn();
     setLoadingState('error', 'Algo salió mal', err.message || 'Revisa tu conexión e inténtalo de nuevo.');
   }
 }
 
-// Actualiza el texto de la pantalla de carga
 function setLoadingState(type, title, sub) {
   document.getElementById('loading-title').textContent = title;
   document.getElementById('loading-sub').textContent = sub;
-  document.getElementById('btn-retry').style.display = type === 'error' ? 'block' : 'none';
+  const isError = type === 'error';
+  document.getElementById('btn-retry').style.display  = isError ? 'block' : 'none';
+  document.getElementById('btn-cancel').style.display = isError ? 'none'  : 'block';
 }
 
 function retryFromError() {
+  enableGenerateBtn();
   showScreen('screen-preferences');
 }
 
@@ -205,6 +235,15 @@ function handleEnd() {
   document.getElementById('icon-play').style.display  = 'block';
   document.getElementById('icon-pause').style.display = 'none';
   document.getElementById('breathing-player').classList.add('paused');
+
+  // Pantalla de cierre: 5 segundos antes de mostrar "Nueva meditación"
+  document.getElementById('end-message').style.display        = 'block';
+  document.getElementById('btn-new-meditation').style.display = 'none';
+
+  setTimeout(() => {
+    document.getElementById('end-message').style.display        = 'none';
+    document.getElementById('btn-new-meditation').style.display = 'block';
+  }, 5000);
 }
 
 function newMeditation() {
@@ -225,6 +264,10 @@ function newMeditation() {
   document.getElementById('icon-play').style.display  = 'block';
   document.getElementById('icon-pause').style.display = 'none';
   document.getElementById('breathing-player').classList.add('paused');
+
+  // Resetear pantalla de fin
+  document.getElementById('end-message').style.display        = 'none';
+  document.getElementById('btn-new-meditation').style.display = 'block';
 
   // Resetear pills a valores por defecto
   document.querySelectorAll('#grp-duration .pill').forEach(p => p.classList.remove('active'));

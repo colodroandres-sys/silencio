@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Silencio</title>
+  <meta name="theme-color" content="#07081a">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
@@ -91,7 +92,7 @@
         </div>
       </div>
 
-      <button class="btn-primary" onclick="generateMeditation()">
+      <button id="btn-generate" class="btn-primary" onclick="generateMeditation()">
         Crear mi meditación
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <path d="M8 2l1.5 4.5H14l-3.8 2.8 1.5 4.5L8 11.1l-3.7 2.7 1.5-4.5L2 6.5h4.5L8 2z" fill="currentColor"/>
@@ -120,7 +121,8 @@
       <p id="loading-title" class="loading-title">Escribiendo tu meditación</p>
       <p id="loading-sub" class="loading-sub">Analizando tu momento y diseñando algo único para ti...</p>
 
-      <button id="btn-retry" class="btn-ghost" onclick="retryFromError()" style="display:none">Intentar de nuevo</button>
+      <button id="btn-retry"  class="btn-ghost" onclick="retryFromError()"   style="display:none">Intentar de nuevo</button>
+      <button id="btn-cancel" class="btn-ghost" onclick="cancelGeneration()" style="display:none">Cancelar</button>
 
     </div>
   </div>
@@ -151,11 +153,7 @@
         </div>
       </div>
 
-      <div class="session-meta">
-        <span id="meta-duration"></span>
-        <span class="meta-dot">·</span>
-        <span id="meta-voice"></span>
-      </div>
+      <p id="session-title" class="session-title"></p>
 
       <div class="progress-area">
         <span id="time-now" class="time">0:00</span>
@@ -165,7 +163,8 @@
         <span id="time-end" class="time">0:00</span>
       </div>
 
-      <button class="btn-ghost" onclick="newMeditation()">Nueva meditación</button>
+      <p id="end-message" class="end-message" style="display:none">Bien.<br>Lleva este silencio contigo.</p>
+      <button id="btn-new-meditation" class="btn-ghost" onclick="newMeditation()">Nueva meditación</button>
 
     </div>
   </div>

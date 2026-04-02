@@ -533,6 +533,33 @@ body {
 }
 
 /* =============================================
+   REPRODUCTOR — título de sesión
+   ============================================= */
+.session-title {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  font-size: 1.25rem;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 28px;
+  max-width: 260px;
+  line-height: 1.4;
+}
+
+/* =============================================
+   REPRODUCTOR — mensaje de cierre
+   ============================================= */
+.end-message {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.75;
+  margin-top: 24px;
+}
+
+/* =============================================
    REPRODUCTOR — meta + progreso
    ============================================= */
 .session-meta {
@@ -572,11 +599,21 @@ body {
 
 .progress-track {
   flex: 1;
-  height: 3px;
+  height: 6px;
   background: var(--bg3);
   border-radius: 99px;
   cursor: pointer;
   position: relative;
+}
+
+/* Amplía el área táctil sin cambiar el visual */
+.progress-track::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  bottom: -12px;
+  left: 0;
+  right: 0;
 }
 
 .progress-fill {
