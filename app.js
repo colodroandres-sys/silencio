@@ -265,7 +265,8 @@ function newMeditation() {
 
   const audio = document.getElementById('audio');
   audio.pause();
-  audio.src = '';
+  audio.removeAttribute('src');
+  audio.load();
 
   if (state.audioBlobUrl) {
     URL.revokeObjectURL(state.audioBlobUrl);
@@ -310,7 +311,6 @@ function connectAudio(url) {
   audio.ontimeupdate = () => {
     if (!state.isPlaying) return;
     state.currentSec = Math.floor(audio.currentTime);
-    if (audio.duration) state.totalSec = Math.floor(audio.duration);
     updateProgress();
   };
 

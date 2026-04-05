@@ -158,7 +158,7 @@
 
       <div class="progress-area">
         <span id="time-now" class="time">0:00</span>
-        <div class="progress-track" onclick="seekTo(event)" ontouchend="seekTo(event)">
+        <div class="progress-track" onclick="seekTo(event)" ontouchend="seekTo(event); event.preventDefault()">
           <div id="progress-fill" class="progress-fill"></div>
         </div>
         <span id="time-end" class="time">0:00</span>

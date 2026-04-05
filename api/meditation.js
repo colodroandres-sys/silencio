@@ -74,7 +74,7 @@ El campo "text" debe contener solo el texto de la meditación, sin títulos ni e
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 4096,
+        max_tokens: 6000,
         system: SYSTEM_PROMPT,
         messages: [{ role: 'user', content: userPrompt }]
       })

@@ -317,6 +317,8 @@ body {
   cursor: pointer;
   color: var(--muted);
   transition: all 0.25s var(--ease);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .btn-back:hover {
@@ -513,6 +515,8 @@ body {
   padding: 2px 0 0 3px; /* offset visual del play icon */
   opacity: 0.92;
   transition: opacity 0.2s ease;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .play-pause-btn:hover {
@@ -662,6 +666,14 @@ body {
 /* =============================================
    RESPONSIVE
    ============================================= */
+/* iOS Safari auto-zoom prevention — cualquier input < 16px dispara zoom */
+@media (-webkit-min-device-pixel-ratio: 1) {
+  .textarea-main,
+  .textarea-small {
+    font-size: 16px;
+  }
+}
+
 @media (max-width: 380px) {
   .screen-inner { padding: 48px 20px 72px; }
   .sound-grid { gap: 5px; }
