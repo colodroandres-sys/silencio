@@ -6,7 +6,7 @@ const checkRateLimit = require('./_ratelimit');
 // Voces de ElevenLabs optimizadas para meditación en español
 // Puedes reemplazarlas por IDs de tu cuenta en: https://elevenlabs.io/voice-library
 const VOICE_IDS = {
-  feminine: 'D9MdulIxfrCUUJcGNQon', // Jhenny — Gentle, Soothing and Meditative
+  feminine: 'XB0fDUnXU5powFXDhCwa', // Charlotte — suave, cálida, ideal para meditación
   masculine: 'TX3LPaxmHKxFdv7VOFE1'  // Liam — sereno, claro, profundo
 };
 
