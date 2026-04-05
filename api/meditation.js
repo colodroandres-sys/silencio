@@ -1,6 +1,8 @@
 // Vercel serverless function
 // Recibe el contexto del usuario, llama a Claude API y devuelve el texto de la meditación
 
+const checkRateLimit = require('./_ratelimit');
+
 const WORD_COUNTS = { '5': 550, '10': 1100, '15': 1650 };
 
 const SOUND_CONTEXTS = {
@@ -35,6 +37,10 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+
+  // Rate limiting: 5 meditaciones por IP por hora
+  const allowed = await checkRateLimit(req, res, 'meditation', 5, '1 h');
+  if (!allowed) return;
 
   const { userInput, duration, voice, sound } = req.body || {};
 

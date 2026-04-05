@@ -1,6 +1,8 @@
 // Vercel serverless function
 // Recibe el texto de la meditación, llama a ElevenLabs y devuelve el audio en mp3
 
+const checkRateLimit = require('./_ratelimit');
+
 // Voces de ElevenLabs optimizadas para meditación en español
 // Puedes reemplazarlas por IDs de tu cuenta en: https://elevenlabs.io/voice-library
 const VOICE_IDS = {
@@ -13,6 +15,10 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
+
+  // Rate limiting: 5 audios por IP por hora
+  const allowed = await checkRateLimit(req, res, 'audio', 5, '1 h');
+  if (!allowed) return;
 
   const { text, voice } = req.body || {};
 
