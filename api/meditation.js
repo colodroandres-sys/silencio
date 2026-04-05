@@ -56,6 +56,7 @@ module.exports = async (req, res) => {
 Contexto de la sesión:
 - Duración: ${duration} minutos
 - Longitud objetivo: aproximadamente ${targetWords} palabras
+- Sonido de fondo: ${soundContext}
 
 Devuelve únicamente un objeto JSON válido con este formato exacto (sin texto adicional antes ni después):
 {"title": "título de 3-5 palabras en español", "text": "texto completo de la meditación aquí"}
@@ -92,12 +93,12 @@ El campo "text" debe contener solo el texto de la meditación, sin títulos ni e
       return res.status(502).json({ error: 'Respuesta vacía de Claude API' });
     }
 
-    // Quitar markdown fences si Claude los incluyó
-    raw = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
-
     let title, text;
     try {
-      const parsed = JSON.parse(raw);
+      // Extraer el primer bloque JSON del texto, ignorando texto antes/después o fences
+      const jsonMatch = raw.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error('No JSON found');
+      const parsed = JSON.parse(jsonMatch[0]);
       title = parsed.title || 'Tu meditación';
       text  = parsed.text;
     } catch {

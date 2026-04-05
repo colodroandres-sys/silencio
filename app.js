@@ -14,6 +14,7 @@ const state = {
 
 let abortController = null;
 let slowTimer = null;
+let shakeInterval = null;
 
 // =============================================
 //  NAVEGACIÓN
@@ -56,13 +57,16 @@ function goToPreferences() {
 }
 
 function shake(el) {
+  if (shakeInterval) { clearInterval(shakeInterval); shakeInterval = null; }
+  el.style.transform   = 'translateX(0)';
   el.style.borderColor = 'rgba(157, 98, 248, 0.6)';
   let n = 0;
-  const iv = setInterval(() => {
+  shakeInterval = setInterval(() => {
     el.style.transform = n % 2 === 0 ? 'translateX(-5px)' : 'translateX(5px)';
     n++;
     if (n >= 6) {
-      clearInterval(iv);
+      clearInterval(shakeInterval);
+      shakeInterval = null;
       el.style.transform = 'translateX(0)';
       setTimeout(() => { el.style.borderColor = ''; }, 800);
     }
@@ -98,9 +102,8 @@ async function generateMeditation() {
   const btn = document.getElementById('btn-generate');
   btn.disabled = true;
 
-  state.totalSec = parseInt(state.duration) * 60;
+  state.totalSec   = parseInt(state.duration) * 60;
   state.currentSec = 0;
-  document.getElementById('time-end').textContent = formatTime(state.totalSec);
 
   setLoadingState('normal', 'Escribiendo tu meditación', 'Analizando tu momento y diseñando algo único para ti...');
   showScreen('screen-loading');
@@ -176,13 +179,19 @@ function setLoadingState(type, title, sub) {
   document.getElementById('loading-title').textContent = title;
   document.getElementById('loading-sub').textContent = sub;
   const isError = type === 'error';
-  document.getElementById('btn-retry').style.display  = isError ? 'block' : 'none';
-  document.getElementById('btn-cancel').style.display = isError ? 'none'  : 'block';
+  document.getElementById('btn-retry').style.display      = isError ? 'block' : 'none';
+  document.getElementById('btn-back-input').style.display = isError ? 'block' : 'none';
+  document.getElementById('btn-cancel').style.display     = isError ? 'none'  : 'block';
 }
 
 function retryFromError() {
   enableGenerateBtn();
   showScreen('screen-preferences');
+}
+
+function backToInput() {
+  enableGenerateBtn();
+  showScreen('screen-input');
 }
 
 // =============================================
@@ -200,12 +209,13 @@ function togglePlay() {
     document.getElementById('icon-pause').style.display = 'none';
   } else {
     if (audio.src && audio.src !== window.location.href) {
-      audio.play().catch(console.error);
+      audio.play().then(() => {
+        state.isPlaying = true;
+        wrap.classList.remove('paused');
+        document.getElementById('icon-play').style.display  = 'none';
+        document.getElementById('icon-pause').style.display = 'block';
+      }).catch(console.error);
     }
-    state.isPlaying = true;
-    wrap.classList.remove('paused');
-    document.getElementById('icon-play').style.display  = 'none';
-    document.getElementById('icon-pause').style.display = 'block';
   }
 }
 
@@ -216,9 +226,12 @@ function updateProgress() {
 }
 
 function seekTo(event) {
-  const track = event.currentTarget;
-  const rect  = track.getBoundingClientRect();
-  const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+  const track   = event.currentTarget;
+  const rect    = track.getBoundingClientRect();
+  const clientX = event.clientX !== undefined
+    ? event.clientX
+    : (event.touches?.[0] || event.changedTouches?.[0])?.clientX ?? 0;
+  const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
 
   const audio = document.getElementById('audio');
   if (audio.duration) {
@@ -283,6 +296,7 @@ function newMeditation() {
   document.getElementById('guided-2').value   = '';
   document.getElementById('guided-3').value   = '';
 
+  setMode('free');
   showScreen('screen-input');
 }
 

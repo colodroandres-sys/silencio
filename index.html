@@ -121,8 +121,9 @@
       <p id="loading-title" class="loading-title">Escribiendo tu meditación</p>
       <p id="loading-sub" class="loading-sub">Analizando tu momento y diseñando algo único para ti...</p>
 
-      <button id="btn-retry"  class="btn-ghost" onclick="retryFromError()"   style="display:none">Intentar de nuevo</button>
-      <button id="btn-cancel" class="btn-ghost" onclick="cancelGeneration()" style="display:none">Cancelar</button>
+      <button id="btn-retry"  class="btn-ghost" onclick="retryFromError()"        style="display:none">Intentar de nuevo</button>
+      <button id="btn-back-input" class="btn-ghost" onclick="backToInput()"    style="display:none">Cambiar el texto</button>
+      <button id="btn-cancel" class="btn-ghost" onclick="cancelGeneration()"   style="display:none">Cancelar</button>
 
     </div>
   </div>
@@ -157,7 +158,7 @@
 
       <div class="progress-area">
         <span id="time-now" class="time">0:00</span>
-        <div class="progress-track" onclick="seekTo(event)">
+        <div class="progress-track" onclick="seekTo(event)" ontouchend="seekTo(event)">
           <div id="progress-fill" class="progress-fill"></div>
         </div>
         <span id="time-end" class="time">0:00</span>

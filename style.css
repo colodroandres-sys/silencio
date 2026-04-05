@@ -32,7 +32,6 @@ body {
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
-  overflow: hidden;
 }
 
 /* =============================================
@@ -75,7 +74,7 @@ body {
 .screen.active {
   opacity: 1;
   transform: translateY(0);
-  pointer-events: all;
+  pointer-events: auto;
 }
 
 .screen-inner {
@@ -90,6 +89,7 @@ body {
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
+  min-height: 100dvh;
   justify-content: center;
   padding-top: 48px;
   padding-bottom: 48px;
@@ -168,6 +168,8 @@ body {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.25s var(--ease);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .mode-btn.active {
@@ -267,6 +269,8 @@ body {
   box-shadow: 0 4px 28px rgba(124, 58, 237, 0.38);
   transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
   margin-top: 8px;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .btn-primary:hover {
@@ -289,6 +293,8 @@ body {
   cursor: pointer;
   transition: all 0.25s var(--ease);
   margin-top: 28px;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .btn-ghost:hover {
@@ -353,6 +359,8 @@ body {
   cursor: pointer;
   text-align: center;
   transition: all 0.25s var(--ease);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .pill.active {
