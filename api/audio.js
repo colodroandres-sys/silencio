@@ -20,11 +20,14 @@ module.exports = async (req, res) => {
   const allowed = await checkRateLimit(req, res, 'audio', 5, '1 h');
   if (!allowed) return;
 
-  const { text, voice } = req.body || {};
+  const { text: rawText, voice } = req.body || {};
 
-  if (!text || !voice) {
+  if (!rawText || !voice) {
     return res.status(400).json({ error: 'Faltan campos requeridos: text, voice' });
   }
+
+  // Eliminar marcadores de silencio — serán convertidos a pausas reales en el futuro
+  const text = rawText.replace(/\[silencio:\d+s\]/gi, '').replace(/\s+/g, ' ').trim();
 
   if (text.length > 7000) {
     return res.status(400).json({ error: `El texto es demasiado largo (${text.length} caracteres). Máximo 7000.` });
