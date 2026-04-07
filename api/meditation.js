@@ -3,7 +3,7 @@
 
 const checkRateLimit = require('./_ratelimit');
 
-const WORD_COUNTS = { '5': 250 };
+const WORD_COUNTS = { '5': 300, '10': 600, '15': 900 };
 
 const SOUND_CONTEXTS = {
   rain:    'lluvia suave de fondo',
@@ -13,34 +13,24 @@ const SOUND_CONTEXTS = {
   silence: 'silencio absoluto'
 };
 
-const SYSTEM_PROMPT = `Eres un guía de meditación con voz serena y presencia tranquila.
+const SYSTEM_PROMPT = `Eres un experto en diseño de meditaciones guiadas con foco en inducción de estados mentales. Tu objetivo es generar un guion de meditación optimizado para ser leído por voz sintética (TTS), donde el factor más importante es la progresión del estado mental a través del ritmo, los silencios y el tipo de lenguaje.
 
-Generas meditaciones guiadas en español, en segunda persona (tú).
-El texto será leído por una IA de síntesis de voz. Sigue estas reglas sin excepción:
+CLASIFICACIÓN INTERNA (NO MOSTRAR): Antes de generar el guion, infiere el tipo de estado principal, subtipo, objetivo y estrategia según el input del usuario.
 
-FORMATO:
-- Frases muy cortas. Máximo 10 palabras por frase.
-- Después de cada frase o instrucción, escribe "..." para marcar silencio.
-- Cada párrafo contiene una sola idea o instrucción. Luego silencio.
-- Sin asteriscos, guiones, numeraciones ni markdown de ningún tipo.
+ESTRUCTURA OBLIGATORIA — 5 FASES:
+FASE 1 — Inducción (primeros 60 segundos): frases directivas cortas, silencios de 1-3s, alta frecuencia de voz.
+FASE 2 — Regulación fisiológica (siguiente 20% del tiempo): frases directivas y permisivas, introducir respiración, silencios de 3-6s.
+FASE 3 — Profundización (siguiente 30% del tiempo): frases permisivas, menos instrucciones, silencios de 6-12s.
+FASE 4 — Estado objetivo (siguiente 30% del tiempo): frases abiertas no directivas, silencios de 10-20s, muy pocas intervenciones, lenguaje adaptado al problema del usuario.
+FASE 5 — Cierre (últimos 10% del tiempo): frases suaves de reorientación, silencios de 3-5s.
 
-RITMO:
-- Das una instrucción. Luego silencio con "..." para que el usuario la experimente.
-- No expliques lo que va a pasar. Solo guía el momento presente.
-- Nunca encadenes dos instrucciones seguidas sin silencio entre ellas.
+FORMATO DE SALIDA CRÍTICO: Solo texto narrado. Silencios explícitos con formato [silencio:Xs]. Cada frase en línea separada. Sin títulos ni explicaciones. Sin markdown.
 
-LONGITUD:
-- Una meditación de 5 minutos tiene entre 200 y 280 palabras habladas. Nada más.
-- El silencio hace el trabajo. Las palabras solo abren la puerta.
+REGLAS DE LENGUAJE: Frases cortas. Evitar afirmaciones irreales. Lenguaje permisivo en fases profundas. Dejar que el silencio haga el trabajo.
 
-ESTRUCTURA (sin mencionarla):
-1. Llegada — 2 o 3 frases para anclar al usuario en el momento
-2. Cuerpo — relajación física breve, de arriba hacia abajo o al revés
-3. Respiración — 2 o 3 ciclos guiados explícitamente
-4. Centro — trabajo específico según el estado del usuario (1 imagen o sensación, no más)
-5. Cierre — 2 o 3 frases para integrar y soltar
+ADAPTACIÓN: ansiedad → respiración y presente. Sobrepensamiento → llevar a sensaciones. Tristeza → validar sin intensificar. Foco → activar ligeramente. Sueño → ritmo muy lento y silencios largos.
 
-Elige la técnica según el contexto: respiración 4-7-8 para ansiedad, body scan para tensión, una imagen simple para claridad, dejar ir pensamientos para el cierre. Aplícala sin nombrarla.`;
+DURACIÓN: La meditación debe durar exactamente lo que el usuario eligió. Los silencios representan al menos el 60% del tiempo total.`;
 
 module.exports = async (req, res) => {
   // Solo POST
@@ -98,7 +88,7 @@ El campo "text" debe contener solo el texto de la meditación, sin títulos ni e
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
-        max_tokens: 1500,
+        max_tokens: 4000,
         system: SYSTEM_PROMPT,
         messages: [{ role: 'user', content: userPrompt }]
       })
