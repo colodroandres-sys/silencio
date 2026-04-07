@@ -6,8 +6,8 @@ const checkRateLimit = require('./_ratelimit');
 // Voces de ElevenLabs optimizadas para meditación en español
 // Puedes reemplazarlas por IDs de tu cuenta en: https://elevenlabs.io/voice-library
 const VOICE_IDS = {
-  feminine: 'XB0fDUnXU5powFXDhCwa', // Charlotte — suave, cálida, ideal para meditación
-  masculine: 'TX3LPaxmHKxFdv7VOFE1'  // Liam — sereno, claro, profundo
+  feminine: 'EXAVITQu4vr4xnSDxMaL', // Sarah — madura, tranquilizadora, premade free tier
+  masculine: 'nPczCjzI2devNBz1zQrb'  // Brian — profundo, reconfortante, premade free tier
 };
 
 module.exports = async (req, res) => {
