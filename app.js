@@ -6,6 +6,7 @@ const state = {
   userInput: '',
   duration: '5',
   voice: 'feminine',
+  gender: 'femenino',
   isPlaying: false,
   currentSec: 0,
   totalSec: 0,
@@ -126,7 +127,8 @@ async function generateMeditation() {
       body: JSON.stringify({
         userInput: state.userInput,
         duration: state.duration,
-        voice: state.voice
+        voice: state.voice,
+        gender: state.gender
       })
     });
 
@@ -292,6 +294,10 @@ function newMeditation() {
   document.querySelector('#grp-voice .pill[data-value="feminine"]').classList.add('active');
   state.voice = 'feminine';
 
+  document.querySelectorAll('#grp-gender .pill').forEach(p => p.classList.remove('active'));
+  document.querySelector('#grp-gender .pill[data-value="femenino"]').classList.add('active');
+  state.gender = 'femenino';
+
   document.getElementById('input-free').value = '';
   document.getElementById('guided-1').value   = '';
   document.getElementById('guided-2').value   = '';
@@ -320,15 +326,6 @@ function connectAudio(url) {
     updateProgress();
   };
 
-  // Auto-reproducir al llegar al player
-  audio.play().then(() => {
-    state.isPlaying = true;
-    document.getElementById('breathing-player').classList.remove('paused');
-    document.getElementById('icon-play').style.display  = 'none';
-    document.getElementById('icon-pause').style.display = 'block';
-  }).catch(() => {
-    // Autoplay bloqueado por el navegador — el usuario verá el botón play
-  });
 }
 
 // =============================================

@@ -52,7 +52,7 @@ module.exports = async (req, res) => {
   const allowed = await checkRateLimit(req, res, 'meditation', 5, '1 h');
   if (!allowed) return;
 
-  const { userInput, duration, voice, sound } = req.body || {};
+  const { userInput, duration, voice, sound, gender } = req.body || {};
 
   if (!userInput || !duration) {
     return res.status(400).json({ error: 'Faltan campos requeridos: userInput, duration' });
@@ -67,6 +67,9 @@ module.exports = async (req, res) => {
   const voiceContext = voice === 'masculine'
     ? 'La voz que leerá esto es masculina. Usa un tono firme, sereno y con autoridad tranquila.'
     : 'La voz que leerá esto es femenina. Usa un tono cálido, suave y envolvente.';
+  const genderContext = gender === 'masculino'
+    ? 'Dirígete al usuario en masculino: adjetivos y artículos en masculino (ej: "estás tranquilo", "eres capaz", "te sientes libre").'
+    : 'Dirígete al usuario en femenino: adjetivos y artículos en femenino (ej: "estás tranquila", "eres capaz", "te sientes libre").';
 
   const userPrompt = `El usuario comparte lo siguiente sobre su momento actual:
 
@@ -77,6 +80,7 @@ Contexto de la sesión:
 - Longitud objetivo: aproximadamente ${targetWords} palabras
 - Sonido de fondo: ${soundContext}
 - Voz: ${voiceContext}
+- Género gramatical: ${genderContext}
 
 Devuelve únicamente un objeto JSON válido con este formato exacto (sin texto adicional antes ni después):
 {"title": "título de 3-5 palabras en español", "text": "texto completo de la meditación aquí"}

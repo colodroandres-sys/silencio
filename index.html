@@ -90,6 +90,14 @@
         </div>
       </div>
 
+      <div class="pref-section">
+        <span class="pref-label">¿Cómo quieres que me dirija a ti?</span>
+        <div id="grp-gender" class="pill-row">
+          <button class="pill active" data-value="femenino"  onclick="selectPill(this, 'grp-gender', 'gender')">Femenino</button>
+          <button class="pill"        data-value="masculino" onclick="selectPill(this, 'grp-gender', 'gender')">Masculino</button>
+        </div>
+      </div>
+
       <button id="btn-generate" class="btn-primary" onclick="generateMeditation()">
         Crear mi meditación
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
