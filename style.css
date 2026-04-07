@@ -376,55 +376,6 @@ body {
   color: var(--text);
 }
 
-.sound-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
-}
-
-.sound-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 7px;
-  padding: 13px 6px;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 13px;
-  cursor: pointer;
-  transition: all 0.25s var(--ease);
-}
-
-.sound-card.active {
-  background: linear-gradient(135deg, rgba(59, 95, 224, 0.15), rgba(124, 58, 237, 0.15));
-  border-color: var(--border-on);
-}
-
-.sound-card:hover:not(.active) {
-  border-color: rgba(110, 110, 200, 0.3);
-}
-
-.sound-emoji {
-  font-size: 1.45rem;
-  line-height: 1;
-}
-
-.silence-icon {
-  font-size: 1.6rem;
-  letter-spacing: 2px;
-  color: var(--muted);
-}
-
-.sound-name {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.68rem;
-  color: var(--muted);
-}
-
-.sound-card.active .sound-name {
-  color: var(--purple-soft);
-}
-
 /* =============================================
    ANIMACIÓN DE RESPIRACIÓN
    ============================================= */
@@ -572,24 +523,8 @@ body {
 }
 
 /* =============================================
-   REPRODUCTOR — meta + progreso
+   REPRODUCTOR — progreso
    ============================================= */
-.session-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.8rem;
-  color: var(--muted);
-  margin-bottom: 36px;
-  text-align: center;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.meta-dot {
-  opacity: 0.35;
-}
-
 .progress-area {
   display: flex;
   align-items: center;
@@ -676,8 +611,4 @@ body {
 
 @media (max-width: 380px) {
   .screen-inner { padding: 48px 20px 72px; }
-  .sound-grid { gap: 5px; }
-  .sound-card { padding: 10px 4px; }
-  .sound-emoji { font-size: 1.2rem; }
-  .sound-name { font-size: 0.62rem; }
 }

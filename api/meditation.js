@@ -3,7 +3,7 @@
 
 const checkRateLimit = require('./_ratelimit');
 
-const WORD_COUNTS = { '5': 550, '10': 1100, '15': 1650 };
+const WORD_COUNTS = { '5': 550 };
 
 const SOUND_CONTEXTS = {
   rain:    'lluvia suave de fondo',
