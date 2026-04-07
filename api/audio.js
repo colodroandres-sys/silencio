@@ -26,8 +26,11 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Faltan campos requeridos: text, voice' });
   }
 
-  // Eliminar marcadores de silencio — serán convertidos a pausas reales en el futuro
-  const text = rawText.replace(/\[silencio:\d+s\]/gi, '').replace(/\s+/g, ' ').trim();
+  // Convertir marcadores de silencio a puntos suspensivos (1 punto por segundo)
+  const text = rawText
+    .replace(/\[silencio:(\d+)s\]/gi, (_, secs) => '.'.repeat(parseInt(secs)))
+    .replace(/\s+/g, ' ')
+    .trim();
 
   if (text.length > 7000) {
     return res.status(400).json({ error: `El texto es demasiado largo (${text.length} caracteres). Máximo 7000.` });
