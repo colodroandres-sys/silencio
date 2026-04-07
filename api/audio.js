@@ -26,8 +26,8 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Faltan campos requeridos: text, voice' });
   }
 
-  if (text.length > 5000) {
-    return res.status(400).json({ error: `El texto es demasiado largo (${text.length} caracteres). Máximo 5000.` });
+  if (text.length > 7000) {
+    return res.status(400).json({ error: `El texto es demasiado largo (${text.length} caracteres). Máximo 7000.` });
   }
 
   if (!process.env.ELEVENLABS_API_KEY) {

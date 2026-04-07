@@ -54,6 +54,9 @@ module.exports = async (req, res) => {
 
   const targetWords = WORD_COUNTS[duration] || 1100;
   const soundContext = SOUND_CONTEXTS[sound] || 'silencio';
+  const voiceContext = voice === 'masculine'
+    ? 'La voz que leerá esto es masculina. Usa un tono firme, sereno y con autoridad tranquila.'
+    : 'La voz que leerá esto es femenina. Usa un tono cálido, suave y envolvente.';
 
   const userPrompt = `El usuario comparte lo siguiente sobre su momento actual:
 
@@ -63,6 +66,7 @@ Contexto de la sesión:
 - Duración: ${duration} minutos
 - Longitud objetivo: aproximadamente ${targetWords} palabras
 - Sonido de fondo: ${soundContext}
+- Voz: ${voiceContext}
 
 Devuelve únicamente un objeto JSON válido con este formato exacto (sin texto adicional antes ni después):
 {"title": "título de 3-5 palabras en español", "text": "texto completo de la meditación aquí"}
