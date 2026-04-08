@@ -62,10 +62,11 @@ module.exports = async (req, res) => {
           text,
           model_id: 'eleven_multilingual_v2', // Mejor calidad para español
           voice_settings: {
-            stability: 0.75,        // Alta estabilidad = voz consistente y serena
+            stability: 0.80,        // Alta estabilidad = voz consistente y uniforme
             similarity_boost: 0.75, // Fidelidad a la voz original
-            style: 0.20,            // Mínima expresividad — calma, no dramatismo
-            use_speaker_boost: true
+            style: 0.05,            // Casi sin expresividad — tono plano y sereno
+            use_speaker_boost: true,
+            speed: 0.75             // 25% más lento que el default — ritmo de meditación
           }
         })
       }
