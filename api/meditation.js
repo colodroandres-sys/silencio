@@ -48,6 +48,10 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Faltan campos requeridos: userInput, duration' });
   }
 
+  if (userInput.length > 500) {
+    return res.status(400).json({ error: 'El texto no puede superar los 500 caracteres.' });
+  }
+
   if (!process.env.ANTHROPIC_API_KEY) {
     return res.status(500).json({ error: 'ANTHROPIC_API_KEY no configurada' });
   }

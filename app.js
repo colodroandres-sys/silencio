@@ -119,62 +119,78 @@ async function generateMeditation() {
   const { signal } = abortController;
 
   try {
-    // ── Paso 1: Generar texto con Claude ──────────────────────────
-    const meditationRes = await fetch('/api/meditation', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal,
-      body: JSON.stringify({
-        userInput: state.userInput,
-        duration: state.duration,
-        voice: state.voice,
-        gender: state.gender
-      })
-    });
-
-    if (!meditationRes.ok) {
-      const err = await meditationRes.json().catch(() => ({}));
-      throw new Error(err.error || `Error ${meditationRes.status} en /api/meditation`);
-    }
-
-    const { title, text } = await meditationRes.json();
-    document.getElementById('session-title').textContent = title;
-
-    // ── Paso 2: Convertir a audio con ElevenLabs ──────────────────
-    setLoadingState('normal', 'Creando el audio', 'Convirtiendo el texto a voz personalizada...');
-
-    const audioRes = await fetch('/api/audio', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal,
-      body: JSON.stringify({ text, voice: state.voice })
-    });
-
-    if (!audioRes.ok) {
-      const err = await audioRes.json().catch(() => ({}));
-      throw new Error(err.error || `Error ${audioRes.status} en /api/audio`);
-    }
-
-    const audioBlob = await audioRes.blob();
-
-    if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
-    abortController = null;
-
-    if (state.audioBlobUrl) URL.revokeObjectURL(state.audioBlobUrl);
-    state.audioBlobUrl = URL.createObjectURL(audioBlob);
-
-    connectAudio(state.audioBlobUrl);
-    showScreen('screen-player');
-
+    await attemptGeneration(signal);
   } catch (err) {
     if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
-    abortController = null;
 
-    if (err.name === 'AbortError') return; // usuario canceló
-    console.error('Error generando meditación:', err);
-    enableGenerateBtn();
-    setLoadingState('error', 'Algo salió mal', err.message || 'Revisa tu conexión e inténtalo de nuevo.');
+    if (err.name === 'AbortError') { abortController = null; return; }
+
+    // Reintento automático una sola vez
+    console.warn('Primer intento fallido, reintentando...', err);
+    setLoadingState('normal', 'Un momento más...', 'Estamos terminando de preparar tu meditación...');
+
+    abortController = new AbortController();
+    try {
+      await attemptGeneration(abortController.signal);
+    } catch (retryErr) {
+      if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
+      abortController = null;
+
+      if (retryErr.name === 'AbortError') return;
+      console.error('Error generando meditación (reintento):', retryErr);
+      enableGenerateBtn();
+      setLoadingState('error', 'Algo salió mal', retryErr.message || 'Revisa tu conexión e inténtalo de nuevo.');
+    }
   }
+}
+
+async function attemptGeneration(signal) {
+  // ── Paso 1: Generar texto con Claude ──────────────────────────
+  const meditationRes = await fetch('/api/meditation', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    signal,
+    body: JSON.stringify({
+      userInput: state.userInput,
+      duration: state.duration,
+      voice: state.voice,
+      gender: state.gender
+    })
+  });
+
+  if (!meditationRes.ok) {
+    const err = await meditationRes.json().catch(() => ({}));
+    throw new Error(err.error || `Error ${meditationRes.status} en /api/meditation`);
+  }
+
+  const { title, text } = await meditationRes.json();
+  document.getElementById('session-title').textContent = title;
+
+  // ── Paso 2: Convertir a audio con ElevenLabs ──────────────────
+  setLoadingState('normal', 'Creando el audio', 'Convirtiendo el texto a voz personalizada...');
+
+  const audioRes = await fetch('/api/audio', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    signal,
+    body: JSON.stringify({ text, voice: state.voice })
+  });
+
+  if (!audioRes.ok) {
+    const err = await audioRes.json().catch(() => ({}));
+    throw new Error(err.error || `Error ${audioRes.status} en /api/audio`);
+  }
+
+  const audioBlob = await audioRes.blob();
+
+  if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
+  abortController = null;
+
+  if (state.audioBlobUrl) URL.revokeObjectURL(state.audioBlobUrl);
+  state.audioBlobUrl = URL.createObjectURL(audioBlob);
+
+  connectAudio(state.audioBlobUrl);
+  showScreen('screen-player');
 }
 
 function setLoadingState(type, title, sub) {

@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/meditation.js": {
-      "maxDuration": 60
+      "maxDuration": 120
     },
     "api/audio.js": {
       "maxDuration": 300
