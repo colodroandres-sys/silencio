@@ -42,8 +42,10 @@ function goToPreferences() {
   let input = '';
 
   if (state.mode === 'free') {
-    input = document.getElementById('input-free').value.trim();
-    if (!input) { shake(document.getElementById('input-free')); return; }
+    const el = document.getElementById('input-free');
+    input = el.value.trim();
+    if (!input) { shake(el); return; }
+    if (input.length > 500) { showCharError(el, `Máximo 500 caracteres (tienes ${input.length})`); return; }
   } else {
     const g1 = document.getElementById('guided-1').value.trim();
     const g2 = document.getElementById('guided-2').value.trim();
@@ -51,10 +53,25 @@ function goToPreferences() {
     if (!g2) { shake(document.getElementById('guided-2')); return; }
     const g3 = document.getElementById('guided-3').value.trim();
     input = [g1, g2, g3].filter(Boolean).join('\n');
+    if (input.length > 500) { showCharError(document.getElementById('guided-1'), `Máximo 500 caracteres en total (tienes ${input.length})`); return; }
   }
 
   state.userInput = input;
   showScreen('screen-preferences');
+}
+
+function showCharError(el, msg) {
+  const id = el.id + '-char-error';
+  let err = document.getElementById(id);
+  if (!err) {
+    err = document.createElement('p');
+    err.id = id;
+    err.style.cssText = 'color:#f87171;font-size:0.78rem;margin-top:6px;';
+    el.parentNode.insertBefore(err, el.nextSibling);
+  }
+  err.textContent = msg;
+  shake(el);
+  setTimeout(() => { if (err.parentNode) err.parentNode.removeChild(err); }, 4000);
 }
 
 function shake(el) {
@@ -111,7 +128,7 @@ async function generateMeditation() {
 
   // Aviso de tiempo si tarda más de 10 segundos
   slowTimer = setTimeout(() => {
-    document.getElementById('loading-sub').textContent = 'Esto puede tardar hasta 60 segundos. Gracias por tu paciencia.';
+    document.getElementById('loading-sub').textContent = 'Esto puede tardar hasta 2 minutos. Gracias por tu paciencia.';
     slowTimer = null;
   }, 10000);
 
@@ -125,7 +142,15 @@ async function generateMeditation() {
 
     if (err.name === 'AbortError') { abortController = null; return; }
 
-    // Reintento automático una sola vez
+    // Errores de cliente (4xx): mostrar inmediatamente, sin reintentar
+    if (err.status && err.status < 500) {
+      abortController = null;
+      enableGenerateBtn();
+      setLoadingState('error', 'Algo salió mal', err.message || 'Revisa los datos e inténtalo de nuevo.');
+      return;
+    }
+
+    // Errores de servidor (5xx / red): reintento automático una sola vez
     console.warn('Primer intento fallido, reintentando...', err);
     setLoadingState('normal', 'Un momento más...', 'Estamos terminando de preparar tu meditación...');
 
@@ -160,7 +185,9 @@ async function attemptGeneration(signal) {
 
   if (!meditationRes.ok) {
     const err = await meditationRes.json().catch(() => ({}));
-    throw new Error(err.error || `Error ${meditationRes.status} en /api/meditation`);
+    const error = new Error(err.error || `Error ${meditationRes.status} en /api/meditation`);
+    error.status = meditationRes.status;
+    throw error;
   }
 
   const { title, text } = await meditationRes.json();
@@ -178,7 +205,9 @@ async function attemptGeneration(signal) {
 
   if (!audioRes.ok) {
     const err = await audioRes.json().catch(() => ({}));
-    throw new Error(err.error || `Error ${audioRes.status} en /api/audio`);
+    const error = new Error(err.error || `Error ${audioRes.status} en /api/audio`);
+    error.status = audioRes.status;
+    throw error;
   }
 
   const audioBlob = await audioRes.blob();

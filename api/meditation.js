@@ -48,6 +48,10 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Faltan campos requeridos: userInput, duration' });
   }
 
+  if (!['5', '10', '15'].includes(duration)) {
+    return res.status(400).json({ error: 'Duración no válida. Debe ser 5, 10 o 15 minutos.' });
+  }
+
   if (userInput.length > 500) {
     return res.status(400).json({ error: 'El texto no puede superar los 500 caracteres.' });
   }
