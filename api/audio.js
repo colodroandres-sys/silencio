@@ -27,8 +27,14 @@ module.exports = async (req, res) => {
   }
 
   // Convertir marcadores de silencio a SSML y envolver en <speak>
+  // ElevenLabs ignora breaks > 3s, así que los partimos en chunks de 3s
   const text = '<speak>' + rawText
-    .replace(/\[silencio:(\d+)s\]/gi, (_, secs) => `<break time="${secs}s"/>`)
+    .replace(/\[silencio:(\d+)s\]/gi, (_, secs) => {
+      const total = parseInt(secs);
+      const chunks = Math.floor(total / 3);
+      const remainder = total % 3;
+      return '<break time="3s"/>'.repeat(chunks) + (remainder > 0 ? `<break time="${remainder}s"/>` : '');
+    })
     .replace(/\s+/g, ' ')
     .trim() + '</speak>';
 
