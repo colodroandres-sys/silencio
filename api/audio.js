@@ -6,8 +6,8 @@ const checkRateLimit = require('./_ratelimit');
 // Voces de ElevenLabs optimizadas para meditación en español
 // Puedes reemplazarlas por IDs de tu cuenta en: https://elevenlabs.io/voice-library
 const VOICE_IDS = {
-  feminine: 'EXAVITQu4vr4xnSDxMaL', // Sarah — madura, tranquilizadora, premade free tier
-  masculine: 'nPczCjzI2devNBz1zQrb'  // Brian — profundo, reconfortante, premade free tier
+  feminine: 'D9MdulIxfrCUUJcGNQon',
+  masculine: 'RTFg9niKcgGLDwa3RFlz'
 };
 
 module.exports = async (req, res) => {
@@ -61,12 +61,12 @@ module.exports = async (req, res) => {
         body: JSON.stringify({
           text,
           model_id: 'eleven_multilingual_v2', // Mejor calidad para español
+          speed: 0.75,                        // 25% más lento que el default — ritmo de meditación
           voice_settings: {
             stability: 0.80,        // Alta estabilidad = voz consistente y uniforme
             similarity_boost: 0.75, // Fidelidad a la voz original
             style: 0.05,            // Casi sin expresividad — tono plano y sereno
-            use_speaker_boost: true,
-            speed: 0.75             // 25% más lento que el default — ritmo de meditación
+            use_speaker_boost: true
           }
         })
       }
