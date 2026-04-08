@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
   }
 
   // Rate limiting: 5 audios por IP por hora
-  const allowed = await checkRateLimit(req, res, 'audio', 5, '1 h');
+  const allowed = await checkRateLimit(req, res, 'audio', 10, '1 h');
   if (!allowed) return;
 
   const { text: rawText, voice } = req.body || {};
@@ -38,8 +38,8 @@ module.exports = async (req, res) => {
     .replace(/\s+/g, ' ')
     .trim() + '</speak>';
 
-  if (text.length > 7000) {
-    return res.status(400).json({ error: `El texto es demasiado largo (${text.length} caracteres). Máximo 7000.` });
+  if (text.length > 15000) {
+    return res.status(400).json({ error: `El texto es demasiado largo (${text.length} caracteres). Máximo 15000.` });
   }
 
   if (!process.env.ELEVENLABS_API_KEY) {
@@ -62,6 +62,7 @@ module.exports = async (req, res) => {
           text,
           model_id: 'eleven_multilingual_v2', // Mejor calidad para español
           speed: 0.75,                        // 25% más lento que el default — ritmo de meditación
+          output_format: 'mp3_44100_192',     // Alta calidad de audio
           voice_settings: {
             stability: 0.80,        // Alta estabilidad = voz consistente y uniforme
             similarity_boost: 0.75, // Fidelidad a la voz original

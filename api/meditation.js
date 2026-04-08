@@ -39,7 +39,7 @@ module.exports = async (req, res) => {
   }
 
   // Rate limiting: 5 meditaciones por IP por hora
-  const allowed = await checkRateLimit(req, res, 'meditation', 5, '1 h');
+  const allowed = await checkRateLimit(req, res, 'meditation', 10, '1 h');
   if (!allowed) return;
 
   const { userInput, duration, voice, sound, gender } = req.body || {};

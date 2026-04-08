@@ -2,8 +2,8 @@
 // Usa Upstash Redis para mantener estado entre instancias serverless
 //
 // Límites configurados para pre-launch:
-//   /api/meditation — 5 requests por IP por hora  (Claude API cuesta dinero)
-//   /api/audio      — 5 requests por IP por hora  (ElevenLabs cuesta dinero)
+//   /api/meditation — 10 requests por IP por hora  (Claude API cuesta dinero)
+//   /api/audio      — 10 requests por IP por hora  (ElevenLabs cuesta dinero)
 //
 // IMPORTANTE: si Upstash no está configurado o falla por cualquier razón,
 // el rate limiting se desactiva silenciosamente — nunca bloquea la función principal.
