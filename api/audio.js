@@ -48,6 +48,8 @@ module.exports = async (req, res) => {
 
   const voiceId = VOICE_IDS[voice] || VOICE_IDS.feminine;
 
+  console.log('TEXTO SSML:', text);
+
   try {
     const response = await fetch(
       `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
