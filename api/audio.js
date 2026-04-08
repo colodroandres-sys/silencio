@@ -47,7 +47,7 @@ module.exports = async (req, res) => {
     })
     .replace(/\s+/g, ' ')
     .trim();
-  const text = '<speak><prosody rate="75%">' + inner + '</prosody></speak>';
+  const text = '<speak>' + inner + '</speak>';
 
   if (text.length > 15000) {
     return res.status(400).json({ error: `El texto es demasiado largo (${text.length} caracteres). Máximo 15000.` });
