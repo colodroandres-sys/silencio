@@ -27,7 +27,7 @@ Siempre debe seguir un arco: relajación física → respiración → trabajo es
 
 ## Stack tecnológico
 - Frontend: HTML, CSS, JavaScript puro
-- IA para generar el texto de la meditación: Claude API (claude-sonnet-4-20250514)
+- IA para generar el texto de la meditación: Claude API (claude-sonnet-4-5)
 - IA para el audio: ElevenLabs API
 - Idioma: español primero, inglés después
 

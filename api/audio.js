@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Rate limiting: 5 audios por IP por hora
+  // Rate limiting: 10 audios por IP por hora
   const allowed = await checkRateLimit(req, res, 'audio', 10, '1 h');
   if (!allowed) return;
 
@@ -26,17 +26,28 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Faltan campos requeridos: text, voice' });
   }
 
+  // Escapar caracteres especiales XML para evitar SSML malformado
+  function escapeXml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+  }
+
   // Convertir marcadores de silencio a SSML y envolver en <speak>
-  // ElevenLabs ignora breaks > 3s, así que los partimos en chunks de 3s
-  const text = '<speak>' + rawText
+  // El plan Creator de ElevenLabs soporta breaks de hasta 5s
+  const inner = escapeXml(rawText)
     .replace(/\[silencio:(\d+)s\]/gi, (_, secs) => {
       const total = parseInt(secs);
-      const chunks = Math.floor(total / 3);
-      const remainder = total % 3;
-      return '<break time="3s"/>'.repeat(chunks) + (remainder > 0 ? `<break time="${remainder}s"/>` : '');
+      const chunks = Math.floor(total / 5);
+      const remainder = total % 5;
+      return '<break time="5s"/>'.repeat(chunks) + (remainder > 0 ? `<break time="${remainder}s"/>` : '');
     })
     .replace(/\s+/g, ' ')
-    .trim() + '</speak>';
+    .trim();
+  const text = '<speak><prosody rate="75%">' + inner + '</prosody></speak>';
 
   if (text.length > 15000) {
     return res.status(400).json({ error: `El texto es demasiado largo (${text.length} caracteres). Máximo 15000.` });
@@ -68,8 +79,7 @@ module.exports = async (req, res) => {
             stability: 0.80,        // Alta estabilidad = voz consistente y uniforme
             similarity_boost: 0.75, // Fidelidad a la voz original
             style: 0.05,            // Casi sin expresividad — tono plano y sereno
-            use_speaker_boost: true,
-            speed: 0.75             // 25% más lento que el default — ritmo de meditación
+            use_speaker_boost: true
           }
         })
       }
