@@ -133,6 +133,7 @@ El campo "text" debe contener solo el texto de la meditación, sin títulos ni e
       return res.status(502).json({ error: 'Respuesta vacía de Claude API' });
     }
 
+    console.log('TEXTO GENERADO:', JSON.stringify({title, text}));
     return res.status(200).json({ title, text });
 
   } catch (err) {
