@@ -26,11 +26,11 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Faltan campos requeridos: text, voice' });
   }
 
-  // Convertir marcadores de silencio a puntos suspensivos (1 punto por segundo)
-  const text = rawText
-    .replace(/\[silencio:(\d+)s\]/gi, (_, secs) => '.'.repeat(parseInt(secs)))
+  // Convertir marcadores de silencio a SSML y envolver en <speak>
+  const text = '<speak>' + rawText
+    .replace(/\[silencio:(\d+)s\]/gi, (_, secs) => `<break time="${secs}s"/>`)
     .replace(/\s+/g, ' ')
-    .trim();
+    .trim() + '</speak>';
 
   if (text.length > 7000) {
     return res.status(400).json({ error: `El texto es demasiado largo (${text.length} caracteres). Máximo 7000.` });
