@@ -120,13 +120,25 @@ module.exports = async (req, res) => {
       return buf;
     }
 
+    // Encontrar el inicio del siguiente frame MP3 válido desde una posición dada
+    // Evita cortar en medio de un frame, lo que congela el decoder del navegador
+    function findFrameBoundary(buf, startByte) {
+      for (let i = startByte; i < buf.length - 1; i++) {
+        if (buf[i] === 0xFF && (buf[i + 1] & 0xE0) === 0xE0) return i;
+      }
+      return startByte;
+    }
+
     // Cortar el audio de voz en segmentos usando cutTimes
-    // CBR 128kbps = exactamente 16000 bytes por segundo
+    // Aproximamos la posición en bytes (CBR 128kbps = 16000 bytes/s)
+    // y luego alineamos al frame boundary más cercano
     const BYTES_PER_SEC  = 16000;
+    const audioDataStart = findFrameBoundary(voiceBuffer, 0); // salta ID3 u otros headers
     const voiceSegments  = [];
-    let prevByte = 0;
+    let prevByte = audioDataStart;
     for (let i = 0; i < cutTimes.length; i++) {
-      const cutByte = Math.round(cutTimes[i] * BYTES_PER_SEC);
+      const approxByte = audioDataStart + Math.round(cutTimes[i] * BYTES_PER_SEC);
+      const cutByte    = findFrameBoundary(voiceBuffer, approxByte);
       voiceSegments.push(voiceBuffer.slice(prevByte, cutByte));
       prevByte = cutByte;
     }
