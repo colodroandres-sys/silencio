@@ -5,14 +5,6 @@ const checkRateLimit = require('./_ratelimit');
 
 const WORD_COUNTS = { '5': 300, '10': 600, '15': 900 };
 
-const SOUND_CONTEXTS = {
-  rain:    'lluvia suave de fondo',
-  ocean:   'olas del mar de fondo',
-  forest:  'sonidos del bosque de fondo',
-  birds:   'canto de pájaros de fondo',
-  silence: 'silencio absoluto'
-};
-
 const SYSTEM_PROMPT = `Eres un experto en diseño de meditaciones guiadas. Generas guiones optimizados para voz sintética (TTS). El silencio es el protagonista — las palabras son solo guías entre silencios.
 
 CLASIFICACIÓN INTERNA (NO MOSTRAR): Infiere estado principal, subtipo, objetivo y estrategia según el input.
@@ -42,7 +34,7 @@ module.exports = async (req, res) => {
   const allowed = await checkRateLimit(req, res, 'meditation', 10, '1 h');
   if (!allowed) return;
 
-  const { userInput, duration, voice, sound, gender } = req.body || {};
+  const { userInput, duration, voice, gender } = req.body || {};
 
   if (!userInput || !duration) {
     return res.status(400).json({ error: 'Faltan campos requeridos: userInput, duration' });
@@ -61,7 +53,6 @@ module.exports = async (req, res) => {
   }
 
   const targetWords = WORD_COUNTS[duration] || 1100;
-  const soundContext = SOUND_CONTEXTS[sound] || 'silencio';
   const voiceContext = voice === 'masculine'
     ? 'La voz que leerá esto es masculina. Usa un tono firme, sereno y con autoridad tranquila.'
     : 'La voz que leerá esto es femenina. Usa un tono cálido, suave y envolvente.';
@@ -76,7 +67,6 @@ module.exports = async (req, res) => {
 Contexto de la sesión:
 - Duración: ${duration} minutos
 - Longitud objetivo: aproximadamente ${targetWords} palabras
-- Sonido de fondo: ${soundContext}
 - Voz: ${voiceContext}
 - Género gramatical: ${genderContext}
 
@@ -133,7 +123,6 @@ El campo "text" debe contener solo el texto de la meditación, sin títulos ni e
       return res.status(502).json({ error: 'Respuesta vacía de Claude API' });
     }
 
-    console.log('TEXTO GENERADO:', JSON.stringify({title, text}));
     return res.status(200).json({ title, text });
 
   } catch (err) {

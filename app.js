@@ -146,7 +146,11 @@ async function generateMeditation() {
     if (err.status && err.status < 500) {
       abortController = null;
       enableGenerateBtn();
-      setLoadingState('error', 'Algo salió mal', err.message || 'Revisa los datos e inténtalo de nuevo.');
+      if (err.status === 429) {
+        setLoadingState('error', 'Límite alcanzado', 'Has alcanzado el límite de meditaciones por hora. Vuelve en un momento.');
+      } else {
+        setLoadingState('error', 'Algo salió mal', err.message || 'Revisa los datos e inténtalo de nuevo.');
+      }
       return;
     }
 
