@@ -290,7 +290,7 @@ function togglePlay() {
 function updateProgress() {
   const pct = state.totalSec > 0 ? Math.min(100, (state.currentSec / state.totalSec) * 100) : 0;
   document.getElementById('progress-fill').style.width = `${pct}%`;
-  document.getElementById('time-now').textContent = formatTime(state.currentSec);
+  document.getElementById('time-now').textContent = formatTime(Math.min(state.currentSec, state.totalSec));
 }
 
 function seekTo(event) {
@@ -304,6 +304,7 @@ function seekTo(event) {
   const audio = document.getElementById('audio');
   if (audio.duration) {
     if (state.silenceTimeoutId) { clearTimeout(state.silenceTimeoutId); state.silenceTimeoutId = null; }
+    if (state.silenceTimer) { clearInterval(state.silenceTimer); state.silenceTimer = null; }
     audio.currentTime = ratio * audio.duration;
 
     // Recalcular silenceOffset y flags _done según la nueva posición
