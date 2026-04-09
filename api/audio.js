@@ -95,8 +95,12 @@ module.exports = async (req, res) => {
     const audioBase64  = elData.audio_base64;
     const charEndTimes = elData.alignment?.character_end_times_seconds || [];
 
+    const characters = elData.alignment?.characters || [];
     console.log('[audio] charEndTimes length:', charEndTimes.length);
-    console.log('[audio] charEndTimes primeros/últimos:', charEndTimes.slice(0,3), '...', charEndTimes.slice(-3));
+    console.log('[audio] characters length:', characters.length);
+    console.log('[audio] cleanText.length vs characters.length — match:', cleanText.length === characters.length ? 'SÍ' : `NO (diff: ${cleanText.length - characters.length})`);
+    console.log('[audio] characters muestra inicio:', characters.slice(0,8).join(''));
+    console.log('[audio] charEndTimes primeros:', charEndTimes.slice(0,3), '| últimos:', charEndTimes.slice(-3));
 
     // Calcular en qué segundo exacto termina cada segmento dentro del audio de ElevenLabs
     // cleanText = seg0 + " " + seg1 + " " + seg2 ...
@@ -109,7 +113,9 @@ module.exports = async (req, res) => {
       charPos += 1; // el espacio que separa segmentos en cleanText
     }
 
+    const badCutTimes = cutTimes.filter(t => t === 0).length;
     console.log('[audio] cutTimes:', JSON.stringify(cutTimes));
+    if (badCutTimes > 0) console.warn('[audio] ALERTA: hay', badCutTimes, 'cutTime(s) en 0 — silencios dispararán al inicio');
 
     // Construir el mapa de silencios: cuándo parar y cuánto esperar
     const silenceMap = cutTimes.map((time, i) => ({ time, duration: silences[i] }));
@@ -118,7 +124,12 @@ module.exports = async (req, res) => {
     const voiceDuration = charEndTimes[charEndTimes.length - 1] || 0;
     const totalDuration = voiceDuration + silences.reduce((sum, s) => sum + s, 0);
 
+    console.log('[audio] voiceDuration:', voiceDuration);
     console.log('[audio] totalDuration:', totalDuration);
+    console.log('[audio] silenceMap:', JSON.stringify(silenceMap));
+    if (silences.length > cutTimes.length) {
+      console.warn('[audio] ALERTA: hay', silences.length - cutTimes.length, 'silencio(s) trailing — no están en silenceMap pero sí en totalDuration');
+    }
 
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-store');
