@@ -103,62 +103,16 @@ module.exports = async (req, res) => {
       charPos += 1; // el espacio que separa segmentos en cleanText
     }
 
-    // Convertir el audio base64 de ElevenLabs a Buffer binario
-    const voiceBuffer = Buffer.from(audioBase64, 'base64');
+    // Construir el mapa de silencios: cuándo parar y cuánto esperar
+    const silenceMap = cutTimes.map((time, i) => ({ time, duration: silences[i] }));
 
-    // Generar silencio MP3 puro sin librerías externas
-    // Formato: MPEG1, Layer3, 128kbps, 44100Hz, joint stereo, sin padding
-    function generateSilentMp3(seconds) {
-      const HEADER        = Buffer.from([0xFF, 0xFB, 0x90, 0x44]);
-      const FRAME_SIZE    = 417;              // bytes por frame a 128kbps 44100Hz
-      const FRAMES_PER_SEC = 44100 / 1152;   // ~38.28 frames por segundo
-      const frameCount    = Math.ceil(seconds * FRAMES_PER_SEC);
-      const buf           = Buffer.alloc(frameCount * FRAME_SIZE, 0);
-      for (let i = 0; i < frameCount; i++) {
-        HEADER.copy(buf, i * FRAME_SIZE);
-      }
-      return buf;
-    }
+    // Duración total = duración de la voz + suma de todos los silencios
+    const voiceDuration = charEndTimes[charEndTimes.length - 1] || 0;
+    const totalDuration = voiceDuration + silences.reduce((sum, s) => sum + s, 0);
 
-    // Encontrar el inicio del siguiente frame MP3 válido desde una posición dada
-    // Evita cortar en medio de un frame, lo que congela el decoder del navegador
-    function findFrameBoundary(buf, startByte) {
-      for (let i = startByte; i < buf.length - 1; i++) {
-        if (buf[i] === 0xFF && (buf[i + 1] & 0xE0) === 0xE0) return i;
-      }
-      return startByte;
-    }
-
-    // Cortar el audio de voz en segmentos usando cutTimes
-    // Aproximamos la posición en bytes (CBR 128kbps = 16000 bytes/s)
-    // y luego alineamos al frame boundary más cercano
-    const BYTES_PER_SEC  = 16000;
-    const audioDataStart = findFrameBoundary(voiceBuffer, 0); // salta ID3 u otros headers
-    const voiceSegments  = [];
-    let prevByte = audioDataStart;
-    for (let i = 0; i < cutTimes.length; i++) {
-      const approxByte = audioDataStart + Math.round(cutTimes[i] * BYTES_PER_SEC);
-      const cutByte    = findFrameBoundary(voiceBuffer, approxByte);
-      voiceSegments.push(voiceBuffer.slice(prevByte, cutByte));
-      prevByte = cutByte;
-    }
-    voiceSegments.push(voiceBuffer.slice(prevByte)); // último segmento hasta el final
-
-    // Construir el audio final intercalando voz y silencios:
-    // seg0 + silencio0 + seg1 + silencio1 + seg2 ...
-    const audioParts = [];
-    for (let i = 0; i < voiceSegments.length; i++) {
-      audioParts.push(voiceSegments[i]);
-      if (i < silences.length) {
-        audioParts.push(generateSilentMp3(silences[i]));
-      }
-    }
-    const finalAudio = Buffer.concat(audioParts);
-
-    res.setHeader('Content-Type', 'audio/mpeg');
-    res.setHeader('Content-Length', finalAudio.byteLength);
+    res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-store');
-    res.status(200).end(finalAudio);
+    return res.status(200).json({ audioBase64, silenceMap, totalDuration });
 
   } catch (err) {
     console.error('Error interno en /api/audio:', err);

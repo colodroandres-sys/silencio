@@ -10,7 +10,10 @@ const state = {
   isPlaying: false,
   currentSec: 0,
   totalSec: 0,
-  audioBlobUrl: null
+  audioBlobUrl: null,
+  silenceMap: [],      // [{time, duration}] — silencios a insertar durante la reproducción
+  silenceOffset: 0,   // segundos acumulados de silencio ya ejecutados
+  silenceTimer: null  // timeout activo durante un silencio
 };
 
 let abortController = null;
@@ -120,7 +123,6 @@ async function generateMeditation() {
   const btn = document.getElementById('btn-generate');
   btn.disabled = true;
 
-  state.totalSec   = parseInt(state.duration) * 60;
   state.currentSec = 0;
 
   setLoadingState('normal', 'Escribiendo tu meditación', 'Analizando tu momento y diseñando algo único para ti...');
@@ -214,13 +216,24 @@ async function attemptGeneration(signal) {
     throw error;
   }
 
-  const audioBlob = await audioRes.blob();
+  const audioData = await audioRes.json();
 
   if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
   abortController = null;
 
+  // Convertir base64 a Blob
+  const binary = atob(audioData.audioBase64);
+  const bytes  = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  const audioBlob = new Blob([bytes], { type: 'audio/mpeg' });
+
   if (state.audioBlobUrl) URL.revokeObjectURL(state.audioBlobUrl);
-  state.audioBlobUrl = URL.createObjectURL(audioBlob);
+  state.audioBlobUrl   = URL.createObjectURL(audioBlob);
+  state.silenceMap     = audioData.silenceMap || [];
+  state.totalSec       = Math.round(audioData.totalDuration || parseInt(state.duration) * 60);
+  state.silenceOffset  = 0;
+
+  document.getElementById('time-end').textContent = formatTime(state.totalSec);
 
   connectAudio(state.audioBlobUrl);
   showScreen('screen-player');
@@ -253,6 +266,7 @@ function togglePlay() {
   const wrap  = document.getElementById('breathing-player');
 
   if (state.isPlaying) {
+    if (state.silenceTimer) { clearInterval(state.silenceTimer); state.silenceTimer = null; }
     audio.pause();
     state.isPlaying = false;
     wrap.classList.add('paused');
@@ -319,6 +333,10 @@ function newMeditation() {
   audio.removeAttribute('src');
   audio.load();
 
+  if (state.silenceTimer) { clearInterval(state.silenceTimer); state.silenceTimer = null; }
+  state.silenceMap    = [];
+  state.silenceOffset = 0;
+
   if (state.audioBlobUrl) {
     URL.revokeObjectURL(state.audioBlobUrl);
     state.audioBlobUrl = null;
@@ -365,16 +383,38 @@ function connectAudio(url) {
 
   audio.ontimeupdate = () => {
     if (!state.isPlaying) return;
-    state.currentSec = Math.floor(audio.currentTime);
+
+    // Comprobar si toca pausar para un silencio
+    const voiceTime = audio.currentTime;
+    for (const s of state.silenceMap) {
+      if (!s._done && voiceTime >= s.time) {
+        s._done = true;
+        audio.pause();
+        state.isPlaying = false;
+
+        // Avanzar el progreso tick a tick durante el silencio
+        let elapsed = 0;
+        const tick = 250; // ms
+        state.silenceTimer = setInterval(() => {
+          elapsed += tick / 1000;
+          state.currentSec = Math.round(s.time + state.silenceOffset + elapsed);
+          updateProgress();
+          if (elapsed >= s.duration) {
+            clearInterval(state.silenceTimer);
+            state.silenceTimer  = null;
+            state.silenceOffset += s.duration;
+            audio.play().then(() => {
+              state.isPlaying = true;
+            }).catch(console.error);
+          }
+        }, tick);
+        return;
+      }
+    }
+
+    state.currentSec = Math.round(voiceTime + state.silenceOffset);
     updateProgress();
   };
-
-  audio.onloadedmetadata = () => {
-    state.totalSec = Math.floor(audio.duration);
-    document.getElementById('time-end').textContent = formatTime(state.totalSec);
-    updateProgress();
-  };
-
 }
 
 // =============================================
