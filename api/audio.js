@@ -46,9 +46,6 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'El texto no contiene frases habladas.' });
   }
 
-  console.log('[audio] segments:', segments.length, '| silences:', JSON.stringify(silences));
-  console.log('[audio] cleanText length:', cleanText.length);
-
   if (!process.env.ELEVENLABS_API_KEY) {
     return res.status(500).json({ error: 'ELEVENLABS_API_KEY no configurada' });
   }
@@ -57,6 +54,9 @@ module.exports = async (req, res) => {
 
   // Texto limpio para ElevenLabs: segmentos unidos, sin marcadores de silencio
   const cleanText = segments.join(' ');
+
+  console.log('[audio] segments:', segments.length, '| silences:', JSON.stringify(silences));
+  console.log('[audio] cleanText length:', cleanText.length);
 
   try {
     const response = await fetch(
