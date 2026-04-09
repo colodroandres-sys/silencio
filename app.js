@@ -11,9 +11,10 @@ const state = {
   currentSec: 0,
   totalSec: 0,
   audioBlobUrl: null,
-  silenceMap: [],      // [{time, duration}] — silencios a insertar durante la reproducción
-  silenceOffset: 0,   // segundos acumulados de silencio ya ejecutados
-  silenceTimer: null  // timeout activo durante un silencio
+  silenceMap: [],        // [{time, duration}] — silencios a insertar durante la reproducción
+  silenceOffset: 0,     // segundos acumulados de silencio ya ejecutados
+  silenceTimer: null,   // setInterval activo durante un silencio
+  silenceTimeoutId: null // setTimeout para disparar el próximo silencio con precisión
 };
 
 let abortController = null;
@@ -267,6 +268,7 @@ function togglePlay() {
 
   if (state.isPlaying) {
     if (state.silenceTimer) { clearInterval(state.silenceTimer); state.silenceTimer = null; }
+    if (state.silenceTimeoutId) { clearTimeout(state.silenceTimeoutId); state.silenceTimeoutId = null; }
     audio.pause();
     state.isPlaying = false;
     wrap.classList.add('paused');
@@ -279,6 +281,7 @@ function togglePlay() {
         wrap.classList.remove('paused');
         document.getElementById('icon-play').style.display  = 'none';
         document.getElementById('icon-pause').style.display = 'block';
+        scheduleNextSilence(audio);
       }).catch(console.error);
     }
   }
@@ -334,6 +337,7 @@ function newMeditation() {
   audio.load();
 
   if (state.silenceTimer) { clearInterval(state.silenceTimer); state.silenceTimer = null; }
+  if (state.silenceTimeoutId) { clearTimeout(state.silenceTimeoutId); state.silenceTimeoutId = null; }
   state.silenceMap    = [];
   state.silenceOffset = 0;
 
@@ -381,44 +385,52 @@ function connectAudio(url) {
   const audio = document.getElementById('audio');
   audio.src = url;
 
+  // ontimeupdate solo actualiza la barra de progreso
   audio.ontimeupdate = () => {
     if (!state.isPlaying) return;
-
-    // Comprobar si toca pausar para un silencio
-    const voiceTime = audio.currentTime;
-    for (const s of state.silenceMap) {
-      if (!s._done && voiceTime >= s.time) {
-        s._done = true;
-        audio.pause();
-        state.isPlaying = false;
-
-        // Avanzar el progreso tick a tick durante el silencio
-        let elapsed = 0;
-        const tick = 250; // ms
-        state.silenceTimer = setInterval(() => {
-          elapsed += tick / 1000;
-          state.currentSec = Math.round(s.time + state.silenceOffset + elapsed);
-          updateProgress();
-          if (elapsed >= s.duration) {
-            clearInterval(state.silenceTimer);
-            state.silenceTimer  = null;
-            state.silenceOffset += s.duration;
-            if (audio.ended) {
-              handleEnd();
-            } else {
-              audio.play().then(() => {
-                if (!audio.ended) state.isPlaying = true;
-              }).catch(console.error);
-            }
-          }
-        }, tick);
-        return;
-      }
-    }
-
-    state.currentSec = Math.round(voiceTime + state.silenceOffset);
+    state.currentSec = Math.round(audio.currentTime + state.silenceOffset);
     updateProgress();
   };
+}
+
+// Programa el próximo silencio con setTimeout (precisión ~4ms vs ~250ms de ontimeupdate)
+function scheduleNextSilence(audio) {
+  if (state.silenceTimeoutId) { clearTimeout(state.silenceTimeoutId); state.silenceTimeoutId = null; }
+  const next = state.silenceMap.find(s => !s._done);
+  if (!next) return;
+
+  const delayMs = Math.max(0, (next.time - audio.currentTime) * 1000);
+  state.silenceTimeoutId = setTimeout(() => {
+    state.silenceTimeoutId = null;
+    if (!state.isPlaying) return;
+
+    next._done = true;
+    audio.pause();
+    state.isPlaying = false;
+
+    let elapsed = 0;
+    const tick = 250;
+    state.silenceTimer = setInterval(() => {
+      elapsed += tick / 1000;
+      state.currentSec = Math.round(next.time + state.silenceOffset + elapsed);
+      updateProgress();
+      if (elapsed >= next.duration) {
+        clearInterval(state.silenceTimer);
+        state.silenceTimer  = null;
+        state.silenceOffset += next.duration;
+        if (audio.ended) {
+          handleEnd();
+        } else {
+          audio.play().then(() => {
+            if (!audio.ended) {
+              state.isPlaying = true;
+              scheduleNextSilence(audio);
+            }
+          }).catch(console.error);
+        }
+      }
+    }, tick);
+  }, delayMs);
 }
 
 // =============================================
