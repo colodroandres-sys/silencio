@@ -403,9 +403,13 @@ function connectAudio(url) {
             clearInterval(state.silenceTimer);
             state.silenceTimer  = null;
             state.silenceOffset += s.duration;
-            audio.play().then(() => {
-              state.isPlaying = true;
-            }).catch(console.error);
+            if (audio.ended) {
+              handleEnd();
+            } else {
+              audio.play().then(() => {
+                if (!audio.ended) state.isPlaying = true;
+              }).catch(console.error);
+            }
           }
         }, tick);
         return;

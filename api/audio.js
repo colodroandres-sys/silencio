@@ -46,6 +46,9 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'El texto no contiene frases habladas.' });
   }
 
+  console.log('[audio] segments:', segments.length, '| silences:', JSON.stringify(silences));
+  console.log('[audio] cleanText length:', cleanText.length);
+
   if (!process.env.ELEVENLABS_API_KEY) {
     return res.status(500).json({ error: 'ELEVENLABS_API_KEY no configurada' });
   }
@@ -92,6 +95,9 @@ module.exports = async (req, res) => {
     const audioBase64  = elData.audio_base64;
     const charEndTimes = elData.alignment?.character_end_times_seconds || [];
 
+    console.log('[audio] charEndTimes length:', charEndTimes.length);
+    console.log('[audio] charEndTimes primeros/últimos:', charEndTimes.slice(0,3), '...', charEndTimes.slice(-3));
+
     // Calcular en qué segundo exacto termina cada segmento dentro del audio de ElevenLabs
     // cleanText = seg0 + " " + seg1 + " " + seg2 ...
     // charEndTimes[i] corresponde al carácter i de cleanText (espacios incluidos)
@@ -103,12 +109,16 @@ module.exports = async (req, res) => {
       charPos += 1; // el espacio que separa segmentos en cleanText
     }
 
+    console.log('[audio] cutTimes:', JSON.stringify(cutTimes));
+
     // Construir el mapa de silencios: cuándo parar y cuánto esperar
     const silenceMap = cutTimes.map((time, i) => ({ time, duration: silences[i] }));
 
     // Duración total = duración de la voz + suma de todos los silencios
     const voiceDuration = charEndTimes[charEndTimes.length - 1] || 0;
     const totalDuration = voiceDuration + silences.reduce((sum, s) => sum + s, 0);
+
+    console.log('[audio] totalDuration:', totalDuration);
 
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-store');
