@@ -288,7 +288,7 @@ function togglePlay() {
 }
 
 function updateProgress() {
-  const pct = state.totalSec > 0 ? (state.currentSec / state.totalSec) * 100 : 0;
+  const pct = state.totalSec > 0 ? Math.min(100, (state.currentSec / state.totalSec) * 100) : 0;
   document.getElementById('progress-fill').style.width = `${pct}%`;
   document.getElementById('time-now').textContent = formatTime(state.currentSec);
 }
@@ -303,9 +303,23 @@ function seekTo(event) {
 
   const audio = document.getElementById('audio');
   if (audio.duration) {
+    if (state.silenceTimeoutId) { clearTimeout(state.silenceTimeoutId); state.silenceTimeoutId = null; }
     audio.currentTime = ratio * audio.duration;
-    state.currentSec  = Math.floor(audio.currentTime);
+
+    // Recalcular silenceOffset y flags _done según la nueva posición
+    state.silenceOffset = 0;
+    for (const s of state.silenceMap) {
+      if (s.time < audio.currentTime) {
+        s._done = true;
+        state.silenceOffset += s.duration;
+      } else {
+        s._done = false;
+      }
+    }
+
+    state.currentSec = Math.round(audio.currentTime + state.silenceOffset);
     updateProgress();
+    if (state.isPlaying) scheduleNextSilence(audio);
   }
 }
 
