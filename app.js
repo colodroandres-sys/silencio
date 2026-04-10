@@ -4,6 +4,7 @@
 const state = {
   mode: 'free',
   userInput: '',
+  userName: '',
   duration: '5',
   voice: 'feminine',
   gender: 'femenino',
@@ -61,6 +62,7 @@ function goToPreferences() {
   }
 
   state.userInput = input;
+  state.userName  = document.getElementById('input-name').value.trim().slice(0, 50);
   showScreen('screen-preferences');
 }
 
@@ -184,6 +186,7 @@ async function attemptGeneration(signal) {
     signal,
     body: JSON.stringify({
       userInput: state.userInput,
+      userName:  state.userName,
       duration: state.duration,
       voice: state.voice,
       gender: state.gender
@@ -384,10 +387,11 @@ function newMeditation() {
   document.querySelector('#grp-gender .pill[data-value="femenino"]').classList.add('active');
   state.gender = 'femenino';
 
-  document.getElementById('input-free').value = '';
-  document.getElementById('guided-1').value   = '';
-  document.getElementById('guided-2').value   = '';
-  document.getElementById('guided-3').value   = '';
+  document.getElementById('input-free').value  = '';
+  document.getElementById('guided-1').value    = '';
+  document.getElementById('guided-2').value    = '';
+  document.getElementById('guided-3').value    = '';
+  document.getElementById('input-name').value  = '';
 
   setMode('free');
   showScreen('screen-input');

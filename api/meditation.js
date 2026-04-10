@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
   const allowed = await checkRateLimit(req, res, 'meditation', 10, '1 h');
   if (!allowed) return;
 
-  const { userInput, duration, voice, gender } = req.body || {};
+  const { userInput, userName, duration, voice, gender } = req.body || {};
 
   if (!userInput || !duration) {
     return res.status(400).json({ error: 'Faltan campos requeridos: userInput, duration' });
@@ -70,7 +70,7 @@ Contexto de la sesión:
 - Duración: ${duration} minutos
 - Longitud objetivo: aproximadamente ${targetWords} palabras
 - Voz: ${voiceContext}
-- Género gramatical: ${genderContext}
+- Género gramatical: ${genderContext}${userName ? `\n- Nombre del usuario: ${userName} (úsalo con naturalidad si encaja, no de forma forzada)` : ''}
 
 Devuelve únicamente un objeto JSON válido con este formato exacto (sin texto adicional antes ni después):
 {"title": "título de 3-5 palabras en español", "text": "texto completo de la meditación aquí"}

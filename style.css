@@ -231,6 +231,41 @@ body {
   min-height: 70px;
 }
 
+.input-text {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: var(--fg);
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.input-text:focus {
+  border-color: var(--border-on);
+  box-shadow: 0 0 0 3px rgba(157, 98, 248, 0.1);
+}
+
+.input-text::placeholder {
+  color: var(--muted);
+  opacity: 0.65;
+}
+
+.field-hint {
+  font-size: 0.72rem;
+  color: var(--muted);
+  opacity: 0.7;
+  margin: 6px 0 0 2px;
+}
+
+.name-block {
+  margin-top: 4px;
+}
+
 .textarea-main:focus,
 .textarea-small:focus {
   border-color: var(--border-on);
@@ -604,7 +639,8 @@ body {
 /* iOS Safari auto-zoom prevention — cualquier input < 16px dispara zoom */
 @media (-webkit-min-device-pixel-ratio: 1) {
   .textarea-main,
-  .textarea-small {
+  .textarea-small,
+  .input-text {
     font-size: 16px;
   }
 }
