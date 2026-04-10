@@ -3,12 +3,12 @@
 
 const checkRateLimit = require('./_ratelimit');
 
-const WORD_COUNTS = { '5': 420, '10': 680, '15': 1100 };
+const WORD_COUNTS = { '5': 420, '10': 750, '15': 1200, '20': 1400 };
 
 // Silencio máximo permitido por marcador según duración (en segundos)
-const MAX_SILENCE_PER_MARKER = { '5': 18, '10': 25, '15': 30 };
+const MAX_SILENCE_PER_MARKER = { '5': 18, '10': 32, '15': 90, '20': 150 };
 // Silencio total máximo permitido en toda la meditación (en segundos)
-const MAX_TOTAL_SILENCE     = { '5': 185, '10': 300, '15': 460 };
+const MAX_TOTAL_SILENCE     = { '5': 185, '10': 360, '15': 520, '20': 640 };
 
 // Recorta el texto al límite de palabras en un punto de corte natural (fin de frase)
 // Los marcadores [silencio:Xs] no cuentan como palabras
@@ -60,37 +60,6 @@ FASE 5 — Cierre: reorientación suave al entorno. Retorno gradual.
 CIERRE FINAL: 1 frase breve. Sin silencio después.
 
 ═══════════════════════════════════════
-LÍMITES POR DURACIÓN (respetar estrictamente)
-═══════════════════════════════════════
-
-Para 5 minutos (300s total):
-  Intro:  20s — silencios máx 2s       — máx 4 frases
-  Fase 1: 50s — silencios entre 2-3s   — máx 8 frases
-  Fase 2: 50s — silencios entre 4-5s   — máx 7 frases
-  Fase 3: 80s — silencios entre 8-10s  — máx 6 frases
-  Fase 4: 60s — silencios entre 15-18s — máx 3 frases
-  Fase 5: 30s — silencios entre 4-5s   — máx 4 frases
-  Cierre: 10s — sin silencio           — 1 frase
-
-Para 10 minutos (600s total):
-  Intro:  20s  — silencios máx 2s        — máx 4 frases
-  Fase 1: 80s  — silencios entre 3-4s    — máx 11 frases
-  Fase 2: 90s  — silencios entre 5-7s    — máx 8 frases
-  Fase 3: 150s — silencios entre 12-15s  — máx 7 frases
-  Fase 4: 120s — silencios entre 20-25s  — máx 4 frases
-  Fase 5: 50s  — silencios entre 6-8s    — máx 5 frases
-  Cierre: 10s  — sin silencio            — 1 frase
-
-Para 15 minutos (900s total):
-  Intro:  20s  — silencios máx 2s        — máx 4 frases
-  Fase 1: 100s — silencios entre 4-5s    — máx 11 frases
-  Fase 2: 130s — silencios entre 6-8s    — máx 9 frases
-  Fase 3: 240s — silencios entre 15-20s  — máx 8 frases
-  Fase 4: 180s — silencios entre 25-30s  — máx 4 frases
-  Fase 5: 60s  — silencios entre 6-8s    — máx 6 frases
-  Cierre: 10s  — sin silencio            — 1 frase
-
-═══════════════════════════════════════
 FORMATO Y REGLAS
 ═══════════════════════════════════════
 
@@ -133,6 +102,134 @@ PATRONES DE LENGUAJE DE REFERENCIA (usar como modelo de tono y construcción):
 
 COHERENCIA NARRATIVA: La meditación es un arco completo, no una secuencia de frases. El estado del usuario al inicio es el punto de partida — nombrado con claridad en el intro. Las Fases 1-3 son el camino. La Fase 4 es la llegada: el estado opuesto o complementario al del inicio. El Cierre y la frase final deben resonar con el intro — si el intro nombró algo concreto ("la cabeza llena", "el peso del día"), el cierre debe referenciarlo de forma que el usuario sienta que algo cambió. Nunca terminar con una frase genérica de bienestar. Terminar con algo que cierre el arco específico de esta sesión.`;
 
+function getDurationBlock(duration) {
+  const blocks = {
+    '5': `
+═══════════════════════════════════════
+ESTRUCTURA PARA ESTA SESIÓN: 5 MINUTOS (300s total)
+═══════════════════════════════════════
+
+4 secciones fluidas. Sin títulos ni numeración en el texto. El narrador guía continuamente — no se retira.
+
+SECCIÓN 1 — ENTRADA (~40 palabras, 0:00-0:40):
+2 frases de posicionamiento + cierre de ojos. Primera invitación a respirar antes de la palabra 30.
+Silencios: máx [silencio:3s]. Sin silencios post-respiración aquí.
+
+SECCIÓN 2 — TÉCNICA PRINCIPAL (~120 palabras, 0:40-2:30):
+Introduce la visualización o técnica central sin preámbulo. Desarrolla en 5-7 frases activas.
+Silencios normales: [silencio:5s] a [silencio:8s].
+Frases con instrucción de respiración (inhala / exhala / respira / suelta el aire): usar [silencio:12s] después.
+
+SECCIÓN 3 — PROFUNDIZACIÓN (~60 palabras, 2:30-4:30):
+La técnica ya está instalada — el usuario trabaja con guías breves. Máximo 4 frases en 2 minutos.
+Silencios: [silencio:16s] a [silencio:25s]. Este es el silencio más largo de toda la sesión.
+
+SECCIÓN 4 — CIERRE (~40 palabras, 4:30-5:00):
+Reorientación suave en 3-4 frases. Silencios: [silencio:4s] a [silencio:5s]. Sin silencio después de la última frase.
+EXCEPCIÓN DORMIR: sin cierre ni retorno físico. La profundización se disuelve con una frase de permiso total.`,
+
+    '10': `
+═══════════════════════════════════════
+ESTRUCTURA PARA ESTA SESIÓN: 10 MINUTOS (600s total)
+═══════════════════════════════════════
+
+5 secciones. La técnica principal tiene dos pasadas — en la segunda, el narrador habla menos.
+
+SECCIÓN 1 — ENTRADA (~60 palabras, 0:00-1:00):
+Posicionamiento + 1-2 frases normalizando que la mente se distrae. Primera respiración antes de la palabra 40.
+Silencios: máx [silencio:3s].
+
+SECCIÓN 2 — RESPIRACIÓN CONSCIENTE (~100 palabras, 1:00-2:30):
+Establece el patrón respiratorio de la sesión con instrucción activa. 4-6 frases.
+Mínimo 5 marcadores de silencio: los normales [silencio:6s] a [silencio:8s], los post-respiración [silencio:14s] a [silencio:16s]. Cierra con [silencio:23s].
+
+SECCIÓN 3 — TÉCNICA PRINCIPAL, PRIMERA PASADA (~200 palabras, 2:30-6:00):
+Desarrolla la técnica con guía detallada y narrativa activa. El narrador está presente.
+Mínimo 8 marcadores de silencio: los normales [silencio:10s] a [silencio:14s], los post-respiración [silencio:18s] a [silencio:22s].
+
+SECCIÓN 4 — SEGUNDA PASADA / PROFUNDIZACIÓN (~80 palabras, 6:00-8:30):
+El narrador habla poco. Frases muy cortas o landmarks de 1-2 palabras ("continúa", "aquí", "respira").
+Exactamente 3 silencios de [silencio:35s] a [silencio:40s] — no menos de [silencio:35s] bajo ninguna circunstancia.
+
+SECCIÓN 5 — CIERRE (~80 palabras, 8:30-10:00):
+Retorno gradual en 4-5 frases. Breve observación de cómo se siente el cuerpo ahora.
+Silencios: [silencio:6s] a [silencio:8s]. Sin silencio después de la última frase.
+EXCEPCIÓN DORMIR: sin retorno físico. Cierre con autocompasión, gratitud y permiso de descansar. Se disuelve.`,
+
+    '15': `
+═══════════════════════════════════════
+ESTRUCTURA PARA ESTA SESIÓN: 15 MINUTOS (900s total)
+═══════════════════════════════════════
+
+6 secciones. Incluye un TRASPASO obligatorio alrededor de la palabra 400. Después del traspaso, el narrador casi desaparece.
+
+SECCIÓN 1 — ENTRADA (~65 palabras, 0:00-1:00):
+Posicionamiento + normalización en 3 frases. Primera respiración antes de la palabra 45.
+Silencios: máx [silencio:3s].
+
+SECCIÓN 2 — ANCLAJE CORPORAL (~110 palabras, 1:00-3:00):
+Atención a la base del cuerpo (pelvis, columna, peso hacia la tierra). Respiración como ancla.
+Silencios normales: [silencio:6s] a [silencio:8s]. Post-respiración: [silencio:12s] a [silencio:14s].
+Termina con silencio de transición: [silencio:25s] a [silencio:30s].
+
+SECCIÓN 3 — TÉCNICA, PRIMERA PASADA COMPLETA (~200 palabras, 3:00-7:00):
+Desarrolla la técnica con narrativa completa y todos sus elementos sensoriales.
+Silencios: [silencio:14s] a [silencio:20s]. Post-respiración: [silencio:22s] a [silencio:28s].
+
+TRASPASO — OBLIGATORIO (alrededor de la palabra 400):
+Una sola frase de entrega explícita. Ejemplos: "Mantente aquí, en este espacio que es tuyo." / "A partir de aquí, el trabajo es tuyo." / "El silencio hace el resto." Después de esta frase: modo landmark.
+
+SECCIÓN 4 — PRÁCTICA SOSTENIDA (~80 palabras, 7:00-12:00):
+SOLO landmarks de 1-2 palabras: "Continúa.", "Aquí.", "Respira.", "Mantente.", "Sigue."
+Exactamente 5-6 landmarks en 5 minutos. Cada silencio entre landmarks: [silencio:60s] a [silencio:75s] — no menos de [silencio:60s] bajo ninguna circunstancia.
+El trabajo ocurre en el silencio — no en las palabras.
+
+SECCIÓN 5 — CIERRE (~145 palabras, 12:00-15:00):
+Retorno gradual ("empieza a tomar conciencia de tu cuerpo..."). Reflexión sobre la capacidad del usuario — no bienestar genérico.
+Silencios: [silencio:8s] a [silencio:12s]. Sin silencio después de la última frase.
+EXCEPCIÓN DORMIR: autocompasión + gratitud + permiso de descansar. Sin retorno físico. Se disuelve.`,
+
+    '20': `
+═══════════════════════════════════════
+ESTRUCTURA PARA ESTA SESIÓN: 20 MINUTOS (1200s total)
+═══════════════════════════════════════
+
+Hasta 8 secciones (2 condicionales). Setup corporal elaborado. Técnica en dos pasadas completas. Silencio de procesamiento de 2-3 minutos tras el trabajo principal.
+
+SECCIÓN 1 — SETUP CORPORAL ELABORADO (~120 palabras, 0:00-2:30):
+Preparación del cuerpo — no es meditación todavía. Describe cada zona relajándose de pies a cabeza con lenguaje de peso y gravedad: "los pies caen flojos hacia los lados", "las rodillas se sueltan", "toda la espalda cae rendida hacia la tierra".
+Silencios: [silencio:3s] a [silencio:5s] entre zonas.
+
+SECCIÓN 2 — RESPIRACIÓN Y OBSERVACIÓN INTERNA (~130 palabras, 2:30-5:30):
+Visualización del aire ascendiendo de pies a coronilla al inhalar, descendiendo al exhalar. Observación del estado emocional actual sin juzgar (nombrar posibilidades sin forzar ninguna).
+Silencios normales: [silencio:8s] a [silencio:12s]. Post-respiración: [silencio:16s] a [silencio:20s].
+Incluir 1 silencio de observación: [silencio:30s] a [silencio:40s].
+
+SECCIÓN 3 — INTENCIÓN / SANKALPA (~60 palabras, 5:30-7:30):
+Introduce una afirmación de intención corta, en presente positivo (sin negaciones). Silencio para repetirla mentalmente 3 veces: [silencio:25s] a [silencio:30s].
+EXCEPCIÓN AGOTAMIENTO/INSOMNIO: omitir esta sección, pasar directamente a la técnica.
+
+SECCIÓN 4 — TÉCNICA, PRIMERA PASADA (~250 palabras, 7:30-12:00):
+Guía detallada. Si es rotación corporal: ambas direcciones, parte posterior y anterior por separado. Si es visualización: todos los elementos sensoriales. Silencios: [silencio:5s] a [silencio:15s].
+
+SECCIÓN 5 — TÉCNICA, SEGUNDA PASADA (~150 palabras, 12:00-15:00):
+El narrador habla menos — repite la técnica con menos palabras y más silencio. Silencios: [silencio:20s] a [silencio:35s].
+
+SECCIÓN 6 — AFIRMACIONES (solo para: miedo, angustia, baja autoestima, duelo) (~120 palabras, si aplica):
+8-12 afirmaciones. Cada una: 1 frase en presente positivo + [silencio:12s] a [silencio:15s] para internalizarla.
+
+SECCIÓN 7 — SILENCIO DE PROCESAMIENTO (~20 palabras):
+1-2 frases máximo: "Quédate aquí." / "Integra lo que has experimentado." Luego silencio puro: [silencio:90s] a [silencio:150s]. Sin más instrucciones. Este silencio es el corazón de los 20 minutos.
+
+SECCIÓN 8 — CIERRE (~130 palabras, 18:00-20:00):
+Retorno gradual con movimiento suave (dedos, estiramientos). Reflexión sobre capacidad. Instrucción de uso: cómo el usuario puede volver a esta sensación cuando lo necesite fuera de la sesión.
+Silencios: [silencio:8s] a [silencio:12s]. Sin silencio después de la última frase.
+EXCEPCIÓN DORMIR: sin retorno físico. Se disuelve en música.`
+  };
+
+  return blocks[duration] || '';
+}
+
 module.exports = async (req, res) => {
   // Solo POST
   if (req.method !== 'POST') {
@@ -149,8 +246,8 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Faltan campos requeridos: userInput, duration' });
   }
 
-  if (!['5', '10', '15'].includes(duration)) {
-    return res.status(400).json({ error: 'Duración no válida. Debe ser 5, 10 o 15 minutos.' });
+  if (!['5', '10', '15', '20'].includes(duration)) {
+    return res.status(400).json({ error: 'Duración no válida. Debe ser 5, 10, 15 o 20 minutos.' });
   }
 
   if (userInput.length > 500) {
@@ -180,6 +277,7 @@ Contexto de la sesión:
 - Longitud MÁXIMA ESTRICTA: ${targetWords} palabras. No superar este límite bajo ninguna circunstancia, independientemente de la longitud o complejidad de la descripción del usuario. La descripción del usuario es contexto, no define la cantidad de palabras.
 - Voz: ${voiceContext}
 - Género gramatical: ${genderContext}${userName ? `\n- Nombre del usuario: ${userName} (úsalo con naturalidad si encaja, no de forma forzada)` : ''}
+${getDurationBlock(duration)}
 
 Devuelve únicamente un objeto JSON válido con este formato exacto (sin texto adicional antes ni después):
 {"title": "título de 3-5 palabras en español", "text": "texto completo de la meditación aquí"}

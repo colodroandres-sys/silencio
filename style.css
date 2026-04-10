@@ -380,12 +380,14 @@ body {
 
 .pill-row {
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .pill {
   flex: 1;
-  padding: 11px 8px;
+  min-width: 60px;
+  padding: 11px 6px;
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: 11px;

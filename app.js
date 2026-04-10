@@ -186,12 +186,12 @@ async function generateMeditation() {
 
   state.currentSec = 0;
 
-  setLoadingState('normal', 'Escribiendo tu meditación', 'Analizando tu momento y diseñando algo único para ti...');
+  setLoadingState('normal', 'Entendiéndote', 'Leyendo tu momento y creando algo solo para ti...');
   showScreen('screen-loading');
 
   // Aviso de tiempo si tarda más de 10 segundos
   slowTimer = setTimeout(() => {
-    document.getElementById('loading-sub').textContent = 'Esto puede tardar hasta 2 minutos. Gracias por tu paciencia.';
+    document.getElementById('loading-sub').textContent = 'Tu meditación está tomando forma. Solo un momento más...';
     slowTimer = null;
   }, 10000);
 
@@ -219,7 +219,7 @@ async function generateMeditation() {
 
     // Errores de servidor (5xx / red): reintento automático una sola vez
     console.warn('Primer intento fallido, reintentando...', err);
-    setLoadingState('normal', 'Un momento más...', 'Estamos terminando de preparar tu meditación...');
+    setLoadingState('normal', 'Casi lista', 'Dando los últimos toques a tu meditación...');
 
     abortController = new AbortController();
     try {
@@ -262,7 +262,7 @@ async function attemptGeneration(signal) {
   document.getElementById('session-title').textContent = title;
 
   // ── Paso 2: Convertir a audio con ElevenLabs ──────────────────
-  setLoadingState('normal', 'Creando el audio', 'Convirtiendo el texto a voz personalizada...');
+  setLoadingState('normal', 'Dando voz a tu meditación', 'Ya queda poco...');
 
   const audioRes = await fetch('/api/audio', {
     method: 'POST',
