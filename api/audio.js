@@ -70,13 +70,13 @@ module.exports = async (req, res) => {
         },
         body: JSON.stringify({
           text: cleanText,
-          model_id: 'eleven_multilingual_v2', // Mejor calidad para español
+          model_id: 'eleven_turbo_v2_5',     // Soporta parámetro speed nativo
           output_format: 'mp3_44100_128',
-          speaking_rate: 0.90,               // Velocidad ligeramente reducida — más espacio entre palabras
           voice_settings: {
             stability: 0.80,        // Alta estabilidad = voz consistente y uniforme
             similarity_boost: 0.75, // Fidelidad a la voz original
             style: 0.05,            // Casi sin expresividad — tono plano y sereno
+            speed: 0.90,            // 0.90x — voz ligeramente más lenta
             use_speaker_boost: true
           }
         })

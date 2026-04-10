@@ -3,7 +3,7 @@
 
 const checkRateLimit = require('./_ratelimit');
 
-const WORD_COUNTS = { '5': 300, '10': 600, '15': 900 };
+const WORD_COUNTS = { '5': 400, '10': 800, '15': 1200 };
 
 const SYSTEM_PROMPT = `Eres un experto en diseño de meditaciones guiadas. Generas guiones optimizados para voz sintética (TTS). El silencio es el protagonista — las palabras son solo guías entre silencios.
 
@@ -28,30 +28,30 @@ LÍMITES POR DURACIÓN (respetar estrictamente)
 ═══════════════════════════════════════
 
 Para 5 minutos (300s total):
-  Intro:  20s — silencios máx 2s       — máx 3 frases
-  Fase 1: 50s — silencios entre 2-3s   — máx 6 frases
-  Fase 2: 50s — silencios entre 4-5s   — máx 5 frases
-  Fase 3: 80s — silencios entre 8-10s  — máx 4 frases
-  Fase 4: 60s — silencios entre 15-18s — máx 2 frases
-  Fase 5: 30s — silencios entre 4-5s   — máx 3 frases
+  Intro:  20s — silencios máx 2s       — máx 4 frases
+  Fase 1: 50s — silencios entre 2-3s   — máx 8 frases
+  Fase 2: 50s — silencios entre 4-5s   — máx 7 frases
+  Fase 3: 80s — silencios entre 8-10s  — máx 6 frases
+  Fase 4: 60s — silencios entre 15-18s — máx 3 frases
+  Fase 5: 30s — silencios entre 4-5s   — máx 4 frases
   Cierre: 10s — sin silencio           — 1 frase
 
 Para 10 minutos (600s total):
-  Intro:  20s  — silencios máx 2s        — máx 3 frases
-  Fase 1: 80s  — silencios entre 3-4s    — máx 8 frases
-  Fase 2: 90s  — silencios entre 5-7s    — máx 6 frases
-  Fase 3: 150s — silencios entre 12-15s  — máx 5 frases
-  Fase 4: 120s — silencios entre 20-25s  — máx 3 frases
-  Fase 5: 50s  — silencios entre 6-8s    — máx 4 frases
+  Intro:  20s  — silencios máx 2s        — máx 4 frases
+  Fase 1: 80s  — silencios entre 3-4s    — máx 11 frases
+  Fase 2: 90s  — silencios entre 5-7s    — máx 8 frases
+  Fase 3: 150s — silencios entre 12-15s  — máx 7 frases
+  Fase 4: 120s — silencios entre 20-25s  — máx 4 frases
+  Fase 5: 50s  — silencios entre 6-8s    — máx 5 frases
   Cierre: 10s  — sin silencio            — 1 frase
 
 Para 15 minutos (900s total):
-  Intro:  20s  — silencios máx 2s        — máx 3 frases
-  Fase 1: 100s — silencios entre 4-5s    — máx 8 frases
-  Fase 2: 130s — silencios entre 6-8s    — máx 7 frases
-  Fase 3: 240s — silencios entre 15-20s  — máx 6 frases
-  Fase 4: 180s — silencios entre 25-30s  — máx 3 frases
-  Fase 5: 60s  — silencios entre 6-8s    — máx 4 frases
+  Intro:  20s  — silencios máx 2s        — máx 4 frases
+  Fase 1: 100s — silencios entre 4-5s    — máx 11 frases
+  Fase 2: 130s — silencios entre 6-8s    — máx 9 frases
+  Fase 3: 240s — silencios entre 15-20s  — máx 8 frases
+  Fase 4: 180s — silencios entre 25-30s  — máx 4 frases
+  Fase 5: 60s  — silencios entre 6-8s    — máx 6 frases
   Cierre: 10s  — sin silencio            — 1 frase
 
 ═══════════════════════════════════════
