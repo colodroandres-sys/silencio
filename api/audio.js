@@ -76,7 +76,7 @@ module.exports = async (req, res) => {
             stability: 0.80,        // Alta estabilidad = voz consistente y uniforme
             similarity_boost: 0.75, // Fidelidad a la voz original
             style: 0.05,            // Casi sin expresividad — tono plano y sereno
-            speed: 0.90,            // 0.90x — voz ligeramente más lenta
+            speed: 0.95,            // 0.95x — voz ligeramente más lenta
             use_speaker_boost: true
           }
         })
