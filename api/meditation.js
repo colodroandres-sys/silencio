@@ -3,7 +3,38 @@
 
 const checkRateLimit = require('./_ratelimit');
 
-const WORD_COUNTS = { '5': 400, '10': 720, '15': 1050 };
+const WORD_COUNTS = { '5': 420, '10': 640, '15': 920 };
+
+// Recorta el texto al límite de palabras en un punto de corte natural (fin de frase)
+// Los marcadores [silencio:Xs] no cuentan como palabras
+function enforceWordLimit(text, maxWords) {
+  const parts = text.split(/(\[silencio:\d+s\])/gi);
+  let wordCount = 0;
+  const result = [];
+
+  for (const part of parts) {
+    if (/^\[silencio:\d+s\]$/i.test(part)) {
+      result.push(part);
+      continue;
+    }
+    const trimmed = part.trim();
+    if (!trimmed) { result.push(part); continue; }
+
+    const words = trimmed.split(/\s+/);
+    if (wordCount + words.length <= maxWords) {
+      wordCount += words.length;
+      result.push(part);
+    } else {
+      const canTake = maxWords - wordCount;
+      const slice   = words.slice(0, canTake).join(' ');
+      const lastEnd = Math.max(slice.lastIndexOf('.'), slice.lastIndexOf('?'), slice.lastIndexOf('!'));
+      result.push(lastEnd > 0 ? slice.substring(0, lastEnd + 1) : slice + '.');
+      break;
+    }
+  }
+
+  return result.join('').trim();
+}
 
 const SYSTEM_PROMPT = `Eres un experto en diseño de meditaciones guiadas. Generas guiones optimizados para voz sintética (TTS). El silencio es el protagonista — las palabras son solo guías entre silencios.
 
@@ -137,7 +168,7 @@ module.exports = async (req, res) => {
 
 "${userInput}"
 
-Elementos clave a incorporar durante toda la meditación, no solo en el intro: ${userInput}
+Elementos clave a incorporar durante toda la meditación: ${userInput.slice(0, 120)}${userInput.length > 120 ? '...' : ''}
 
 Contexto de la sesión:
 - Duración: ${duration} minutos
@@ -196,6 +227,14 @@ El campo "text" debe contener solo el texto de la meditación, sin títulos ni e
 
     if (!text) {
       return res.status(502).json({ error: 'Respuesta vacía de Claude API' });
+    }
+
+    // Contar palabras reales (sin marcadores de silencio) y recortar si Claude se excedió
+    const spokenWords = text.replace(/\[silencio:\d+s\]/gi, '').trim().split(/\s+/).filter(Boolean).length;
+    console.log(`[meditation] Palabras generadas: ${spokenWords} / límite: ${targetWords}`);
+    if (spokenWords > targetWords * 1.15) {
+      console.warn(`[meditation] Exceso de ${spokenWords - targetWords} palabras — recortando`);
+      text = enforceWordLimit(text, targetWords);
     }
 
     return res.status(200).json({ title, text });
