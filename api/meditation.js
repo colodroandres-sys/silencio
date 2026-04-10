@@ -3,7 +3,12 @@
 
 const checkRateLimit = require('./_ratelimit');
 
-const WORD_COUNTS = { '5': 420, '10': 640, '15': 920 };
+const WORD_COUNTS = { '5': 420, '10': 680, '15': 1100 };
+
+// Silencio máximo permitido por marcador según duración (en segundos)
+const MAX_SILENCE_PER_MARKER = { '5': 18, '10': 25, '15': 30 };
+// Silencio total máximo permitido en toda la meditación (en segundos)
+const MAX_TOTAL_SILENCE     = { '5': 185, '10': 300, '15': 460 };
 
 // Recorta el texto al límite de palabras en un punto de corte natural (fin de frase)
 // Los marcadores [silencio:Xs] no cuentan como palabras
@@ -229,13 +234,26 @@ El campo "text" debe contener solo el texto de la meditación, sin títulos ni e
       return res.status(502).json({ error: 'Respuesta vacía de Claude API' });
     }
 
-    // Contar palabras reales (sin marcadores de silencio) y recortar si Claude se excedió
+    // 1) Recortar palabras si Claude se excedió
     const spokenWords = text.replace(/\[silencio:\d+s\]/gi, '').trim().split(/\s+/).filter(Boolean).length;
     console.log(`[meditation] Palabras generadas: ${spokenWords} / límite: ${targetWords}`);
     if (spokenWords > targetWords * 1.15) {
       console.warn(`[meditation] Exceso de ${spokenWords - targetWords} palabras — recortando`);
       text = enforceWordLimit(text, targetWords);
     }
+
+    // 2) Capear silencios: primero por marcador individual, luego el total acumulado
+    const maxPerMarker  = MAX_SILENCE_PER_MARKER[duration] || 30;
+    const maxTotalSil   = MAX_TOTAL_SILENCE[duration]      || 460;
+    let   totalSilence  = 0;
+    text = text.replace(/\[silencio:(\d+)s\]/gi, (_match, val) => {
+      const raw    = parseInt(val, 10);
+      const capped = Math.min(raw, maxPerMarker);           // cap por marcador
+      const grant  = Math.min(capped, Math.max(0, maxTotalSil - totalSilence)); // cap total
+      totalSilence += grant;
+      return grant > 0 ? `[silencio:${grant}s]` : '';
+    });
+    console.log(`[meditation] Silencio total: ${totalSilence}s / límite: ${maxTotalSil}s`);
 
     return res.status(200).json({ title, text });
 
