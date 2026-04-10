@@ -15,12 +15,69 @@ const state = {
   silenceMap: [],        // [{time, duration}] — silencios a insertar durante la reproducción
   silenceOffset: 0,     // segundos acumulados de silencio ya ejecutados
   silenceTimer: null,   // setInterval activo durante un silencio
-  silenceTimeoutId: null // setTimeout para disparar el próximo silencio con precisión
+  silenceTimeoutId: null, // setTimeout para disparar el próximo silencio con precisión
+  ambientFadeInterval: null
 };
 
 let abortController = null;
 let slowTimer = null;
 let shakeInterval = null;
+
+// =============================================
+//  SONIDO DE FONDO
+// =============================================
+const AMBIENT_TRACKS = [
+  '/sounds/ribhavagrawal-258hz-frequency-ambient-music-meditationcalmingzenspiritual-music-319111.mp3',
+  '/sounds/ribhavagrawal-417hz-frequency-ambient-music-meditationcalmingzenspiritual-music-327887.mp3',
+  '/sounds/ribhavagrawal-528hz-frequency-ambient-music-meditationcalmingzenspiritual-music-292845.mp3',
+  '/sounds/viacheslavstarostin-meditation-spiritual-music-471929.mp3'
+];
+
+function loadRandomAmbient() {
+  const ambient = document.getElementById('audio-ambient');
+  const track   = AMBIENT_TRACKS[Math.floor(Math.random() * AMBIENT_TRACKS.length)];
+  ambient.src   = track;
+  ambient.load();
+}
+
+function ambientPlay() {
+  const ambient = document.getElementById('audio-ambient');
+  if (!ambient.src || ambient.src === window.location.href) return;
+  ambient.volume = 0.25;
+  ambient.play().catch(() => {});
+}
+
+function ambientPause() {
+  document.getElementById('audio-ambient').pause();
+}
+
+function ambientFadeOut() {
+  const ambient = document.getElementById('audio-ambient');
+  if (ambient.paused || !ambient.src || ambient.src === window.location.href) return;
+
+  const startVol = ambient.volume;
+  const steps    = 40; // 4 segundos, un tick cada 100ms
+  let step       = 0;
+
+  if (state.ambientFadeInterval) { clearInterval(state.ambientFadeInterval); }
+  state.ambientFadeInterval = setInterval(() => {
+    step++;
+    ambient.volume = Math.max(0, startVol * (1 - step / steps));
+    if (step >= steps) {
+      clearInterval(state.ambientFadeInterval);
+      state.ambientFadeInterval = null;
+      ambient.pause();
+      ambient.volume = 0.25; // restaurar para la próxima sesión
+    }
+  }, 100);
+}
+
+function ambientStop() {
+  const ambient = document.getElementById('audio-ambient');
+  if (state.ambientFadeInterval) { clearInterval(state.ambientFadeInterval); state.ambientFadeInterval = null; }
+  ambient.pause();
+  ambient.volume = 0.25;
+}
 
 // =============================================
 //  NAVEGACIÓN
@@ -273,6 +330,7 @@ function togglePlay() {
     if (state.silenceTimer) { clearInterval(state.silenceTimer); state.silenceTimer = null; }
     if (state.silenceTimeoutId) { clearTimeout(state.silenceTimeoutId); state.silenceTimeoutId = null; }
     audio.pause();
+    ambientPause();
     state.isPlaying = false;
     wrap.classList.add('paused');
     document.getElementById('icon-play').style.display  = 'block';
@@ -284,6 +342,7 @@ function togglePlay() {
         wrap.classList.remove('paused');
         document.getElementById('icon-play').style.display  = 'none';
         document.getElementById('icon-pause').style.display = 'block';
+        ambientPlay();
         scheduleNextSilence(audio);
       }).catch(console.error);
     }
@@ -334,6 +393,7 @@ function handleEnd() {
   document.getElementById('icon-play').style.display  = 'block';
   document.getElementById('icon-pause').style.display = 'none';
   document.getElementById('breathing-player').classList.add('paused');
+  ambientFadeOut();
 
   // Pantalla de cierre: 5 segundos antes de mostrar "Nueva meditación"
   document.getElementById('end-message').style.display        = 'block';
@@ -364,6 +424,12 @@ function newMeditation() {
     state.audioBlobUrl = null;
   }
 
+  // Detener sonido de fondo
+  ambientStop();
+  const ambientEl = document.getElementById('audio-ambient');
+  ambientEl.removeAttribute('src');
+  ambientEl.load();
+
   document.getElementById('progress-fill').style.width = '0%';
   document.getElementById('time-now').textContent = '0:00';
   document.getElementById('icon-play').style.display  = 'block';
@@ -387,6 +453,7 @@ function newMeditation() {
   document.querySelector('#grp-gender .pill[data-value="femenino"]').classList.add('active');
   state.gender = 'femenino';
 
+
   document.getElementById('input-free').value  = '';
   document.getElementById('guided-1').value    = '';
   document.getElementById('guided-2').value    = '';
@@ -403,6 +470,7 @@ function newMeditation() {
 function connectAudio(url) {
   const audio = document.getElementById('audio');
   audio.src = url;
+  loadRandomAmbient();
 
   // ontimeupdate solo actualiza la barra de progreso
   audio.ontimeupdate = () => {

@@ -106,7 +106,8 @@
         </div>
       </div>
 
-      <button id="btn-generate" class="btn-primary" onclick="generateMeditation()">
+
+<button id="btn-generate" class="btn-primary" onclick="generateMeditation()">
         Crear mi meditación
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <path d="M8 2l1.5 4.5H14l-3.8 2.8 1.5 4.5L8 11.1l-3.7 2.7 1.5-4.5L2 6.5h4.5L8 2z" fill="currentColor"/>
@@ -185,6 +186,7 @@
   </div>
 
   <audio id="audio" onended="handleEnd()"></audio>
+  <audio id="audio-ambient" loop preload="none"></audio>
 
   <script src="app.js"></script>
 </body>
