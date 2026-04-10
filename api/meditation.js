@@ -3,7 +3,7 @@
 
 const checkRateLimit = require('./_ratelimit');
 
-const WORD_COUNTS = { '5': 150, '10': 300, '15': 450 };
+const WORD_COUNTS = { '5': 220, '10': 440, '15': 660 };
 
 const SYSTEM_PROMPT = `Eres un experto en diseño de meditaciones guiadas. Generas guiones optimizados para voz sintética (TTS). El silencio es el protagonista — las palabras son solo guías entre silencios.
 
@@ -60,7 +60,7 @@ FORMATO Y REGLAS
 
 FORMATO: Solo texto narrado. Silencios con formato [silencio:Xs]. Sin títulos, sin numeración de fases, sin markdown.
 
-REGLAS: Frases cortas. Lenguaje permisivo. El silencio hace el trabajo, no las palabras. No superar el número máximo de frases por fase. No superar el silencio máximo por fase.
+REGLAS: Frases cortas. Lenguaje permisivo. El silencio hace el trabajo, no las palabras. No superar el número máximo de frases por fase. No superar el silencio máximo por fase. Cada frase debe tener sentido completo por sí sola — nunca una frase de menos de 4 palabras. Evitar fragmentos sueltos como "Tu respiración." o "El aire." — siempre desarrollar la idea mínimamente.
 
 CONTINUIDAD FONÉTICA: Cada segmento (frase después de un [silencio:Xs]) debe comenzar con una palabra completa y fonéticamente clara. Prohibido comenzar con: "Te", "Me", "Se", "Lo", "La", "Le", "Ir", "Un", "Y", "A", "O", "Si" u otras partículas de una o dos sílabas. Comenzar siempre con una palabra de tres o más sílabas, o con un sustantivo o verbo conjugado claro.
 
