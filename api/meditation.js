@@ -3,7 +3,7 @@
 
 const checkRateLimit = require('./_ratelimit');
 
-const WORD_COUNTS = { '5': 300, '10': 600, '15': 900 };
+const WORD_COUNTS = { '5': 150, '10': 300, '15': 450 };
 
 const SYSTEM_PROMPT = `Eres un experto en diseño de meditaciones guiadas. Generas guiones optimizados para voz sintética (TTS). El silencio es el protagonista — las palabras son solo guías entre silencios.
 
@@ -105,6 +105,8 @@ module.exports = async (req, res) => {
   const userPrompt = `El usuario comparte lo siguiente sobre su momento actual:
 
 "${userInput}"
+
+Elementos clave a incorporar durante toda la meditación, no solo en el intro: ${userInput}
 
 Contexto de la sesión:
 - Duración: ${duration} minutos
