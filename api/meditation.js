@@ -22,6 +22,8 @@ FORMATO: Solo texto narrado. Silencios con formato [silencio:Xs]. Sin títulos n
 
 REGLAS: Frases cortas. Lenguaje permisivo. El silencio hace el trabajo, no las palabras.
 
+CONTINUIDAD FONÉTICA: Cada segmento de texto (frase después de un [silencio:Xs]) debe comenzar con una palabra completa y fonéticamente clara. Nunca empezar un segmento con sílabas sueltas o palabras cortas que puedan confundirse con el final del segmento anterior: prohibido comenzar con "Te", "Me", "Se", "Lo", "La", "Le", "Ir", "Un", "Y", "A", "O", "Si" u otras partículas de una o dos sílabas. Comenzar siempre con una palabra de tres o más sílabas, o con un sustantivo o verbo conjugado claro.
+
 ADAPTACIÓN: ansiedad → respiración y presente. Sobrepensamiento → sensaciones corporales. Tristeza → validar sin intensificar. Sueño → ritmo lento, silencios muy largos.`;
 
 module.exports = async (req, res) => {
