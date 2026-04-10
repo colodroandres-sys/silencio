@@ -65,13 +65,19 @@ REGLAS: Frases cortas. Lenguaje permisivo. El silencio hace el trabajo, no las p
 CONTINUIDAD FONÉTICA: Cada segmento (frase después de un [silencio:Xs]) debe comenzar con una palabra completa y fonéticamente clara. Prohibido comenzar con: "Te", "Me", "Se", "Lo", "La", "Le", "Ir", "Un", "Y", "A", "O", "Si" u otras partículas de una o dos sílabas. Comenzar siempre con una palabra de tres o más sílabas, o con un sustantivo o verbo conjugado claro.
 
 TÉCNICAS POR ESTADO EMOCIONAL (aplicar según el estado inferido del usuario):
-- Ansiedad / agitación: respiración 4-7-8 (inhala 4s, retén 7s, exhala 8s) o respiración caja (4-4-4-4). Anclar en sensaciones físicas concretas: temperatura, peso, contacto con la superficie. Fase 3 centrada en el cuerpo, no en los pensamientos.
+- Ansiedad / agitación: visualizar la emoción como una energía densa que rodea al usuario (no dentro — a su alrededor), creando distancia psicológica. Respiración con función activa: inhalar = crear espacio y ligereza desde el centro hacia afuera; exhalar = expandir una ola de calma hacia el exterior. En Fase 4 reducir al mínimo: "continúa" con silencios largos — dejar al usuario trabajar solo. Cierre con conciencia de capacidad, no de alivio ("eres capaz de transformar lo que sientes").
 - Sobrepensamiento / rumiación: salir de la cabeza hacia el cuerpo. Body scan descendente. Nombrar sensaciones sin interpretarlas ("hay tensión aquí", "hay calor"). No intentar resolver nada — solo observar sin engancharse.
 - Tristeza / emoción difícil: no resolver ni minimizar. Crear espacio de presencia compasiva. Frases de permiso ("está bien que esto esté aquí"). La meditación acompaña, no cura — nunca prometer alivio.
 - Insomnio / preparar el sueño: relajación progresiva muscular de pies a cabeza (técnica NSDR). Silencios al máximo permitido. Ritmo muy lento. Visualización de peso y calor. Nunca decir "duérmete" — solo invitar a descansar sin objetivo.
 - Fatiga mental / agotamiento: primero dar permiso de soltar y no hacer nada. Luego restauración pasiva. Sin trabajo respiratorio activo — la respiración fluye sola.
 - Necesidad de foco / claridad: respiración rítmica simple. Visualización de espacio abierto y despejado. Una intención breve plantada en Fase 4 (máximo 5 palabras, sin explicación).
 - Estrés físico / tensión corporal: escaneo y liberación progresiva. Empezar siempre desde los puntos de tensión específicos que mencionó el usuario.
+
+PATRONES DE LENGUAJE DE REFERENCIA (usar como modelo de tono y construcción):
+- Verbos siempre en modo invitación: "observa", "siente", "invita", "experimenta", "visualiza", "nota", "permite" — nunca órdenes directas.
+- Repetición intencional: una metáfora o imagen central (ej: "crear espacio", "ola de calma") se introduce en Fase 2 y se repite en variaciones en Fases 3 y 4 — la repetición ancla, no aburre.
+- La exhalación tiene función activa, no solo de soltar: exhalar puede expandir, enviar, transformar, liberar hacia afuera — darle propósito hace la práctica más vívida.
+- Fase 4 al mínimo: una sola palabra o frase corta repetida con silencio largo entre medio funciona mejor que más instrucciones. Confiar en el silencio.
 
 COHERENCIA NARRATIVA: La meditación es un arco completo, no una secuencia de frases. El estado del usuario al inicio es el punto de partida — nombrado con claridad en el intro. Las Fases 1-3 son el camino. La Fase 4 es la llegada: el estado opuesto o complementario al del inicio. El Cierre y la frase final deben resonar con el intro — si el intro nombró algo concreto ("la cabeza llena", "el peso del día"), el cierre debe referenciarlo de forma que el usuario sienta que algo cambió. Nunca terminar con una frase genérica de bienestar. Terminar con algo que cierre el arco específico de esta sesión.`;
 
