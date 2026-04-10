@@ -3,7 +3,7 @@
 
 const checkRateLimit = require('./_ratelimit');
 
-const WORD_COUNTS = { '5': 400, '10': 800, '15': 1200 };
+const WORD_COUNTS = { '5': 400, '10': 720, '15': 1050 };
 
 const SYSTEM_PROMPT = `Eres un experto en diseño de meditaciones guiadas. Generas guiones optimizados para voz sintética (TTS). El silencio es el protagonista — las palabras son solo guías entre silencios.
 
@@ -141,7 +141,7 @@ Elementos clave a incorporar durante toda la meditación, no solo en el intro: $
 
 Contexto de la sesión:
 - Duración: ${duration} minutos
-- Longitud objetivo: aproximadamente ${targetWords} palabras
+- Longitud MÁXIMA ESTRICTA: ${targetWords} palabras. No superar este límite bajo ninguna circunstancia, independientemente de la longitud o complejidad de la descripción del usuario. La descripción del usuario es contexto, no define la cantidad de palabras.
 - Voz: ${voiceContext}
 - Género gramatical: ${genderContext}${userName ? `\n- Nombre del usuario: ${userName} (úsalo con naturalidad si encaja, no de forma forzada)` : ''}
 

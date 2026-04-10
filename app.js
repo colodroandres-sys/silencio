@@ -16,7 +16,8 @@ const state = {
   silenceOffset: 0,     // segundos acumulados de silencio ya ejecutados
   silenceTimer: null,   // setInterval activo durante un silencio
   silenceTimeoutId: null, // setTimeout para disparar el próximo silencio con precisión
-  ambientFadeInterval: null
+  ambientFadeInterval: null,
+  inSilence: false      // true solo mientras dura un silencio programado
 };
 
 let abortController = null;
@@ -327,8 +328,10 @@ function togglePlay() {
   const wrap  = document.getElementById('breathing-player');
 
   if (state.isPlaying) {
+    // Cancelar cualquier silencio activo o próximo
     if (state.silenceTimer) { clearInterval(state.silenceTimer); state.silenceTimer = null; }
     if (state.silenceTimeoutId) { clearTimeout(state.silenceTimeoutId); state.silenceTimeoutId = null; }
+    state.inSilence = false;
     audio.pause();
     ambientPause();
     state.isPlaying = false;
@@ -339,6 +342,7 @@ function togglePlay() {
     if (audio.src && audio.src !== window.location.href) {
       audio.play().then(() => {
         state.isPlaying = true;
+        state.inSilence = false;
         wrap.classList.remove('paused');
         document.getElementById('icon-play').style.display  = 'none';
         document.getElementById('icon-pause').style.display = 'block';
@@ -380,14 +384,23 @@ function seekTo(event) {
       }
     }
 
+    // Cancelar cualquier silencio activo
+    if (state.silenceTimeoutId) { clearTimeout(state.silenceTimeoutId); state.silenceTimeoutId = null; }
+    if (state.silenceTimer) { clearInterval(state.silenceTimer); state.silenceTimer = null; }
+    state.inSilence = false;
+
     state.currentSec = Math.round(audio.currentTime + state.silenceOffset);
     updateProgress();
-    if (state.isPlaying) scheduleNextSilence(audio);
+
+    if (state.isPlaying) {
+      audio.play().then(() => { scheduleNextSilence(audio); }).catch(console.error);
+    }
   }
 }
 
 function handleEnd() {
   state.isPlaying  = false;
+  state.inSilence  = false;
   state.currentSec = state.totalSec;
   updateProgress();
   document.getElementById('icon-play').style.display  = 'block';
@@ -407,6 +420,7 @@ function handleEnd() {
 
 function newMeditation() {
   state.isPlaying  = false;
+  state.inSilence  = false;
   state.currentSec = 0;
 
   const audio = document.getElementById('audio');
@@ -474,7 +488,7 @@ function connectAudio(url) {
 
   // ontimeupdate solo actualiza la barra de progreso
   audio.ontimeupdate = () => {
-    if (!state.isPlaying) return;
+    if (!state.isPlaying || state.inSilence) return;
     state.currentSec = Math.round(audio.currentTime + state.silenceOffset);
     updateProgress();
   };
@@ -493,7 +507,8 @@ function scheduleNextSilence(audio) {
 
     next._done = true;
     audio.pause();
-    state.isPlaying = false;
+    state.inSilence = true;
+    // state.isPlaying se mantiene en true — el usuario no pausó, es un silencio programado
 
     let elapsed = 0;
     const tick = 250;
@@ -505,12 +520,12 @@ function scheduleNextSilence(audio) {
         clearInterval(state.silenceTimer);
         state.silenceTimer  = null;
         state.silenceOffset += next.duration;
+        state.inSilence = false;
         if (audio.ended) {
           handleEnd();
         } else {
           audio.play().then(() => {
             if (!audio.ended) {
-              state.isPlaying = true;
               scheduleNextSilence(audio);
             }
           }).catch(console.error);
