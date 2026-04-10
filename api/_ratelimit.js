@@ -5,8 +5,8 @@
 //   /api/meditation — 10 requests por IP por hora  (Claude API cuesta dinero)
 //   /api/audio      — 10 requests por IP por hora  (ElevenLabs cuesta dinero)
 //
-// IMPORTANTE: si Upstash no está configurado o falla por cualquier razón,
-// el rate limiting se desactiva silenciosamente — nunca bloquea la función principal.
+// IMPORTANTE: si Upstash falla en runtime, la request es bloqueada (fail-closed).
+// Si las variables de entorno no están configuradas, se permite el paso (modo dev sin Redis).
 
 let Ratelimit, Redis;
 try {
@@ -66,8 +66,9 @@ module.exports = async function checkRateLimit(req, res, endpoint, requests, win
 
     return true;
   } catch (e) {
-    // Error inesperado de Redis — dejamos pasar, no bloqueamos al usuario
-    console.error('Rate limit error (non-blocking):', e.message);
-    return true;
+    // Error inesperado de Redis — bloqueamos para proteger las APIs de costos inesperados
+    console.error('Rate limit error (blocking):', e.message);
+    res.status(503).json({ error: 'Servicio temporalmente no disponible. Inténtalo de nuevo en unos minutos.' });
+    return false;
   }
 };

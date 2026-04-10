@@ -114,9 +114,9 @@ El campo "text" debe contener solo el texto de la meditación, sin títulos ni e
       title = parsed.title || 'Tu meditación';
       text  = parsed.text;
     } catch {
-      // Fallback si la respuesta no es JSON válido
-      title = 'Tu meditación';
-      text  = raw;
+      // Claude devolvió algo que no es JSON válido — no usar el texto crudo como meditación
+      console.error('[meditation] Claude devolvió JSON inválido. Primeros 300 chars:', raw.slice(0, 300));
+      return res.status(502).json({ error: 'Respuesta inválida de Claude API. Inténtalo de nuevo.' });
     }
 
     if (!text) {

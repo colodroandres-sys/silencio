@@ -38,7 +38,8 @@ module.exports = async (req, res) => {
       const seg = parts[i].replace(/\s+/g, ' ').trim();
       if (seg) segments.push(seg);
     } else {
-      silences.push(parseInt(parts[i]));
+      const val = parseInt(parts[i], 10);
+      if (!isNaN(val) && val > 0) silences.push(val);
     }
   }
 
@@ -102,6 +103,12 @@ module.exports = async (req, res) => {
     console.log('[audio] characters muestra inicio:', characters.slice(0,8).join(''));
     console.log('[audio] charEndTimes primeros:', charEndTimes.slice(0,3), '| últimos:', charEndTimes.slice(-3));
 
+    // Si ElevenLabs no devolvió timestamps válidos, reproducir audio sin silencios (graceful degradation)
+    if (charEndTimes.length === 0 || !charEndTimes.some(t => t > 0)) {
+      console.warn('[audio] charEndTimes vacío o inválido — reproduciendo sin silencios');
+      return res.status(200).json({ audioBase64, silenceMap: [], totalDuration: 0 });
+    }
+
     // Calcular en qué segundo exacto termina cada segmento dentro del audio de ElevenLabs
     // cleanText = seg0 + " " + seg1 + " " + seg2 ...
     // charEndTimes[i] corresponde al carácter i de cleanText (espacios incluidos)
@@ -116,6 +123,13 @@ module.exports = async (req, res) => {
     const badCutTimes = cutTimes.filter(t => t === 0).length;
     console.log('[audio] cutTimes:', JSON.stringify(cutTimes));
     if (badCutTimes > 0) console.warn('[audio] ALERTA: hay', badCutTimes, 'cutTime(s) en 0 — silencios dispararán al inicio');
+
+    // Si todos los cutTimes son 0 los silencios se dispararían en el segundo 0 — mejor sin silencios
+    if (badCutTimes === cutTimes.length && cutTimes.length > 0) {
+      console.warn('[audio] Todos los cutTimes son 0 — reproduciendo sin silencios como fallback');
+      const voiceDur = charEndTimes[charEndTimes.length - 1] || 0;
+      return res.status(200).json({ audioBase64, silenceMap: [], totalDuration: voiceDur });
+    }
 
     // Construir el mapa de silencios: cuándo parar y cuánto esperar
     const silenceMap = cutTimes.map((time, i) => ({ time, duration: silences[i] }));
