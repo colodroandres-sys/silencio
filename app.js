@@ -599,7 +599,16 @@ let pendingGeneration = false;
 
 async function initClerk() {
   try {
-    clerk = new window.Clerk(CLERK_KEY);
+    // Clerk v5 CDN auto-crea la instancia en window.Clerk desde el data-attribute
+    // Esperamos a que esté disponible (máx 5s)
+    let attempts = 0;
+    while (!window.Clerk && attempts < 50) {
+      await new Promise(r => setTimeout(r, 100));
+      attempts++;
+    }
+    if (!window.Clerk) throw new Error('Clerk no cargó en 5 segundos');
+
+    clerk = window.Clerk;
     await clerk.load();
 
     clerk.addListener(({ user }) => {
