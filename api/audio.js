@@ -4,10 +4,15 @@
 const checkRateLimit = require('./_ratelimit');
 
 // Voces de ElevenLabs optimizadas para meditación en español
-// Puedes reemplazarlas por IDs de tu cuenta en: https://elevenlabs.io/voice-library
 const VOICE_IDS = {
   feminine: 'D9MdulIxfrCUUJcGNQon',
   masculine: 'RTFg9niKcgGLDwa3RFlz'
+};
+
+// Speed por voz — masculina más lenta para compensar ritmo natural más rápido
+const VOICE_SPEED = {
+  feminine: 0.95,
+  masculine: 0.92
 };
 
 module.exports = async (req, res) => {
@@ -73,10 +78,10 @@ module.exports = async (req, res) => {
           model_id: 'eleven_turbo_v2_5',     // Soporta parámetro speed nativo
           output_format: 'mp3_44100_128',
           voice_settings: {
-            stability: 0.80,        // Alta estabilidad = voz consistente y uniforme
-            similarity_boost: 0.75, // Fidelidad a la voz original
-            style: 0.05,            // Casi sin expresividad — tono plano y sereno
-            speed: 0.95,            // 0.95x — voz ligeramente más lenta
+            stability: 0.80,
+            similarity_boost: 0.75,
+            style: 0.05,
+            speed: VOICE_SPEED[voice] || VOICE_SPEED.feminine,
             use_speaker_boost: true
           }
         })

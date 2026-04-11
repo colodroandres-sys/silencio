@@ -16,6 +16,7 @@ const state = {
   silenceOffset: 0,     // segundos acumulados de silencio ya ejecutados
   silenceTimer: null,   // setInterval activo durante un silencio
   silenceTimeoutId: null, // setTimeout para disparar el próximo silencio con precisión
+  introTimeoutId: null,  // setTimeout del intro de 3s de música antes de arrancar la voz
   ambientFadeInterval: null,
   inSilence: false      // true solo mientras dura un silencio programado
 };
@@ -331,6 +332,7 @@ function togglePlay() {
     // Cancelar cualquier silencio activo o próximo
     if (state.silenceTimer) { clearInterval(state.silenceTimer); state.silenceTimer = null; }
     if (state.silenceTimeoutId) { clearTimeout(state.silenceTimeoutId); state.silenceTimeoutId = null; }
+    if (state.introTimeoutId) { clearTimeout(state.introTimeoutId); state.introTimeoutId = null; }
     state.inSilence = false;
     audio.pause();
     ambientPause();
@@ -340,15 +342,32 @@ function togglePlay() {
     document.getElementById('icon-pause').style.display = 'none';
   } else {
     if (audio.src && audio.src !== window.location.href) {
-      audio.play().then(() => {
+      const isFirstPlay = audio.currentTime === 0;
+
+      if (isFirstPlay) {
+        // Intro de 3s: música sola antes de arrancar la voz
+        ambientPlay();
         state.isPlaying = true;
         state.inSilence = false;
         wrap.classList.remove('paused');
         document.getElementById('icon-play').style.display  = 'none';
         document.getElementById('icon-pause').style.display = 'block';
-        ambientPlay();
-        scheduleNextSilence(audio);
-      }).catch(console.error);
+        state.introTimeoutId = setTimeout(() => {
+          state.introTimeoutId = null;
+          if (!state.isPlaying) return;
+          audio.play().then(() => { scheduleNextSilence(audio); }).catch(console.error);
+        }, 3000);
+      } else {
+        audio.play().then(() => {
+          state.isPlaying = true;
+          state.inSilence = false;
+          wrap.classList.remove('paused');
+          document.getElementById('icon-play').style.display  = 'none';
+          document.getElementById('icon-pause').style.display = 'block';
+          ambientPlay();
+          scheduleNextSilence(audio);
+        }).catch(console.error);
+      }
     }
   }
 }

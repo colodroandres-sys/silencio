@@ -3,7 +3,10 @@
 
 const checkRateLimit = require('./_ratelimit');
 
-const WORD_COUNTS = { '5': 420, '10': 750, '15': 1200, '20': 1400 };
+const WORD_COUNTS = {
+  feminine: { '5': 420, '10': 750, '15': 1200, '20': 1700 },
+  masculine: { '5': 460, '10': 820, '15': 1320, '20': 1700 }
+};
 
 // Silencio máximo permitido por marcador según duración (en segundos)
 const MAX_SILENCE_PER_MARKER = { '5': 18, '10': 32, '15': 90, '20': 150 };
@@ -196,33 +199,35 @@ ESTRUCTURA PARA ESTA SESIÓN: 20 MINUTOS (1200s total)
 
 Hasta 8 secciones (2 condicionales). Setup corporal elaborado. Técnica en dos pasadas completas. Silencio de procesamiento de 2-3 minutos tras el trabajo principal.
 
-SECCIÓN 1 — SETUP CORPORAL ELABORADO (~120 palabras, 0:00-2:30):
-Preparación del cuerpo — no es meditación todavía. Describe cada zona relajándose de pies a cabeza con lenguaje de peso y gravedad: "los pies caen flojos hacia los lados", "las rodillas se sueltan", "toda la espalda cae rendida hacia la tierra".
-Silencios: [silencio:3s] a [silencio:5s] entre zonas.
+SECCIÓN 1 — SETUP CORPORAL ELABORADO (~200 palabras, 0:00-2:30):
+Preparación del cuerpo — no es meditación todavía. Describe CADA zona relajándose de pies a cabeza con lenguaje de peso y gravedad: pies, pantorrillas, rodillas, muslos, caderas, abdomen, espalda baja, espalda alta, hombros, brazos, manos, cuello, mandíbula, frente. Usa frases largas y sensoriales: "los pies caen flojos hacia los lados", "las rodillas se sueltan sin esfuerzo".
+Silencios: [silencio:3s] a [silencio:5s] entre zonas corporales.
 
-SECCIÓN 2 — RESPIRACIÓN Y OBSERVACIÓN INTERNA (~130 palabras, 2:30-5:30):
-Visualización del aire ascendiendo de pies a coronilla al inhalar, descendiendo al exhalar. Observación del estado emocional actual sin juzgar (nombrar posibilidades sin forzar ninguna).
+SECCIÓN 2 — RESPIRACIÓN Y OBSERVACIÓN INTERNA (~200 palabras, 2:30-5:30):
+Visualización del aire ascendiendo de pies a coronilla al inhalar, descendiendo al exhalar. Observación del estado emocional actual sin juzgar (nombrar posibilidades sin forzar ninguna). Guía 3 ciclos completos de respiración con descripción detallada de cada uno.
 Silencios normales: [silencio:8s] a [silencio:12s]. Post-respiración: [silencio:16s] a [silencio:20s].
 Incluir 1 silencio de observación: [silencio:30s] a [silencio:40s].
 
-SECCIÓN 3 — INTENCIÓN / SANKALPA (~60 palabras, 5:30-7:30):
-Introduce una afirmación de intención corta, en presente positivo (sin negaciones). Silencio para repetirla mentalmente 3 veces: [silencio:25s] a [silencio:30s].
+SECCIÓN 3 — INTENCIÓN / SANKALPA (~80 palabras, 5:30-7:30):
+Introduce una afirmación de intención corta, en presente positivo (sin negaciones). Explica brevemente por qué esta intención tiene sentido ahora. Silencio para repetirla mentalmente 3 veces: [silencio:25s] a [silencio:30s].
 EXCEPCIÓN AGOTAMIENTO/INSOMNIO: omitir esta sección, pasar directamente a la técnica.
 
-SECCIÓN 4 — TÉCNICA, PRIMERA PASADA (~250 palabras, 7:30-12:00):
-Guía detallada. Si es rotación corporal: ambas direcciones, parte posterior y anterior por separado. Si es visualización: todos los elementos sensoriales. Silencios: [silencio:5s] a [silencio:15s].
+SECCIÓN 4 — TÉCNICA, PRIMERA PASADA (~450 palabras, 7:30-12:00):
+Guía completamente detallada. Si es rotación corporal: ambas direcciones, parte posterior y anterior por separado, cada zona con descripción sensorial completa. Si es visualización: todos los elementos sensoriales (visual, táctil, auditivo, temperatura). El narrador está presente y acompaña cada paso.
+Mínimo 14 marcadores de silencio: los normales [silencio:10s] a [silencio:15s], los post-respiración [silencio:18s] a [silencio:25s].
 
-SECCIÓN 5 — TÉCNICA, SEGUNDA PASADA (~150 palabras, 12:00-15:00):
-El narrador habla menos — repite la técnica con menos palabras y más silencio. Silencios: [silencio:20s] a [silencio:35s].
+SECCIÓN 5 — TÉCNICA, SEGUNDA PASADA (~250 palabras, 12:00-15:00):
+El narrador habla menos — repite la técnica con menos palabras y más silencio. Cada instrucción va seguida de un silencio generoso. El espacio es más importante que las palabras en esta sección.
+Mínimo 8 marcadores de silencio: [silencio:22s] a [silencio:35s]. No más de 2 frases seguidas sin silencio.
 
-SECCIÓN 6 — AFIRMACIONES (solo para: miedo, angustia, baja autoestima, duelo) (~120 palabras, si aplica):
+SECCIÓN 6 — AFIRMACIONES (solo para: miedo, angustia, baja autoestima, duelo) (~150 palabras, si aplica):
 8-12 afirmaciones. Cada una: 1 frase en presente positivo + [silencio:12s] a [silencio:15s] para internalizarla.
 
-SECCIÓN 7 — SILENCIO DE PROCESAMIENTO (~20 palabras):
+SECCIÓN 7 — SILENCIO DE PROCESAMIENTO (~25 palabras):
 1-2 frases máximo: "Quédate aquí." / "Integra lo que has experimentado." Luego silencio puro: [silencio:90s] a [silencio:150s]. Sin más instrucciones. Este silencio es el corazón de los 20 minutos.
 
-SECCIÓN 8 — CIERRE (~130 palabras, 18:00-20:00):
-Retorno gradual con movimiento suave (dedos, estiramientos). Reflexión sobre capacidad. Instrucción de uso: cómo el usuario puede volver a esta sensación cuando lo necesite fuera de la sesión.
+SECCIÓN 8 — CIERRE (~200 palabras, 18:00-20:00):
+Retorno gradual con movimiento suave (dedos, estiramientos). Reflexión extensa sobre la capacidad del usuario y lo que acaba de experimentar. Instrucción detallada de uso: cómo el usuario puede volver a esta sensación cuando lo necesite fuera de la sesión, en qué momentos aplicarla, qué señal usar para acceder a este estado.
 Silencios: [silencio:8s] a [silencio:12s]. Sin silencio después de la última frase.
 EXCEPCIÓN DORMIR: sin retorno físico. Se disuelve en música.`
   };
@@ -258,7 +263,8 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'ANTHROPIC_API_KEY no configurada' });
   }
 
-  const targetWords = WORD_COUNTS[duration] || 1100;
+  const voiceKey = voice === 'masculine' ? 'masculine' : 'feminine';
+  const targetWords = (WORD_COUNTS[voiceKey] || WORD_COUNTS.feminine)[duration] || 1100;
   const voiceContext = voice === 'masculine'
     ? 'La voz que leerá esto es masculina. Usa un tono firme, sereno y con autoridad tranquila.'
     : 'La voz que leerá esto es femenina. Usa un tono cálido, suave y envolvente.';
