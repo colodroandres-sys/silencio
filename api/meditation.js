@@ -4,14 +4,21 @@
 const checkRateLimit = require('./_ratelimit');
 
 const WORD_COUNTS = {
-  feminine: { '5': 420, '10': 750, '15': 1200, '20': 1400 },
+  feminine: { '5': 420, '10': 750, '15': 1200, '20': 1100 },
   masculine: { '5': 460, '10': 820, '15': 1320, '20': 1700 }
 };
 
-// Silencio máximo permitido por marcador según duración (en segundos)
-const MAX_SILENCE_PER_MARKER = { '5': 18, '10': 32, '15': 90, '20': 150 };
-// Silencio total máximo permitido en toda la meditación (en segundos)
-const MAX_TOTAL_SILENCE     = { '5': 185, '10': 360, '15': 520, '20': 640 };
+// Silencio máximo por marcador individual (en segundos)
+const MAX_SILENCE_PER_MARKER = {
+  feminine: { '5': 18, '10': 32, '15': 90, '20': 150 },
+  masculine: { '5': 18, '10': 32, '15': 90, '20': 150 }
+};
+// Silencio total máximo en toda la meditación (en segundos)
+// Femenina 20 min más bajo porque la voz es más lenta y necesita menos silencio para llegar a 20 min
+const MAX_TOTAL_SILENCE = {
+  feminine: { '5': 185, '10': 360, '15': 520, '20': 560 },
+  masculine: { '5': 185, '10': 360, '15': 520, '20': 640 }
+};
 
 // Recorta el texto al límite de palabras en un punto de corte natural (fin de frase)
 // Los marcadores [silencio:Xs] no cuentan como palabras
@@ -347,8 +354,8 @@ El campo "text" debe contener solo el texto de la meditación, sin títulos ni e
     }
 
     // 2) Capear silencios: primero por marcador individual, luego el total acumulado
-    const maxPerMarker  = MAX_SILENCE_PER_MARKER[duration] || 30;
-    const maxTotalSil   = MAX_TOTAL_SILENCE[duration]      || 460;
+    const maxPerMarker  = (MAX_SILENCE_PER_MARKER[voiceKey] || MAX_SILENCE_PER_MARKER.feminine)[duration] || 30;
+    const maxTotalSil   = (MAX_TOTAL_SILENCE[voiceKey]      || MAX_TOTAL_SILENCE.feminine)[duration]      || 460;
     let   totalSilence  = 0;
     text = text.replace(/\[silencio:(\d+)s\]/gi, (_match, val) => {
       const raw    = parseInt(val, 10);
