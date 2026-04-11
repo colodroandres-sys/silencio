@@ -3,6 +3,25 @@
 
 const checkRateLimit = require('./_ratelimit');
 
+const { Redis } = (() => { try { return require('@upstash/redis'); } catch(e) { return {}; } })();
+
+let redis;
+function getRedis() {
+  if (!redis && Redis && process.env.UPSTASH_REDIS_REST_URL) {
+    redis = new Redis({ url: process.env.UPSTASH_REDIS_REST_URL, token: process.env.UPSTASH_REDIS_REST_TOKEN });
+  }
+  return redis;
+}
+
+async function saveLog(entry) {
+  try {
+    const r = getRedis();
+    if (!r) return;
+    await r.lpush('silencio:logs', JSON.stringify(entry));
+    await r.ltrim('silencio:logs', 0, 199); // guardar solo los últimos 200
+  } catch (e) { /* log falla silenciosamente */ }
+}
+
 // Voces de ElevenLabs optimizadas para meditación en español
 const VOICE_IDS = {
   feminine: 'D9MdulIxfrCUUJcGNQon',
@@ -25,7 +44,7 @@ module.exports = async (req, res) => {
   const allowed = await checkRateLimit(req, res, 'audio', 10, '1 h');
   if (!allowed) return;
 
-  const { text: rawText, voice } = req.body || {};
+  const { text: rawText, voice, duration, targetWords, silenceTotal } = req.body || {};
 
   if (!rawText || !voice) {
     return res.status(400).json({ error: 'Faltan campos requeridos: text, voice' });
@@ -150,6 +169,16 @@ module.exports = async (req, res) => {
     if (silences.length > cutTimes.length) {
       console.warn('[audio] ALERTA: hay', silences.length - cutTimes.length, 'silencio(s) trailing — no están en silenceMap pero sí en totalDuration');
     }
+
+    await saveLog({
+      ts: new Date().toISOString(),
+      voice,
+      duration,
+      targetWords,
+      silenceTotal: silenceTotal ?? Math.round(silences.reduce((s, v) => s + v, 0)),
+      voiceDuration: Math.round(voiceDuration),
+      totalDuration: Math.round(totalDuration)
+    });
 
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-store');

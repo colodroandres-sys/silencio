@@ -259,7 +259,7 @@ async function attemptGeneration(signal) {
     throw error;
   }
 
-  const { title, text } = await meditationRes.json();
+  const { title, text, targetWords, silenceTotal } = await meditationRes.json();
   document.getElementById('session-title').textContent = title;
 
   // ── Paso 2: Convertir a audio con ElevenLabs ──────────────────
@@ -269,7 +269,7 @@ async function attemptGeneration(signal) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     signal,
-    body: JSON.stringify({ text, voice: state.voice })
+    body: JSON.stringify({ text, voice: state.voice, duration: state.duration, targetWords, silenceTotal })
   });
 
   if (!audioRes.ok) {

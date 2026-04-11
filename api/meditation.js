@@ -366,7 +366,7 @@ El campo "text" debe contener solo el texto de la meditación, sin títulos ni e
     });
     console.log(`[meditation] Silencio total: ${totalSilence}s / límite: ${maxTotalSil}s`);
 
-    return res.status(200).json({ title, text });
+    return res.status(200).json({ title, text, targetWords, silenceTotal: totalSilence });
 
   } catch (err) {
     console.error('Error interno en /api/meditation:', err);
