@@ -4,7 +4,7 @@
 const checkRateLimit = require('./_ratelimit');
 
 const WORD_COUNTS = {
-  feminine: { '5': 420, '10': 750, '15': 1200, '20': 1700 },
+  feminine: { '5': 420, '10': 750, '15': 1200, '20': 1400 },
   masculine: { '5': 460, '10': 820, '15': 1320, '20': 1700 }
 };
 
