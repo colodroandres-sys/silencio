@@ -182,6 +182,17 @@ function cancelGeneration() {
 }
 
 async function generateMeditation() {
+  // Requiere login antes de proceder
+  if (!clerk || !clerk.user) {
+    pendingGeneration = true;
+    clerk.openSignIn({
+      afterSignInUrl: window.location.href,
+      afterSignUpUrl: window.location.href
+    });
+    return;
+  }
+  pendingGeneration = false;
+
   const btn = document.getElementById('btn-generate');
   btn.disabled = true;
 
@@ -205,6 +216,15 @@ async function generateMeditation() {
     if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
 
     if (err.name === 'AbortError') { abortController = null; return; }
+
+    // Paywall (402): mostrar modal de upgrade
+    if (err.status === 402) {
+      abortController = null;
+      enableGenerateBtn();
+      showScreen('screen-preferences');
+      showPaywall();
+      return;
+    }
 
     // Errores de cliente (4xx): mostrar inmediatamente, sin reintentar
     if (err.status && err.status < 500) {
@@ -238,10 +258,17 @@ async function generateMeditation() {
 }
 
 async function attemptGeneration(signal) {
+  // Obtener token de Clerk para las llamadas autenticadas
+  const token = await getAuthToken();
+  const email = await getUserEmail();
+  const authHeaders = token
+    ? { 'Authorization': `Bearer ${token}`, 'x-user-email': email }
+    : {};
+
   // ── Paso 1: Generar texto con Claude ──────────────────────────
   const meditationRes = await fetch('/api/meditation', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeaders },
     signal,
     body: JSON.stringify({
       userInput: state.userInput,
@@ -267,7 +294,7 @@ async function attemptGeneration(signal) {
 
   const audioRes = await fetch('/api/audio', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeaders },
     signal,
     body: JSON.stringify({ text, voice: state.voice, duration: state.duration, targetWords, silenceTotal })
   });
@@ -562,3 +589,175 @@ function formatTime(sec) {
   const s = sec % 60;
   return `${m}:${String(s).padStart(2, '0')}`;
 }
+
+// =============================================
+//  AUTH — CLERK
+// =============================================
+const CLERK_KEY = 'pk_test_cmVsYXhpbmctbGFtcHJleS03OC5jbGVyay5hY2NvdW50cy5kZXYk';
+let clerk = null;
+let pendingGeneration = false;
+
+async function initClerk() {
+  try {
+    clerk = new window.Clerk(CLERK_KEY);
+    await clerk.load();
+
+    clerk.addListener(({ user }) => {
+      updateUserStatus();
+      if (user && pendingGeneration) {
+        pendingGeneration = false;
+        generateMeditation();
+      }
+    });
+
+    updateUserStatus();
+    checkUrlParams();
+  } catch (e) {
+    console.error('[clerk] Error de inicialización:', e);
+  }
+}
+
+async function updateUserStatus() {
+  const el = document.getElementById('user-status');
+  if (!el) return;
+
+  if (!clerk || !clerk.user) {
+    el.style.display = 'none';
+    return;
+  }
+
+  el.style.display = 'flex';
+  fetchUserStatus();
+}
+
+async function fetchUserStatus() {
+  if (!clerk || !clerk.user || !clerk.session) return;
+
+  try {
+    const token = await clerk.session.getToken();
+    const email = clerk.user.primaryEmailAddress?.emailAddress || '';
+
+    const res = await fetch('/api/user', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'x-user-email': email
+      }
+    });
+
+    if (!res.ok) return;
+
+    const { plan, usage, limit, canGenerate } = await res.json();
+
+    const planEl = document.getElementById('plan-badge');
+    const usageEl = document.getElementById('usage-info');
+
+    if (planEl) {
+      const planNames = { free: 'Gratis', premium: 'Premium', platinum: 'Platinum' };
+      planEl.textContent = planNames[plan] || plan;
+      planEl.className = `plan-badge plan-${plan}`;
+    }
+
+    if (usageEl) {
+      if (plan === 'free') {
+        usageEl.textContent = canGenerate ? 'Primera meditación gratis' : 'Límite alcanzado';
+      } else {
+        usageEl.textContent = `${usage}/${limit} este mes`;
+      }
+    }
+  } catch (e) {
+    console.error('[user status] Error:', e);
+  }
+}
+
+async function getAuthToken() {
+  if (!clerk || !clerk.session) return null;
+  try {
+    return await clerk.session.getToken();
+  } catch (e) {
+    return null;
+  }
+}
+
+async function getUserEmail() {
+  if (!clerk || !clerk.user) return '';
+  return clerk.user.primaryEmailAddress?.emailAddress || '';
+}
+
+function checkUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('upgraded')) {
+    const plan = params.get('upgraded');
+    const planNames = { premium: 'Premium', platinum: 'Platinum' };
+    showToast(`¡Bienvenido a ${planNames[plan] || plan}! Ya puedes generar más meditaciones.`);
+    window.history.replaceState({}, '', window.location.pathname);
+    fetchUserStatus();
+  }
+  if (params.get('canceled')) {
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+}
+
+function showToast(msg) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.classList.add('visible'), 10);
+  setTimeout(() => {
+    toast.classList.remove('visible');
+    setTimeout(() => toast.remove(), 400);
+  }, 4000);
+}
+
+// =============================================
+//  PAYWALL
+// =============================================
+function showPaywall() {
+  const modal = document.getElementById('paywall-modal');
+  if (modal) modal.classList.add('active');
+}
+
+function closePaywall() {
+  const modal = document.getElementById('paywall-modal');
+  if (modal) modal.classList.remove('active');
+  enableGenerateBtn();
+}
+
+async function upgradePlan(plan) {
+  if (!clerk || !clerk.session) return;
+
+  try {
+    const token = await clerk.session.getToken();
+    const email = await getUserEmail();
+
+    const res = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ plan, email })
+    });
+
+    if (!res.ok) throw new Error('Error al crear sesión de pago');
+
+    const { url } = await res.json();
+    window.location.href = url;
+  } catch (e) {
+    console.error('[checkout] Error:', e);
+    showToast('Error al procesar el pago. Inténtalo de nuevo.');
+  }
+}
+
+function signOut() {
+  if (clerk) {
+    clerk.signOut().then(() => {
+      const el = document.getElementById('user-status');
+      if (el) el.style.display = 'none';
+    });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initClerk();
+});

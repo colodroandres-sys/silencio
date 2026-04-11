@@ -2,6 +2,8 @@
 // Recibe el contexto del usuario, llama a Claude API y devuelve el texto de la meditación
 
 const checkRateLimit = require('./_ratelimit');
+const { verifyAuth } = require('./_auth');
+const { getOrCreateUser, checkUsageLimit } = require('./_limits');
 
 const WORD_COUNTS = {
   feminine: { '5': 420, '10': 750, '15': 1200, '20': 1100 },
@@ -248,9 +250,31 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Rate limiting: 5 meditaciones por IP por hora
+  // Rate limiting: 10 meditaciones por IP por hora
   const allowed = await checkRateLimit(req, res, 'meditation', 10, '1 h');
   if (!allowed) return;
+
+  // Auth: requiere usuario autenticado con Clerk
+  const clerkId = await verifyAuth(req, res);
+  if (!clerkId) return;
+
+  // Crear usuario en Supabase si no existe
+  const email = req.headers['x-user-email'] || '';
+  await getOrCreateUser(clerkId, email);
+
+  // Verificar límite de plan
+  const limitCheck = await checkUsageLimit(clerkId);
+  if (!limitCheck.allowed) {
+    const msg = limitCheck.reason === 'free_limit'
+      ? 'Has usado tu meditación gratuita. Elige un plan para continuar.'
+      : `Has alcanzado tu límite de ${limitCheck.limit} meditaciones este mes.`;
+    return res.status(402).json({
+      error: msg,
+      currentPlan: limitCheck.plan,
+      usage: limitCheck.usage,
+      limit: limitCheck.limit
+    });
+  }
 
   const { userInput, userName, duration, voice, gender } = req.body || {};
 

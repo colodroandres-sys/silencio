@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js" type="text/javascript"></script>
 </head>
 <body>
 
@@ -21,6 +22,12 @@
       <div class="logo">
         <div class="logo-dot"></div>
         <span>Silencio</span>
+      </div>
+
+      <div id="user-status" style="display:none">
+        <span id="plan-badge" class="plan-badge plan-free">Gratis</span>
+        <span id="usage-info" class="usage-info">Primera meditación gratis</span>
+        <button class="btn-signout" onclick="signOut()">Salir</button>
       </div>
 
       <p class="tagline">Describe tu momento y te creo<br>una meditación única para ahora.</p>
@@ -188,6 +195,32 @@
 
   <audio id="audio" onended="handleEnd()"></audio>
   <audio id="audio-ambient" loop preload="none"></audio>
+
+  <!-- Modal: Paywall -->
+  <div id="paywall-modal" class="paywall-overlay">
+    <div class="paywall-card">
+      <p class="paywall-title">Desbloquea más meditaciones</p>
+      <p class="paywall-sub">Has usado tu meditación gratuita.<br>Elige un plan para continuar.</p>
+
+      <div class="paywall-plans">
+        <div class="plan-option">
+          <div class="plan-option-name">Premium</div>
+          <div class="plan-option-desc">10 meditaciones / mes</div>
+          <div class="plan-option-price">$9.99 / mes</div>
+          <button class="btn-upgrade" onclick="upgradePlan('premium')">Elegir Premium</button>
+        </div>
+        <div class="plan-option plan-option-featured">
+          <div class="plan-option-badge">Más popular</div>
+          <div class="plan-option-name">Platinum</div>
+          <div class="plan-option-desc">50 meditaciones / mes</div>
+          <div class="plan-option-price">$14.99 / mes</div>
+          <button class="btn-upgrade btn-upgrade-featured" onclick="upgradePlan('platinum')">Elegir Platinum</button>
+        </div>
+      </div>
+
+      <button class="btn-ghost paywall-close" onclick="closePaywall()">Ahora no</button>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>

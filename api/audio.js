@@ -2,6 +2,8 @@
 // Recibe el texto de la meditación, llama a ElevenLabs y devuelve el audio en mp3
 
 const checkRateLimit = require('./_ratelimit');
+const { verifyAuth } = require('./_auth');
+const { incrementUsage } = require('./_limits');
 
 const { Redis } = (() => { try { return require('@upstash/redis'); } catch(e) { return {}; } })();
 
@@ -43,6 +45,10 @@ module.exports = async (req, res) => {
   // Rate limiting: 10 audios por IP por hora
   const allowed = await checkRateLimit(req, res, 'audio', 10, '1 h');
   if (!allowed) return;
+
+  // Auth: requiere usuario autenticado (ya verificado en /api/meditation)
+  const clerkId = await verifyAuth(req, res);
+  if (!clerkId) return;
 
   const { text: rawText, voice, duration, targetWords, silenceTotal } = req.body || {};
 
@@ -179,6 +185,9 @@ module.exports = async (req, res) => {
       voiceDuration: Math.round(voiceDuration),
       totalDuration: Math.round(totalDuration)
     });
+
+    // Incrementar contador de uso tras generación exitosa
+    await incrementUsage(clerkId);
 
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-store');

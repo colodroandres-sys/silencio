@@ -5,6 +5,12 @@
     },
     "api/audio.js": {
       "maxDuration": 300
+    },
+    "api/checkout.js": {
+      "maxDuration": 30
+    },
+    "api/webhook.js": {
+      "maxDuration": 30
     }
   }
 }
