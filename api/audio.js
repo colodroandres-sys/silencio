@@ -11,7 +11,7 @@ const VOICE_IDS = {
 
 // Speed por voz — masculina más lenta para compensar ritmo natural más rápido
 const VOICE_SPEED = {
-  feminine: 0.95,
+  feminine: 0.97,
   masculine: 0.92
 };
 
