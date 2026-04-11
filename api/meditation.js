@@ -266,6 +266,21 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'El texto no puede superar los 500 caracteres.' });
   }
 
+  // Moderación de contenido — bloquear solicitudes inapropiadas
+  const BLOCKED_PATTERNS = [
+    /\bporno?\b/i, /\bsex(o|ual|ting)?\b/i, /\berotic[ao]?\b/i, /\bnud[eo]\b/i,
+    /\bdroga[s]?\b/i, /\bcocaína\b/i, /\bheroína\b/i, /\bmetanfetamina\b/i,
+    /\bcannabis\b/i, /\bmarijuana\b/i, /\blsd\b/i, /\becstasy\b/i,
+    /\babuso\b/i, /\bviolaci[oó]n\b/i, /\bviolar\b/i, /\bpedofil\b/i,
+    /\bsuicidi[oa]\b/i, /\bmatarme\b/i, /\bautolesi[oó]n\b/i,
+    /\bterrorism[oa]\b/i, /\bbomba\b/i, /\barma[s]?\b/i,
+    /\bporn\b/i, /\bsex\b/i, /\bnude\b/i, /\bdrug[s]?\b/i,
+    /\bcocaine\b/i, /\bheroin\b/i, /\bsuicid\b/i, /\braped?\b/i, /\babuse\b/i
+  ];
+  if (BLOCKED_PATTERNS.some(p => p.test(userInput))) {
+    return res.status(422).json({ error: 'Este contenido no está permitido. Por favor describe cómo te sientes o qué quieres trabajar en tu meditación.' });
+  }
+
   if (!process.env.ANTHROPIC_API_KEY) {
     return res.status(500).json({ error: 'ANTHROPIC_API_KEY no configurada' });
   }
