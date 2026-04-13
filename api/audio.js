@@ -3,7 +3,7 @@
 
 const checkRateLimit = require('./_ratelimit');
 const { verifyAuth } = require('./_auth');
-const { incrementUsage } = require('./_limits');
+const { checkUsageLimit, incrementUsage } = require('./_limits');
 
 const { Redis } = (() => { try { return require('@upstash/redis'); } catch(e) { return {}; } })();
 
@@ -46,9 +46,19 @@ module.exports = async (req, res) => {
   const allowed = await checkRateLimit(req, res, 'audio', 10, '1 h');
   if (!allowed) return;
 
-  // Auth: requiere usuario autenticado (ya verificado en /api/meditation)
+  // Auth: requiere usuario autenticado
   const clerkId = await verifyAuth(req, res);
   if (!clerkId) return;
+
+  // Verificar límite de uso — previene llamadas directas a /api/audio que saltean /api/meditation
+  const limitCheck = await checkUsageLimit(clerkId);
+  if (!limitCheck.allowed) {
+    return res.status(402).json({
+      error: 'Límite de meditaciones alcanzado.',
+      reason: limitCheck.reason,
+      plan: limitCheck.plan
+    });
+  }
 
   const { text: rawText, voice, duration, targetWords, silenceTotal } = req.body || {};
 

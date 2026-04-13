@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Silencio — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #07081a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 24px 16px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+    .logo-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #9d62f8;
+    }
+    .header h1 { font-size: 1.1rem; font-weight: 500; color: #cbd5e1; letter-spacing: 0.05em; }
+    .header span { font-size: 0.75rem; color: #64748b; margin-left: 4px; }
+
+    /* Login */
+    #login-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      gap: 16px;
+    }
+    #login-screen h2 { font-size: 1rem; font-weight: 400; color: #94a3b8; }
+    .input-pw {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #e2e8f0;
+      font-size: 0.95rem;
+      width: 280px;
+      outline: none;
+    }
+    .input-pw:focus { border-color: rgba(157,98,248,0.5); }
+    .btn-login {
+      background: #9d62f8;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 32px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      width: 280px;
+    }
+    .btn-login:hover { background: #8b4ef0; }
+    .login-error { color: #f87171; font-size: 0.8rem; }
+
+    /* Dashboard */
+    #dashboard { display: none; }
+
+    .month-label {
+      font-size: 0.75rem;
+      color: #64748b;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px;
+      padding: 20px 16px;
+    }
+    .card-label {
+      font-size: 0.72rem;
+      color: #64748b;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .card-value {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1;
+    }
+    .card-value.green { color: #4ade80; }
+    .card-value.purple { color: #c084fc; }
+    .card-value.blue { color: #60a5fa; }
+    .card-sub {
+      font-size: 0.75rem;
+      color: #475569;
+      margin-top: 6px;
+    }
+
+    /* Breakdown */
+    .section-title {
+      font-size: 0.75rem;
+      color: #64748b;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .plan-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .plan-row:last-child { border-bottom: none; }
+    .plan-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .dot-free { background: #475569; }
+    .dot-premium { background: #9d62f8; }
+    .dot-platinum { background: #f59e0b; }
+    .plan-name { font-size: 0.9rem; color: #94a3b8; flex: 1; }
+    .plan-count { font-size: 1rem; font-weight: 600; color: #f1f5f9; }
+    .plan-pct { font-size: 0.75rem; color: #475569; min-width: 36px; text-align: right; }
+    .plan-bar-wrap { flex: 2; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+    .plan-bar { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+
+    /* Health */
+    .health-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+    .health-item {
+      background: rgba(255,255,255,0.03);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .health-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .health-dot.ok { background: #4ade80; }
+    .health-dot.fail { background: #f87171; }
+    .health-name { font-size: 0.78rem; color: #94a3b8; }
+
+    /* Refresh */
+    .footer {
+      margin-top: 40px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .btn-refresh {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 8px 16px;
+      color: #94a3b8;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .btn-refresh:hover { background: rgba(255,255,255,0.1); }
+    .last-update { font-size: 0.75rem; color: #475569; }
+
+    .loading { color: #475569; font-size: 0.85rem; padding: 40px 0; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo-dot"></div>
+  <h1>Silencio <span>/ Admin</span></h1>
+</div>
+
+<!-- Login -->
+<div id="login-screen">
+  <h2>Acceso al panel</h2>
+  <input type="password" class="input-pw" id="pw-input" placeholder="Contraseña" onkeydown="if(event.key==='Enter')login()">
+  <button class="btn-login" onclick="login()">Entrar</button>
+  <span class="login-error" id="login-error" style="display:none">Contraseña incorrecta.</span>
+</div>
+
+<!-- Dashboard -->
+<div id="dashboard">
+
+  <div class="month-label" id="month-label">Cargando...</div>
+
+  <!-- KPIs principales -->
+  <div class="grid" id="kpi-grid">
+    <div class="card">
+      <div class="card-label">MRR</div>
+      <div class="card-value green" id="mrr">—</div>
+      <div class="card-sub">ingresos mensuales</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Usuarios pagando</div>
+      <div class="card-value purple" id="paying">—</div>
+      <div class="card-sub" id="conversion-rate">—</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Total usuarios</div>
+      <div class="card-value" id="total-users">—</div>
+      <div class="card-sub" id="recent-signups">—</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Meditaciones este mes</div>
+      <div class="card-value blue" id="meditations">—</div>
+      <div class="card-sub">generadas</div>
+    </div>
+  </div>
+
+  <!-- Breakdown por plan -->
+  <div class="section-title">Usuarios por plan</div>
+  <div style="background:rgba(255,255,255,0.03);border-radius:14px;padding:4px 16px;margin-bottom:32px;" id="plan-breakdown">
+    <div class="loading">Cargando...</div>
+  </div>
+
+  <!-- Health check -->
+  <div class="section-title">Estado del sistema</div>
+  <div class="health-grid" id="health-grid">
+    <div class="loading">Comprobando...</div>
+  </div>
+
+  <div class="footer">
+    <button class="btn-refresh" onclick="loadDashboard()">Actualizar</button>
+    <span class="last-update" id="last-update"></span>
+  </div>
+
+</div>
+
+<script>
+  let adminPassword = '';
+
+  function login() {
+    const pw = document.getElementById('pw-input').value;
+    if (!pw) return;
+    adminPassword = pw;
+    loadDashboard();
+  }
+
+  async function loadDashboard() {
+    try {
+      const [metricsRes, healthRes] = await Promise.all([
+        fetch('/api/admin', { headers: { 'x-admin-password': adminPassword } }),
+        fetch('/api/health')
+      ]);
+
+      if (metricsRes.status === 401) {
+        document.getElementById('login-error').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('login-error').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+
+      if (metricsRes.ok) {
+        const data = await metricsRes.json();
+        renderMetrics(data);
+      }
+
+      if (healthRes.ok || healthRes.status === 503) {
+        const health = await healthRes.json();
+        renderHealth(health);
+      }
+
+      document.getElementById('last-update').textContent =
+        'Actualizado: ' + new Date().toLocaleTimeString('es-ES');
+
+    } catch (e) {
+      console.error('Error cargando dashboard:', e);
+    }
+  }
+
+  function renderMetrics(data) {
+    const monthNames = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    const [year, mon] = data.month.split('-');
+    document.getElementById('month-label').textContent =
+      `${monthNames[parseInt(mon) - 1]} ${year}`;
+
+    document.getElementById('mrr').textContent = `$${data.mrr.toFixed(2)}`;
+    document.getElementById('paying').textContent = data.paying;
+    document.getElementById('conversion-rate').textContent =
+      `${data.conversionRate}% conversión`;
+    document.getElementById('total-users').textContent = data.totalUsers;
+    document.getElementById('recent-signups').textContent =
+      `+${data.recentSignups} últimos 7 días`;
+    document.getElementById('meditations').textContent = data.meditationsThisMonth;
+
+    // Plan breakdown
+    const total = data.totalUsers || 1;
+    const plans = [
+      { key: 'free', label: 'Gratis', dotClass: 'dot-free', color: '#475569' },
+      { key: 'premium', label: 'Premium', dotClass: 'dot-premium', color: '#9d62f8' },
+      { key: 'platinum', label: 'Platinum', dotClass: 'dot-platinum', color: '#f59e0b' }
+    ];
+
+    const html = plans.map(p => {
+      const count = data.byPlan[p.key] || 0;
+      const pct = Math.round((count / total) * 100);
+      return `
+        <div class="plan-row">
+          <div class="plan-dot ${p.dotClass}"></div>
+          <span class="plan-name">${p.label}</span>
+          <div class="plan-bar-wrap">
+            <div class="plan-bar" style="width:${pct}%;background:${p.color}"></div>
+          </div>
+          <span class="plan-count">${count}</span>
+          <span class="plan-pct">${pct}%</span>
+        </div>`;
+    }).join('');
+
+    document.getElementById('plan-breakdown').innerHTML = html;
+  }
+
+  function renderHealth(data) {
+    const items = [
+      { key: 'supabase', label: 'Supabase (DB)' },
+      { key: 'clerk_key', label: 'Clerk (Auth)' },
+      { key: 'stripe_key', label: 'Stripe (Pagos)' },
+      { key: 'elevenlabs_key', label: 'ElevenLabs' },
+      { key: 'upstash_key', label: 'Upstash (Rate)' }
+    ];
+
+    const html = items.map(item => `
+      <div class="health-item">
+        <div class="health-dot ${data[item.key] ? 'ok' : 'fail'}"></div>
+        <span class="health-name">${item.label}</span>
+      </div>`).join('');
+
+    document.getElementById('health-grid').innerHTML = html;
+  }
+</script>
+
+</body>
+</html>

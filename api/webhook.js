@@ -50,12 +50,16 @@ module.exports = async (req, res) => {
       const sub = await stripe.subscriptions.retrieve(subId);
       const clerkId = sub.metadata?.clerk_id;
 
-      if (clerkId) {
+      // Solo bajar a free si la suscripción está efectivamente cancelada
+      // Previene que un evento falso baje el plan de un usuario activo
+      if (clerkId && (sub.status === 'canceled' || sub.status === 'unpaid' || sub.status === 'incomplete_expired')) {
         await db.from('users').update({
           plan: 'free',
           stripe_subscription_id: null
         }).eq('clerk_id', clerkId);
-        console.log(`[webhook] Suscripción cancelada → ${clerkId} vuelve a free`);
+        console.log(`[webhook] Suscripción cancelada (status: ${sub.status}) → ${clerkId} vuelve a free`);
+      } else if (clerkId) {
+        console.warn(`[webhook] subscription.deleted recibido pero status es '${sub.status}' — ignorado para ${clerkId}`);
       }
     }
 

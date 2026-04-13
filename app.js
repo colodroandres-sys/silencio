@@ -198,6 +198,8 @@ async function generateMeditation() {
 
   state.currentSec = 0;
 
+  track('meditation_started', { duration: state.duration, voice: state.voice, mode: state.mode });
+
   setLoadingState('normal', 'Entendiéndote', 'Leyendo tu momento y creando algo solo para ti...');
   showScreen('screen-loading');
 
@@ -223,6 +225,7 @@ async function generateMeditation() {
       enableGenerateBtn();
       showScreen('screen-preferences');
       showPaywall();
+      track('paywall_shown', { duration: state.duration, voice: state.voice });
       return;
     }
 
@@ -324,6 +327,8 @@ async function attemptGeneration(signal) {
   state.silenceOffset  = 0;
 
   document.getElementById('time-end').textContent = formatTime(state.totalSec);
+
+  track('meditation_generated', { duration: state.duration, voice: state.voice });
 
   connectAudio(state.audioBlobUrl);
   showScreen('screen-player');
@@ -445,6 +450,7 @@ function seekTo(event) {
 }
 
 function handleEnd() {
+  track('meditation_completed', { duration: state.duration, voice: state.voice });
   state.isPlaying  = false;
   state.inSilence  = false;
   state.currentSec = state.totalSec;
@@ -579,6 +585,17 @@ function scheduleNextSilence(audio) {
       }
     }, tick);
   }, delayMs);
+}
+
+// =============================================
+//  ANALYTICS — POSTHOG
+// =============================================
+function track(event, props) {
+  try {
+    if (window.posthog && typeof posthog.capture === 'function') {
+      posthog.capture(event, props || {});
+    }
+  } catch (e) { /* falla silenciosamente */ }
 }
 
 // =============================================
@@ -751,6 +768,7 @@ async function upgradePlan(plan) {
     if (!res.ok) throw new Error('Error al crear sesión de pago');
 
     const { url } = await res.json();
+    track('checkout_started', { plan });
     window.location.href = url;
   } catch (e) {
     console.error('[checkout] Error:', e);

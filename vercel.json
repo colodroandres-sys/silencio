@@ -11,6 +11,18 @@
     },
     "api/webhook.js": {
       "maxDuration": 30
+    },
+    "api/user.js": {
+      "maxDuration": 15
+    },
+    "api/logs.js": {
+      "maxDuration": 15
+    },
+    "api/health.js": {
+      "maxDuration": 15
+    },
+    "api/admin.js": {
+      "maxDuration": 15
     }
   }
 }

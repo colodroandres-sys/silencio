@@ -25,11 +25,21 @@ async function getOrCreateUser(clerkId, email) {
 
   if (user) return user;
 
-  const { data: newUser } = await db
+  const { data: newUser, error } = await db
     .from('users')
     .insert({ clerk_id: clerkId, email: email || null })
     .select()
     .single();
+
+  if (error) {
+    // Race condition: otra request ya creó el usuario — lo recuperamos
+    const { data: existingUser } = await db
+      .from('users')
+      .select('*')
+      .eq('clerk_id', clerkId)
+      .single();
+    return existingUser;
+  }
 
   return newUser;
 }
