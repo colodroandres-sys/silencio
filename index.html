@@ -200,10 +200,11 @@
       <button id="btn-new-meditation" class="btn-ghost" onclick="newMeditation()" style="display:none">Nueva meditación</button>
 
       <div id="end-upsell" style="display:none" class="end-upsell">
-        <p class="end-upsell-title">¿Cómo te sientes?</p>
-        <p class="end-upsell-sub">Esta meditación fue creada solo para ti, para este momento exacto.<br>Con Essential tienes 10 créditos al mes y puedes guardar tus favoritas.</p>
-        <button class="btn-primary" onclick="closeEndUpsell(); showPaywall()">Ver planes — desde $11.99/mes</button>
-        <button class="btn-ghost" onclick="closeEndUpsell(); newMeditation()">Ahora no</button>
+        <p class="end-upsell-eyebrow">Primera meditación completada</p>
+        <p class="end-upsell-title">Así de bien puedes<br>sentirte cada día.</p>
+        <p class="end-upsell-sub">Meditaciones creadas en segundos,<br>personalizadas para lo que vives ahora mismo.</p>
+        <button class="btn-primary btn-upsell-cta" onclick="closeEndUpsell(); showPaywall()">Quiero más meditaciones</button>
+        <button class="btn-upsell-skip" onclick="closeEndUpsell(); newMeditation()">Ahora no</button>
       </div>
 
     </div>
@@ -215,22 +216,34 @@
   <!-- Modal: Paywall -->
   <div id="paywall-modal" class="paywall-overlay">
     <div class="paywall-card">
-      <p class="paywall-title">Desbloquea más meditaciones</p>
-      <p class="paywall-sub">Has usado tu meditación gratuita.<br>Elige un plan para continuar.</p>
+      <p class="paywall-title">Tu próxima meditación<br>te espera.</p>
+      <p class="paywall-sub">Creada en segundos, solo para ti.</p>
 
       <div class="paywall-plans">
-        <div class="plan-option">
-          <div class="plan-option-name">Essential</div>
-          <div class="plan-option-desc">10 créditos / mes<br><small>5 min = 1 cr · 10 min = 2 cr · 15 min = 3 cr</small></div>
-          <div class="plan-option-price">$11.99 / mes</div>
-          <button class="btn-upgrade" onclick="upgradePlan('essential')">Elegir Essential</button>
-        </div>
         <div class="plan-option plan-option-featured">
           <div class="plan-option-badge">Más popular</div>
-          <div class="plan-option-name">Premium</div>
-          <div class="plan-option-desc">25 créditos / mes<br><small>Guarda meditaciones ilimitadas</small></div>
-          <div class="plan-option-price">$22.99 / mes</div>
-          <button class="btn-upgrade btn-upgrade-featured" onclick="upgradePlan('premium')">Elegir Premium</button>
+          <div class="plan-option-header">
+            <div class="plan-option-name">Premium</div>
+            <div class="plan-option-price">$22.99<span class="plan-price-period">/mes</span></div>
+          </div>
+          <ul class="plan-benefits">
+            <li>25 meditaciones al mes</li>
+            <li>Guarda tus favoritas sin límite</li>
+            <li>Todas las duraciones hasta 20 min</li>
+          </ul>
+          <button class="btn-upgrade btn-upgrade-featured" onclick="upgradePlan('premium')">Empezar con Premium</button>
+        </div>
+        <div class="plan-option">
+          <div class="plan-option-header">
+            <div class="plan-option-name">Essential</div>
+            <div class="plan-option-price">$11.99<span class="plan-price-period">/mes</span></div>
+          </div>
+          <ul class="plan-benefits">
+            <li>10 meditaciones al mes</li>
+            <li>Guarda hasta 20 meditaciones</li>
+            <li>Todas las duraciones hasta 20 min</li>
+          </ul>
+          <button class="btn-upgrade" onclick="upgradePlan('essential')">Empezar con Essential</button>
         </div>
       </div>
 
