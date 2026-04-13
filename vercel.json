@@ -1,4 +1,7 @@
 {
+  "routes": [
+    { "src": "/admin", "dest": "/admin.html" }
+  ],
   "functions": {
     "api/meditation.js": {
       "maxDuration": 120
