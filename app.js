@@ -214,7 +214,7 @@ async function generateMeditation() {
   } catch (err) {
     if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
 
-    if (err.name === 'AbortError') { abortController = null; return; }
+    if (err.name === 'AbortError') { abortController = null; enableGenerateBtn(); return; }
 
     // Paywall (402): mostrar modal de upgrade
     if (err.status === 402) {
@@ -249,7 +249,7 @@ async function generateMeditation() {
       if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
       abortController = null;
 
-      if (retryErr.name === 'AbortError') return;
+      if (retryErr.name === 'AbortError') { enableGenerateBtn(); return; }
       console.error('Error generando meditación (reintento):', retryErr);
       enableGenerateBtn();
       setLoadingState('error', 'Algo salió mal', retryErr.message || 'Revisa tu conexión e inténtalo de nuevo.');
