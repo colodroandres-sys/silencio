@@ -36,6 +36,7 @@
       <div id="user-status" style="display:none">
         <span id="plan-badge" class="plan-badge plan-free">Gratis</span>
         <span id="usage-info" class="usage-info">Primera meditación gratis</span>
+        <a href="/dashboard.html" class="btn-dashboard">Historial</a>
         <button class="btn-signout" onclick="signOut()">Salir</button>
       </div>
 
@@ -198,6 +199,14 @@
 
       <p id="end-message" class="end-message" style="display:none">Bien.<br>Lleva este silencio contigo.</p>
       <button id="btn-new-meditation" class="btn-ghost" onclick="newMeditation()" style="display:none">Nueva meditación</button>
+
+      <div id="end-save" style="display:none" class="end-save">
+        <p class="end-save-hint">¿Quieres escucharla de nuevo?</p>
+        <button id="btn-save-meditation" class="btn-save" onclick="saveMeditation()">
+          Guardar en mi biblioteca
+        </button>
+        <button class="btn-upsell-skip" onclick="skipSave()">Ahora no</button>
+      </div>
 
       <div id="end-upsell" style="display:none" class="end-upsell">
         <p class="end-upsell-eyebrow">Primera meditación completada</p>

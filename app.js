@@ -14,6 +14,7 @@ const state = {
   currentSec: 0,
   totalSec: 0,
   audioBlobUrl: null,
+  currentMeditationId: null,
   silenceMap: [],        // [{time, duration}] — silencios a insertar durante la reproducción
   silenceOffset: 0,     // segundos acumulados de silencio ya ejecutados
   silenceTimer: null,   // setInterval activo durante un silencio
@@ -298,7 +299,7 @@ async function attemptGeneration(signal) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeaders },
     signal,
-    body: JSON.stringify({ text, voice: state.voice, duration: state.duration, targetWords, silenceTotal })
+    body: JSON.stringify({ text, voice: state.voice, duration: state.duration, targetWords, silenceTotal, title })
   });
 
   if (!audioRes.ok) {
@@ -320,10 +321,11 @@ async function attemptGeneration(signal) {
   const audioBlob = new Blob([bytes], { type: 'audio/mpeg' });
 
   if (state.audioBlobUrl) URL.revokeObjectURL(state.audioBlobUrl);
-  state.audioBlobUrl   = URL.createObjectURL(audioBlob);
-  state.silenceMap     = audioData.silenceMap || [];
-  state.totalSec       = Math.round(audioData.totalDuration || parseInt(state.duration) * 60);
-  state.silenceOffset  = 0;
+  state.audioBlobUrl        = URL.createObjectURL(audioBlob);
+  state.currentMeditationId = audioData.meditationId || null;
+  state.silenceMap          = audioData.silenceMap || [];
+  state.totalSec            = Math.round(audioData.totalDuration || parseInt(state.duration) * 60);
+  state.silenceOffset       = 0;
 
   document.getElementById('time-end').textContent = formatTime(state.totalSec);
 
@@ -469,9 +471,12 @@ function handleEnd() {
 
   setTimeout(() => {
     document.getElementById('end-message').style.display = 'none';
-    // Usuario free que ya usó su crédito → mostrar upsell
     if (state.userPlan === 'free' && !state.userCanGenerate) {
+      // Usuario free sin créditos → upsell
       document.getElementById('end-upsell').style.display = 'flex';
+    } else if (state.currentMeditationId) {
+      // Usuario de pago → opción de guardar
+      document.getElementById('end-save').style.display = 'flex';
     } else {
       document.getElementById('btn-new-meditation').style.display = 'block';
     }
@@ -479,9 +484,10 @@ function handleEnd() {
 }
 
 function newMeditation() {
-  state.isPlaying  = false;
-  state.inSilence  = false;
-  state.currentSec = 0;
+  state.isPlaying           = false;
+  state.inSilence           = false;
+  state.currentSec          = 0;
+  state.currentMeditationId = null;
 
   const audio = document.getElementById('audio');
   audio.pause();
@@ -514,6 +520,7 @@ function newMeditation() {
   document.getElementById('end-message').style.display        = 'none';
   document.getElementById('btn-new-meditation').style.display = 'none';
   document.getElementById('end-upsell').style.display         = 'none';
+  document.getElementById('end-save').style.display           = 'none';
 
   // Resetear pills a valores por defecto
   document.querySelectorAll('#grp-duration .pill').forEach(p => p.classList.remove('active'));
@@ -800,6 +807,82 @@ function signOut() {
       if (el) el.style.display = 'none';
     });
   }
+}
+
+// =============================================
+//  GUARDAR MEDITACIÓN
+// =============================================
+async function saveMeditation() {
+  const btn = document.getElementById('btn-save-meditation');
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+
+  try {
+    const token = await getAuthToken();
+    const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
+
+    // Paso 1: verificar límites y obtener URL de subida firmada
+    const presignRes = await fetch('/api/save-meditation', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ meditationId: state.currentMeditationId, action: 'presign' })
+    });
+
+    if (presignRes.status === 403) {
+      const { reason } = await presignRes.json();
+      btn.disabled = false;
+      btn.textContent = 'Guardar meditación';
+      if (reason === 'save_limit') {
+        showToast('Has alcanzado el límite de Essential. Pasa a Premium para guardar sin límite.');
+        setTimeout(() => showPaywall(), 800);
+      }
+      return;
+    }
+
+    if (!presignRes.ok) throw new Error('Error al preparar el guardado');
+
+    const { signedUrl, path, already_saved } = await presignRes.json();
+
+    if (already_saved) {
+      showToast('Ya estaba guardada en tu biblioteca');
+      skipSave();
+      return;
+    }
+
+    // Paso 2: subir el audio directamente a Supabase Storage
+    const audioBlob = await fetch(state.audioBlobUrl).then(r => r.blob());
+    const uploadRes = await fetch(signedUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'audio/mpeg' },
+      body: audioBlob
+    });
+
+    if (!uploadRes.ok) throw new Error('Error al subir el audio');
+
+    // Paso 3: confirmar el guardado en base de datos
+    const confirmRes = await fetch('/api/save-meditation', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ meditationId: state.currentMeditationId, action: 'confirm', path })
+    });
+
+    if (!confirmRes.ok) throw new Error('Error al confirmar el guardado');
+
+    track('meditation_saved', { duration: state.duration });
+    showToast('Guardada en tu biblioteca');
+    skipSave();
+
+  } catch (e) {
+    console.error('[save] Error:', e);
+    btn.disabled = false;
+    btn.textContent = 'Guardar meditación';
+    showToast('Error al guardar. Inténtalo de nuevo.');
+  }
+}
+
+function skipSave() {
+  document.getElementById('end-save').style.display = 'none';
+  document.getElementById('btn-new-meditation').style.display = 'block';
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -1,9 +1,11 @@
 // Vercel serverless function
 // Recibe el texto de la meditación, llama a ElevenLabs y devuelve el audio en mp3
 
+const { randomUUID } = require('crypto');
 const checkRateLimit = require('./_ratelimit');
 const { verifyAuth } = require('./_auth');
 const { checkUsageLimit, incrementUsage } = require('./_limits');
+const { getSupabase } = require('./_supabase');
 
 const { Redis } = (() => { try { return require('@upstash/redis'); } catch(e) { return {}; } })();
 
@@ -60,7 +62,7 @@ module.exports = async (req, res) => {
     });
   }
 
-  const { text: rawText, voice, duration, targetWords, silenceTotal } = req.body || {};
+  const { text: rawText, voice, duration, targetWords, silenceTotal, title } = req.body || {};
 
   if (!rawText || !voice) {
     return res.status(400).json({ error: 'Faltan campos requeridos: text, voice' });
@@ -89,6 +91,29 @@ module.exports = async (req, res) => {
 
   if (!process.env.ELEVENLABS_API_KEY) {
     return res.status(500).json({ error: 'ELEVENLABS_API_KEY no configurada' });
+  }
+
+  // Generar ID para guardar la meditación (solo planes de pago)
+  const plan = limitCheck.plan || 'free';
+  const meditationId = plan !== 'free' ? randomUUID() : null;
+
+  // Helper para insertar el registro en Supabase (no bloquea la respuesta)
+  async function saveMeditationRecord(silenceMap) {
+    if (!meditationId) return;
+    try {
+      const db = getSupabase();
+      await db.from('meditations').insert({
+        id: meditationId,
+        clerk_id: clerkId,
+        title: title || 'Meditación',
+        duration: parseInt(duration) || 5,
+        voice: voice || 'feminine',
+        silence_map: silenceMap || [],
+        is_saved: false
+      });
+    } catch (e) {
+      console.error('[audio] DB insert error:', e);
+    }
   }
 
   const voiceId = VOICE_IDS[voice] || VOICE_IDS.feminine;
@@ -147,7 +172,8 @@ module.exports = async (req, res) => {
     // Si ElevenLabs no devolvió timestamps válidos, reproducir audio sin silencios (graceful degradation)
     if (charEndTimes.length === 0 || !charEndTimes.some(t => t > 0)) {
       console.warn('[audio] charEndTimes vacío o inválido — reproduciendo sin silencios');
-      return res.status(200).json({ audioBase64, silenceMap: [], totalDuration: 0 });
+      await saveMeditationRecord([]);
+      return res.status(200).json({ audioBase64, silenceMap: [], totalDuration: 0, meditationId });
     }
 
     // Calcular en qué segundo exacto termina cada segmento dentro del audio de ElevenLabs
@@ -169,7 +195,8 @@ module.exports = async (req, res) => {
     if (badCutTimes === cutTimes.length && cutTimes.length > 0) {
       console.warn('[audio] Todos los cutTimes son 0 — reproduciendo sin silencios como fallback');
       const voiceDur = charEndTimes[charEndTimes.length - 1] || 0;
-      return res.status(200).json({ audioBase64, silenceMap: [], totalDuration: voiceDur });
+      await saveMeditationRecord([]);
+      return res.status(200).json({ audioBase64, silenceMap: [], totalDuration: voiceDur, meditationId });
     }
 
     // Construir el mapa de silencios: cuándo parar y cuánto esperar
@@ -199,9 +226,12 @@ module.exports = async (req, res) => {
     // Incrementar créditos usados según duración de la meditación generada
     await incrementUsage(clerkId, duration);
 
+    // Guardar registro de meditación en Supabase (para historial y guardado posterior)
+    await saveMeditationRecord(silenceMap);
+
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-store');
-    return res.status(200).json({ audioBase64, silenceMap, totalDuration });
+    return res.status(200).json({ audioBase64, silenceMap, totalDuration, meditationId });
 
   } catch (err) {
     console.error('Error interno en /api/audio:', err);
