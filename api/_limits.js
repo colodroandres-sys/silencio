@@ -1,9 +1,18 @@
 const { getSupabase } = require('./_supabase');
 
+// Créditos incluidos por plan al mes (free = one-time, no mensual)
 const PLAN_LIMITS = {
-  free: 1,       // 1 meditación para siempre
-  premium: 10,   // por mes
-  platinum: 50   // por mes
+  free: 1,         // 1 crédito one-time (solo 5 min)
+  essential: 10,   // 10 créditos por mes
+  premium: 25      // 25 créditos por mes
+};
+
+// Créditos que cuesta cada duración
+const DURATION_CREDITS = {
+  '5': 1,
+  '10': 2,
+  '15': 3,
+  '20': 4
 };
 
 function getCurrentMonth() {
@@ -77,7 +86,7 @@ async function checkUsageLimit(clerkId) {
     .single();
 
   const count = usage?.count || 0;
-  const limit = PLAN_LIMITS[plan] || 10;
+  const limit = PLAN_LIMITS[plan] || PLAN_LIMITS.essential;
 
   if (count >= limit) {
     return { allowed: false, reason: 'monthly_limit', usage: count, limit, plan };
@@ -87,9 +96,11 @@ async function checkUsageLimit(clerkId) {
 }
 
 /**
- * Incrementa el contador de uso tras una generación exitosa.
+ * Incrementa los créditos usados tras una generación exitosa.
+ * @param {string} clerkId
+ * @param {string} duration - '5', '10', '15' o '20'
  */
-async function incrementUsage(clerkId) {
+async function incrementUsage(clerkId, duration) {
   const db = getSupabase();
 
   const { data: user } = await db
@@ -110,8 +121,21 @@ async function incrementUsage(clerkId) {
     return;
   }
 
+  const credits = DURATION_CREDITS[duration] || 1;
   const month = getCurrentMonth();
-  await db.rpc('increment_usage', { p_clerk_id: clerkId, p_month: month });
+
+  // Upsert: si ya existe la fila la actualiza sumando créditos, si no la crea
+  const { data: existing } = await db
+    .from('monthly_usage')
+    .select('count')
+    .eq('clerk_id', clerkId)
+    .eq('month', month)
+    .single();
+
+  const current = existing?.count || 0;
+  await db
+    .from('monthly_usage')
+    .upsert({ clerk_id: clerkId, month, count: current + credits }, { onConflict: 'clerk_id,month' });
 }
 
-module.exports = { getOrCreateUser, checkUsageLimit, incrementUsage, PLAN_LIMITS };
+module.exports = { getOrCreateUser, checkUsageLimit, incrementUsage, PLAN_LIMITS, DURATION_CREDITS };

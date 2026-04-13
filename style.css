@@ -559,6 +559,33 @@ body {
   margin-top: 24px;
 }
 
+.end-upsell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.end-upsell-title {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  font-size: 1.25rem;
+  color: var(--text);
+  text-align: center;
+  margin: 0;
+}
+
+.end-upsell-sub {
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.6;
+  margin: 0 0 4px;
+}
+
 /* =============================================
    REPRODUCTOR — progreso
    ============================================= */

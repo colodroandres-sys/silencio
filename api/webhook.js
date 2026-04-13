@@ -6,8 +6,8 @@ const Stripe = require('stripe');
 const { getSupabase } = require('./_supabase');
 
 function getPlanByPrice(priceId) {
+  if (priceId === process.env.STRIPE_ESSENTIAL_PRICE_ID) return 'essential';
   if (priceId === process.env.STRIPE_PREMIUM_PRICE_ID) return 'premium';
-  if (priceId === process.env.STRIPE_PLATINUM_PRICE_ID) return 'platinum';
   return null;
 }
 

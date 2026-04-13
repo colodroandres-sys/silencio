@@ -286,6 +286,11 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Duración no válida. Debe ser 5, 10, 15 o 20 minutos.' });
   }
 
+  // Plan Free: solo puede generar meditaciones de 5 minutos
+  if (limitCheck.plan === 'free' && duration !== '5') {
+    return res.status(403).json({ error: 'El plan gratuito solo permite meditaciones de 5 minutos.' });
+  }
+
   if (userInput.length > 500) {
     return res.status(400).json({ error: 'El texto no puede superar los 500 caracteres.' });
   }

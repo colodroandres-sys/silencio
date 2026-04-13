@@ -8,6 +8,8 @@ const state = {
   duration: '5',
   voice: 'feminine',
   gender: 'femenino',
+  userPlan: 'free',
+  userCanGenerate: true,
   isPlaying: false,
   currentSec: 0,
   totalSec: 0,
@@ -457,13 +459,22 @@ function handleEnd() {
   document.getElementById('breathing-player').classList.add('paused');
   ambientFadeOut();
 
-  // Pantalla de cierre: 5 segundos antes de mostrar "Nueva meditación"
+  // Pantalla de cierre: refrescar estado del usuario y luego mostrar acción
   document.getElementById('end-message').style.display        = 'block';
   document.getElementById('btn-new-meditation').style.display = 'none';
+  document.getElementById('end-upsell').style.display         = 'none';
+
+  // Refrescar estado del usuario (el crédito ya fue consumido durante la generación)
+  fetchUserStatus();
 
   setTimeout(() => {
-    document.getElementById('end-message').style.display        = 'none';
-    document.getElementById('btn-new-meditation').style.display = 'block';
+    document.getElementById('end-message').style.display = 'none';
+    // Usuario free que ya usó su crédito → mostrar upsell
+    if (state.userPlan === 'free' && !state.userCanGenerate) {
+      document.getElementById('end-upsell').style.display = 'flex';
+    } else {
+      document.getElementById('btn-new-meditation').style.display = 'block';
+    }
   }, 5000);
 }
 
@@ -501,7 +512,8 @@ function newMeditation() {
 
   // Resetear pantalla de fin
   document.getElementById('end-message').style.display        = 'none';
-  document.getElementById('btn-new-meditation').style.display = 'block';
+  document.getElementById('btn-new-meditation').style.display = 'none';
+  document.getElementById('end-upsell').style.display         = 'none';
 
   // Resetear pills a valores por defecto
   document.querySelectorAll('#grp-duration .pill').forEach(p => p.classList.remove('active'));
@@ -674,17 +686,21 @@ async function fetchUserStatus() {
     const planEl = document.getElementById('plan-badge');
     const usageEl = document.getElementById('usage-info');
 
+    state.userPlan = plan;
+    state.userCanGenerate = canGenerate;
+
     if (planEl) {
-      const planNames = { free: 'Gratis', premium: 'Premium', platinum: 'Platinum' };
+      const planNames = { free: 'Gratis', essential: 'Essential', premium: 'Premium' };
       planEl.textContent = planNames[plan] || plan;
       planEl.className = `plan-badge plan-${plan}`;
     }
 
     if (usageEl) {
       if (plan === 'free') {
-        usageEl.textContent = canGenerate ? 'Primera meditación gratis' : 'Límite alcanzado';
+        usageEl.textContent = canGenerate ? 'Meditación gratis disponible' : 'Sin créditos disponibles';
       } else {
-        usageEl.textContent = `${usage}/${limit} este mes`;
+        const remaining = limit - usage;
+        usageEl.textContent = `${remaining} crédito${remaining !== 1 ? 's' : ''} disponible${remaining !== 1 ? 's' : ''}`;
       }
     }
   } catch (e) {
@@ -710,7 +726,7 @@ function checkUrlParams() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('upgraded')) {
     const plan = params.get('upgraded');
-    const planNames = { premium: 'Premium', platinum: 'Platinum' };
+    const planNames = { essential: 'Essential', premium: 'Premium' };
     showToast(`¡Bienvenido a ${planNames[plan] || plan}! Ya puedes generar más meditaciones.`);
     window.history.replaceState({}, '', window.location.pathname);
     fetchUserStatus();
@@ -738,6 +754,10 @@ function showToast(msg) {
 function showPaywall() {
   const modal = document.getElementById('paywall-modal');
   if (modal) modal.classList.add('active');
+}
+
+function closeEndUpsell() {
+  document.getElementById('end-upsell').style.display = 'none';
 }
 
 function closePaywall() {

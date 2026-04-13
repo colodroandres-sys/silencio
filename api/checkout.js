@@ -4,8 +4,8 @@ const { getOrCreateUser } = require('./_limits');
 const { getSupabase } = require('./_supabase');
 
 const PRICE_IDS = {
-  premium: process.env.STRIPE_PREMIUM_PRICE_ID,
-  platinum: process.env.STRIPE_PLATINUM_PRICE_ID
+  essential: process.env.STRIPE_ESSENTIAL_PRICE_ID,
+  premium: process.env.STRIPE_PREMIUM_PRICE_ID
 };
 
 const APP_URL = 'https://silencio-xi.vercel.app';
@@ -19,7 +19,7 @@ module.exports = async (req, res) => {
   const { plan, email } = req.body || {};
 
   if (!plan || !PRICE_IDS[plan]) {
-    return res.status(400).json({ error: 'Plan inválido. Debe ser premium o platinum.' });
+    return res.status(400).json({ error: 'Plan inválido. Debe ser essential o premium.' });
   }
 
   try {

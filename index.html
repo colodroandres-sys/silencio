@@ -197,7 +197,14 @@
       </div>
 
       <p id="end-message" class="end-message" style="display:none">Bien.<br>Lleva este silencio contigo.</p>
-      <button id="btn-new-meditation" class="btn-ghost" onclick="newMeditation()">Nueva meditación</button>
+      <button id="btn-new-meditation" class="btn-ghost" onclick="newMeditation()" style="display:none">Nueva meditación</button>
+
+      <div id="end-upsell" style="display:none" class="end-upsell">
+        <p class="end-upsell-title">¿Cómo te sientes?</p>
+        <p class="end-upsell-sub">Esta meditación fue creada solo para ti, para este momento exacto.<br>Con Essential tienes 10 créditos al mes y puedes guardar tus favoritas.</p>
+        <button class="btn-primary" onclick="closeEndUpsell(); showPaywall()">Ver planes — desde $11.99/mes</button>
+        <button class="btn-ghost" onclick="closeEndUpsell(); newMeditation()">Ahora no</button>
+      </div>
 
     </div>
   </div>
@@ -213,17 +220,17 @@
 
       <div class="paywall-plans">
         <div class="plan-option">
-          <div class="plan-option-name">Premium</div>
-          <div class="plan-option-desc">10 meditaciones / mes</div>
-          <div class="plan-option-price">$9.99 / mes</div>
-          <button class="btn-upgrade" onclick="upgradePlan('premium')">Elegir Premium</button>
+          <div class="plan-option-name">Essential</div>
+          <div class="plan-option-desc">10 créditos / mes<br><small>5 min = 1 cr · 10 min = 2 cr · 15 min = 3 cr</small></div>
+          <div class="plan-option-price">$11.99 / mes</div>
+          <button class="btn-upgrade" onclick="upgradePlan('essential')">Elegir Essential</button>
         </div>
         <div class="plan-option plan-option-featured">
           <div class="plan-option-badge">Más popular</div>
-          <div class="plan-option-name">Platinum</div>
-          <div class="plan-option-desc">50 meditaciones / mes</div>
-          <div class="plan-option-price">$14.99 / mes</div>
-          <button class="btn-upgrade btn-upgrade-featured" onclick="upgradePlan('platinum')">Elegir Platinum</button>
+          <div class="plan-option-name">Premium</div>
+          <div class="plan-option-desc">25 créditos / mes<br><small>Guarda meditaciones ilimitadas</small></div>
+          <div class="plan-option-price">$22.99 / mes</div>
+          <button class="btn-upgrade btn-upgrade-featured" onclick="upgradePlan('premium')">Elegir Premium</button>
         </div>
       </div>
 

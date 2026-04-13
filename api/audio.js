@@ -196,8 +196,8 @@ module.exports = async (req, res) => {
       totalDuration: Math.round(totalDuration)
     });
 
-    // Incrementar contador de uso tras generación exitosa
-    await incrementUsage(clerkId);
+    // Incrementar créditos usados según duración de la meditación generada
+    await incrementUsage(clerkId, duration);
 
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-store');
