@@ -185,10 +185,7 @@ async function generateMeditation() {
   // Requiere login antes de proceder
   if (!clerk || !clerk.user) {
     pendingGeneration = true;
-    clerk.openSignIn({
-      afterSignInUrl: window.location.href,
-      afterSignUpUrl: window.location.href
-    });
+    clerk.openSignIn();
     return;
   }
   pendingGeneration = false;
