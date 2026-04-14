@@ -175,6 +175,53 @@
     .plan-bar-wrap { flex: 2; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
     .plan-bar { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
 
+    /* Costos */
+    .costs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .cost-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.83rem;
+    }
+    .cost-row:last-child { border-bottom: none; }
+    .cost-label { color: #94a3b8; }
+    .cost-val { color: #f1f5f9; font-variant-numeric: tabular-nums; }
+    .cost-val.free { color: #475569; }
+    .cost-total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0 0;
+      margin-top: 4px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      font-size: 0.88rem;
+      font-weight: 500;
+    }
+    .profit-box {
+      background: rgba(255,255,255,0.03);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .profit-item { display: flex; flex-direction: column; gap: 4px; }
+    .profit-item-label { font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; }
+    .profit-item-val { font-size: 1.4rem; font-weight: 600; }
+    .profit-item-val.green { color: #4ade80; }
+    .profit-item-val.red { color: #f87171; }
+    .profit-item-val.yellow { color: #fbbf24; }
+
     /* Health */
     .health-grid {
       display: grid;
@@ -265,6 +312,30 @@
   <div class="section-title">Usuarios por plan</div>
   <div style="background:rgba(255,255,255,0.03);border-radius:14px;padding:4px 16px;margin-bottom:32px;" id="plan-breakdown">
     <div class="loading">Cargando...</div>
+  </div>
+
+  <!-- Costos y margen -->
+  <div class="section-title">Costos del mes</div>
+  <div style="background:rgba(255,255,255,0.03);border-radius:14px;padding:4px 20px;margin-bottom:12px;" id="costs-breakdown">
+    <div class="loading">Calculando...</div>
+  </div>
+  <div class="profit-box" id="profit-box" style="display:none">
+    <div class="profit-item">
+      <span class="profit-item-label">MRR</span>
+      <span class="profit-item-val green" id="profit-mrr">—</span>
+    </div>
+    <div class="profit-item">
+      <span class="profit-item-label">Costos totales</span>
+      <span class="profit-item-val red" id="profit-costs">—</span>
+    </div>
+    <div class="profit-item">
+      <span class="profit-item-label">Beneficio neto</span>
+      <span class="profit-item-val" id="profit-net">—</span>
+    </div>
+    <div class="profit-item">
+      <span class="profit-item-label">Margen</span>
+      <span class="profit-item-val" id="profit-margin">—</span>
+    </div>
   </div>
 
   <!-- Health check -->
@@ -382,6 +453,9 @@
 
     document.getElementById('plan-breakdown').innerHTML = html;
 
+    // Costos del mes
+    renderCosts(data.meditationsThisMonth, data.mrr);
+
     // Tabla de usuarios
     if (data.users && data.users.length > 0) {
       const rows = data.users.map(u => {
@@ -399,6 +473,59 @@
     } else {
       document.getElementById('users-tbody').innerHTML = '<tr><td colspan="4" style="color:#475569;padding:20px;text-align:center">Sin usuarios aún</td></tr>';
     }
+  }
+
+  function renderCosts(meditationsCount, mrr) {
+    // Costos fijos mensuales (actualizar si cambia el plan de algún servicio)
+    const fixed = [
+      { label: 'Vercel (hosting)',        monthly: 0,     note: 'Free tier' },
+      { label: 'Clerk (auth)',            monthly: 0,     note: 'Free tier' },
+      { label: 'Supabase (DB + storage)', monthly: 0,     note: 'Free tier' },
+      { label: 'Upstash Redis',           monthly: 0,     note: 'Free tier' },
+      { label: 'PostHog (analytics)',     monthly: 0,     note: 'Free tier' },
+      { label: 'Dominio',                 monthly: 1.25,  note: '~$15/año' },
+    ];
+
+    // Costos variables
+    const COST_PER_CREDIT = 0.43; // Claude + ElevenLabs por meditación
+    const variableCost = +(meditationsCount * COST_PER_CREDIT).toFixed(2);
+    const fixedTotal = +fixed.reduce((s, f) => s + f.monthly, 0).toFixed(2);
+    const totalCost = +(fixedTotal + variableCost).toFixed(2);
+    const netProfit = +(mrr - totalCost).toFixed(2);
+    const margin = mrr > 0 ? Math.round((netProfit / mrr) * 100) : 0;
+
+    const fixedRows = fixed.map(f => `
+      <div class="cost-row">
+        <span class="cost-label">${f.label}</span>
+        <span class="cost-val ${f.monthly === 0 ? 'free' : ''}">${f.monthly === 0 ? f.note : '$' + f.monthly.toFixed(2)}</span>
+      </div>`).join('');
+
+    const html = `
+      ${fixedRows}
+      <div class="cost-row">
+        <span class="cost-label">Claude + ElevenLabs (${meditationsCount} meditaciones × $${COST_PER_CREDIT})</span>
+        <span class="cost-val">$${variableCost.toFixed(2)}</span>
+      </div>
+      <div class="cost-total-row">
+        <span style="color:#94a3b8">Total estimado</span>
+        <span style="color:#f87171">$${totalCost.toFixed(2)}</span>
+      </div>`;
+
+    document.getElementById('costs-breakdown').innerHTML = html;
+
+    // Profit box
+    const profitBox = document.getElementById('profit-box');
+    profitBox.style.display = 'flex';
+    document.getElementById('profit-mrr').textContent = `$${mrr.toFixed(2)}`;
+    document.getElementById('profit-costs').textContent = `-$${totalCost.toFixed(2)}`;
+
+    const netEl = document.getElementById('profit-net');
+    netEl.textContent = (netProfit >= 0 ? '+' : '') + `$${netProfit.toFixed(2)}`;
+    netEl.className = 'profit-item-val ' + (netProfit >= 0 ? 'green' : 'red');
+
+    const marginEl = document.getElementById('profit-margin');
+    marginEl.textContent = `${margin}%`;
+    marginEl.className = 'profit-item-val ' + (margin >= 60 ? 'green' : margin >= 30 ? 'yellow' : 'red');
   }
 
   function renderHealth(data) {
