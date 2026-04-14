@@ -124,8 +124,10 @@ function goToPreferences() {
   }
 
   state.userInput = input;
-  state.userName  = document.getElementById('input-name').value.trim().slice(0, 50);
+  // Tomar nombre del perfil de Clerk si está disponible
+  state.userName = (clerk?.user?.firstName || '').trim().slice(0, 50);
   showScreen('screen-preferences');
+  applyDurationLocks();
 }
 
 function showCharError(el, msg) {
@@ -163,7 +165,28 @@ function shake(el) {
 // =============================================
 //  PANTALLA 2 — Preferencias
 // =============================================
+function applyDurationLocks() {
+  const isFree = !clerk?.user || state.userPlan === 'free';
+  document.querySelectorAll('#grp-duration .pill').forEach(pill => {
+    const val = pill.dataset.value;
+    const locked = isFree && val !== '5';
+    pill.classList.toggle('pill-locked', locked);
+    pill.querySelector('.pill-lock')?.remove();
+    if (locked) {
+      const icon = document.createElement('span');
+      icon.className = 'pill-lock';
+      icon.textContent = ' 🔒';
+      pill.appendChild(icon);
+    }
+  });
+}
+
 function selectPill(el, groupId, key) {
+  if (el.classList.contains('pill-locked')) {
+    showPaywall();
+    track('paywall_shown', { trigger: 'duration_lock', duration: el.dataset.value });
+    return;
+  }
   document.querySelectorAll(`#${groupId} .pill`).forEach(p => p.classList.remove('active'));
   el.classList.add('active');
   state[key] = el.dataset.value;
