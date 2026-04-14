@@ -26,6 +26,12 @@
     },
     "api/admin.js": {
       "maxDuration": 15
+    },
+    "api/save-meditation.js": {
+      "maxDuration": 30
+    },
+    "api/dashboard.js": {
+      "maxDuration": 30
     }
   }
 }

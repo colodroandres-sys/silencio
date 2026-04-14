@@ -755,7 +755,6 @@ body {
 .plan-free      { color: var(--muted);  border-color: var(--muted);  }
 .plan-essential { color: #7dd3fc;       border-color: #7dd3fc;       }
 .plan-premium   { color: #a78bfa;       border-color: #a78bfa;       }
-.plan-platinum  { color: #fbbf24;       border-color: #fbbf24;       }
 
 .usage-info {
   font-size: 0.78rem;
@@ -1041,6 +1040,13 @@ body {
   box-shadow: 0 6px 24px rgba(124, 58, 237, 0.55);
 }
 
+.paywall-guarantee {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 12px;
+}
+
 .paywall-close {
   margin-top: 4px;
   font-size: 0.8rem;
@@ -1048,6 +1054,61 @@ body {
 }
 
 .paywall-close:hover { opacity: 1; }
+
+/* =============================================
+   LEAD CAPTURE
+   ============================================= */
+.lead-capture {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding: 20px 24px;
+  z-index: 1500;
+  transform: translateY(100%);
+  transition: transform 0.35s ease;
+  text-align: center;
+}
+
+.lead-capture.visible {
+  transform: translateY(0);
+}
+
+.lead-capture-text {
+  font-size: 0.9rem;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+
+.lead-capture-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.btn-lead-yes {
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-family: inherit;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.btn-lead-no {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-family: inherit;
+  padding: 10px 16px;
+  cursor: pointer;
+  text-decoration: underline;
+}
 
 /* =============================================
    TOAST

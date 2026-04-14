@@ -54,6 +54,13 @@ module.exports = async (req, res) => {
       ? +((paying / totalUsers) * 100).toFixed(1)
       : 0;
 
+    // Lista de usuarios individuales (máx 200, más recientes primero)
+    const { data: userList } = await db
+      .from('users')
+      .select('clerk_id, email, plan, free_used, stripe_subscription_id, created_at')
+      .order('created_at', { ascending: false })
+      .limit(200);
+
     res.json({
       month,
       totalUsers,
@@ -62,7 +69,8 @@ module.exports = async (req, res) => {
       meditationsThisMonth,
       mrr,
       paying,
-      conversionRate
+      conversionRate,
+      users: userList || []
     });
   } catch (e) {
     console.error('[admin] Error:', e.message);

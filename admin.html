@@ -129,8 +129,46 @@
     .plan-row:last-child { border-bottom: none; }
     .plan-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .dot-free { background: #475569; }
+    .dot-essential { background: #7dd3fc; }
     .dot-premium { background: #9d62f8; }
-    .dot-platinum { background: #f59e0b; }
+
+    /* Tabla de usuarios */
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      margin-bottom: 40px;
+    }
+    .users-table th {
+      text-align: left;
+      color: #64748b;
+      font-weight: 500;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .users-table td {
+      padding: 10px 12px;
+      color: #cbd5e1;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      vertical-align: middle;
+    }
+    .users-table tr:last-child td { border-bottom: none; }
+    .users-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .badge {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .badge-free { background: rgba(71,85,105,0.3); color: #94a3b8; }
+    .badge-essential { background: rgba(125,211,252,0.15); color: #7dd3fc; }
+    .badge-premium { background: rgba(157,98,248,0.2); color: #c084fc; }
     .plan-name { font-size: 0.9rem; color: #94a3b8; flex: 1; }
     .plan-count { font-size: 1rem; font-weight: 600; color: #f1f5f9; }
     .plan-pct { font-size: 0.75rem; color: #475569; min-width: 36px; text-align: right; }
@@ -235,6 +273,24 @@
     <div class="loading">Comprobando...</div>
   </div>
 
+  <!-- Tabla de usuarios -->
+  <div class="section-title" style="margin-top:8px">Usuarios</div>
+  <div style="background:rgba(255,255,255,0.03);border-radius:14px;padding:4px 0;margin-bottom:32px;overflow-x:auto;">
+    <table class="users-table" id="users-table">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Plan</th>
+          <th>Suscripción</th>
+          <th>Registrado</th>
+        </tr>
+      </thead>
+      <tbody id="users-tbody">
+        <tr><td colspan="4" class="loading" style="padding:20px">Cargando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
   <div class="footer">
     <button class="btn-refresh" onclick="loadDashboard()">Actualizar</button>
     <span class="last-update" id="last-update"></span>
@@ -304,9 +360,9 @@
     // Plan breakdown
     const total = data.totalUsers || 1;
     const plans = [
-      { key: 'free', label: 'Gratis', dotClass: 'dot-free', color: '#475569' },
-      { key: 'premium', label: 'Premium', dotClass: 'dot-premium', color: '#9d62f8' },
-      { key: 'platinum', label: 'Platinum', dotClass: 'dot-platinum', color: '#f59e0b' }
+      { key: 'free',      label: 'Gratis',    dotClass: 'dot-free',      color: '#475569' },
+      { key: 'essential', label: 'Essential',  dotClass: 'dot-essential', color: '#7dd3fc' },
+      { key: 'premium',   label: 'Premium',    dotClass: 'dot-premium',   color: '#9d62f8' }
     ];
 
     const html = plans.map(p => {
@@ -325,6 +381,24 @@
     }).join('');
 
     document.getElementById('plan-breakdown').innerHTML = html;
+
+    // Tabla de usuarios
+    if (data.users && data.users.length > 0) {
+      const rows = data.users.map(u => {
+        const date = u.created_at ? new Date(u.created_at).toLocaleDateString('es-ES') : '—';
+        const plan = u.plan || 'free';
+        const hasSub = u.stripe_subscription_id ? '✓ Activa' : '—';
+        return `<tr>
+          <td>${u.email || '—'}</td>
+          <td><span class="badge badge-${plan}">${plan}</span></td>
+          <td style="color:${u.stripe_subscription_id ? '#4ade80' : '#475569'};font-size:0.78rem">${hasSub}</td>
+          <td style="color:#64748b">${date}</td>
+        </tr>`;
+      }).join('');
+      document.getElementById('users-tbody').innerHTML = rows;
+    } else {
+      document.getElementById('users-tbody').innerHTML = '<tr><td colspan="4" style="color:#475569;padding:20px;text-align:center">Sin usuarios aún</td></tr>';
+    }
   }
 
   function renderHealth(data) {

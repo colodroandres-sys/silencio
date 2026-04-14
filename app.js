@@ -453,6 +453,7 @@ function seekTo(event) {
   if (audio.duration) {
     if (state.silenceTimeoutId) { clearTimeout(state.silenceTimeoutId); state.silenceTimeoutId = null; }
     if (state.silenceTimer) { clearInterval(state.silenceTimer); state.silenceTimer = null; }
+    state.inSilence = false;
     audio.currentTime = ratio * audio.duration;
 
     // Recalcular silenceOffset y flags _done según la nueva posición
@@ -465,11 +466,6 @@ function seekTo(event) {
         s._done = false;
       }
     }
-
-    // Cancelar cualquier silencio activo
-    if (state.silenceTimeoutId) { clearTimeout(state.silenceTimeoutId); state.silenceTimeoutId = null; }
-    if (state.silenceTimer) { clearInterval(state.silenceTimer); state.silenceTimer = null; }
-    state.inSilence = false;
 
     state.currentSec = Math.round(audio.currentTime + state.silenceOffset);
     updateProgress();
@@ -570,7 +566,7 @@ function newMeditation() {
   document.getElementById('guided-1').value    = '';
   document.getElementById('guided-2').value    = '';
   document.getElementById('guided-3').value    = '';
-  document.getElementById('input-name').value  = '';
+  if (document.getElementById('pref-name')) document.getElementById('pref-name').value = '';
 
   setMode('free');
   showScreen('screen-input');
@@ -656,7 +652,6 @@ function formatTime(sec) {
 // =============================================
 //  AUTH — CLERK
 // =============================================
-const CLERK_KEY = 'pk_test_cmVsYXhpbmctbGFtcHJleS03OC5jbGVyay5hY2NvdW50cy5kZXYk';
 let clerk = null;
 let pendingGeneration = false;
 
@@ -740,7 +735,7 @@ async function fetchUserStatus() {
         usageEl.textContent = canGenerate ? 'Meditación gratis disponible' : 'Sin créditos disponibles';
       } else {
         const remaining = limit - usage;
-        usageEl.textContent = `${remaining} crédito${remaining !== 1 ? 's' : ''} disponible${remaining !== 1 ? 's' : ''}`;
+        usageEl.textContent = `${remaining} meditación${remaining !== 1 ? 'es' : ''} disponible${remaining !== 1 ? 's' : ''}`;
       }
     }
   } catch (e) {
@@ -804,6 +799,45 @@ function closePaywall() {
   const modal = document.getElementById('paywall-modal');
   if (modal) modal.classList.remove('active');
   enableGenerateBtn();
+
+  // Si es free sin créditos, identificar en PostHog y mostrar captura de lead
+  if (state.userPlan === 'free' && !state.userCanGenerate && clerk?.user) {
+    const email = clerk.user.primaryEmailAddress?.emailAddress || '';
+    if (email && window.posthog) {
+      posthog.identify(clerk.user.id, { email, plan: 'free', paywall_dismissed: true });
+      track('paywall_dismissed', { email });
+    }
+    showLeadCapture();
+  }
+}
+
+function showLeadCapture() {
+  if (document.getElementById('lead-capture')) return;
+  const el = document.createElement('div');
+  el.id = 'lead-capture';
+  el.className = 'lead-capture';
+  el.innerHTML = `
+    <p class="lead-capture-text">¿Te avisamos cuando haya nuevas funciones y ofertas?</p>
+    <div class="lead-capture-actions">
+      <button class="btn-lead-yes" onclick="confirmLead()">Sí, avísame</button>
+      <button class="btn-lead-no" onclick="dismissLead()">No, gracias</button>
+    </div>
+  `;
+  document.body.appendChild(el);
+  setTimeout(() => el.classList.add('visible'), 50);
+}
+
+function confirmLead() {
+  track('lead_opt_in', { email: clerk?.user?.primaryEmailAddress?.emailAddress || '' });
+  dismissLead();
+  showToast('¡Perfecto! Te avisaremos cuando haya novedades.');
+}
+
+function dismissLead() {
+  const el = document.getElementById('lead-capture');
+  if (!el) return;
+  el.classList.remove('visible');
+  setTimeout(() => el.remove(), 400);
 }
 
 async function upgradePlan(plan) {
