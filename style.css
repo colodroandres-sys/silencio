@@ -1111,6 +1111,32 @@ body {
 }
 
 /* =============================================
+   FOOTER
+   ============================================= */
+.site-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  font-size: 0.75rem;
+  color: var(--muted);
+  pointer-events: none;
+  z-index: 10;
+}
+.site-footer a {
+  color: var(--muted);
+  text-decoration: none;
+  pointer-events: auto;
+  transition: color 0.2s;
+}
+.site-footer a:hover { color: var(--text); }
+
+/* =============================================
    TOAST
    ============================================= */
 .toast {

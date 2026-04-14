@@ -492,21 +492,22 @@ function handleEnd() {
   document.getElementById('btn-new-meditation').style.display = 'none';
   document.getElementById('end-upsell').style.display         = 'none';
 
-  // Refrescar estado del usuario (el crédito ya fue consumido durante la generación)
-  fetchUserStatus();
+  // Esperar a fetchUserStatus antes de decidir qué mostrar (fix race condition)
+  const statusPromise = fetchUserStatus();
+  const delayPromise  = new Promise(resolve => setTimeout(resolve, 5000));
 
-  setTimeout(() => {
+  Promise.all([statusPromise, delayPromise]).then(() => {
     document.getElementById('end-message').style.display = 'none';
     if (state.userPlan === 'free' && !state.userCanGenerate) {
       // Usuario free sin créditos → upsell
       document.getElementById('end-upsell').style.display = 'flex';
-    } else if (state.currentMeditationId) {
+    } else if (state.userPlan !== 'free' && state.currentMeditationId) {
       // Usuario de pago → opción de guardar
       document.getElementById('end-save').style.display = 'flex';
     } else {
       document.getElementById('btn-new-meditation').style.display = 'block';
     }
-  }, 5000);
+  });
 }
 
 function newMeditation() {
