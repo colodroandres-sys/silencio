@@ -98,11 +98,18 @@ body {
 /* =============================================
    LOGO
    ============================================= */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 18px;
+}
+
 .logo {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 18px;
 }
 
 .logo.small {
@@ -721,8 +728,8 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 28px;
   flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .plan-badge {
@@ -789,8 +796,8 @@ body {
 }
 
 #guest-actions {
-  justify-content: center;
-  gap: 10px;
+  display: flex;
+  align-items: center;
 }
 
 /* =============================================

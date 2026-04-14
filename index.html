@@ -28,20 +28,22 @@
   <div id="screen-input" class="screen active">
     <div class="screen-inner">
 
-      <div class="logo">
-        <div class="logo-dot"></div>
-        <span>Silencio</span>
-      </div>
+      <div class="top-bar">
+        <div class="logo">
+          <div class="logo-dot"></div>
+          <span>Silencio</span>
+        </div>
 
-      <div id="user-status" style="display:none">
-        <span id="plan-badge" class="plan-badge plan-free">Gratis</span>
-        <span id="usage-info" class="usage-info">Primera meditación gratis</span>
-        <a href="/dashboard.html" class="btn-dashboard">Historial</a>
-        <button class="btn-signout" onclick="signOut()">Salir</button>
-      </div>
+        <div id="user-status" style="display:none">
+          <span id="plan-badge" class="plan-badge plan-free">Gratis</span>
+          <span id="usage-info" class="usage-info">Primera meditación gratis</span>
+          <a href="/dashboard.html" class="btn-dashboard">Historial</a>
+          <button class="btn-signout" onclick="signOut()">Salir</button>
+        </div>
 
-      <div id="guest-actions" style="display:none">
-        <button class="btn-signin" onclick="clerk && clerk.openSignIn()">Iniciar sesión</button>
+        <div id="guest-actions" style="display:none">
+          <button class="btn-signin" onclick="clerk && clerk.openSignIn()">Iniciar sesión</button>
+        </div>
       </div>
 
       <p class="tagline">Describe tu momento y te creo<br>una meditación única para ahora.</p>
