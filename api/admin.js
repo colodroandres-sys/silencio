@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
       .select('plan, created_at');
 
     const totalUsers = users?.length || 0;
-    const byPlan = { free: 0, premium: 0, platinum: 0 };
+    const byPlan = { free: 0, essential: 0, premium: 0 };
     let recentSignups = 0;
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -42,14 +42,14 @@ module.exports = async (req, res) => {
     const meditationsThisMonth = (usageRows || []).reduce((sum, r) => sum + (r.count || 0), 0);
 
     // MRR estimado
-    const PRICES = { premium: 9.99, platinum: 14.99 };
+    const PRICES = { essential: 11.99, premium: 22.99 };
     const mrr = +(
-      (byPlan.premium * PRICES.premium) +
-      (byPlan.platinum * PRICES.platinum)
+      (byPlan.essential * PRICES.essential) +
+      (byPlan.premium * PRICES.premium)
     ).toFixed(2);
 
     // Conversión free → pago
-    const paying = byPlan.premium + byPlan.platinum;
+    const paying = byPlan.essential + byPlan.premium;
     const conversionRate = totalUsers > 0
       ? +((paying / totalUsers) * 100).toFixed(1)
       : 0;
