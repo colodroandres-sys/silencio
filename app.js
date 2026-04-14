@@ -124,10 +124,12 @@ function goToPreferences() {
   }
 
   state.userInput = input;
-  // Tomar nombre del perfil de Clerk si está disponible
   state.userName = (clerk?.user?.firstName || '').trim().slice(0, 50);
   showScreen('screen-preferences');
   applyDurationLocks();
+  // Mostrar campo de nombre solo si el usuario no tiene sesión
+  const guestBlock = document.getElementById('guest-name-block');
+  if (guestBlock) guestBlock.style.display = (!clerk?.user) ? 'block' : 'none';
 }
 
 function showCharError(el, msg) {
@@ -210,11 +212,16 @@ function cancelGeneration() {
 async function generateMeditation() {
   // Requiere login antes de proceder
   if (!clerk || !clerk.user) {
+    // Capturar nombre del campo guest antes de abrir el modal
+    const guestName = document.getElementById('pref-name')?.value.trim().slice(0, 50);
+    if (guestName) state.userName = guestName;
     pendingGeneration = true;
     clerk.openSignIn();
     return;
   }
   pendingGeneration = false;
+  // Si hay nombre de Clerk disponible y el usuario no escribió uno manualmente, usarlo
+  if (!state.userName) state.userName = (clerk.user.firstName || '').trim().slice(0, 50);
 
   const btn = document.getElementById('btn-generate');
   btn.disabled = true;
