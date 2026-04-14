@@ -40,6 +40,10 @@
         <button class="btn-signout" onclick="signOut()">Salir</button>
       </div>
 
+      <div id="guest-actions" style="display:none">
+        <button class="btn-signin" onclick="clerk && clerk.openSignIn()">Iniciar sesión</button>
+      </div>
+
       <p class="tagline">Describe tu momento y te creo<br>una meditación única para ahora.</p>
 
       <div class="mode-toggle">

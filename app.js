@@ -661,14 +661,17 @@ async function initClerk() {
 
 async function updateUserStatus() {
   const el = document.getElementById('user-status');
+  const guest = document.getElementById('guest-actions');
   if (!el) return;
 
   if (!clerk || !clerk.user) {
     el.style.display = 'none';
+    if (guest) guest.style.display = 'flex';
     return;
   }
 
   el.style.display = 'flex';
+  if (guest) guest.style.display = 'none';
   fetchUserStatus();
 }
 

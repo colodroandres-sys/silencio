@@ -771,6 +771,28 @@ body {
   border-bottom-color: var(--muted);
 }
 
+.btn-signin {
+  background: none;
+  border: 1px solid rgba(157, 98, 248, 0.4);
+  border-radius: 8px;
+  color: #a78bfa;
+  font-size: 0.8rem;
+  font-family: inherit;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-signin:hover {
+  background: rgba(157, 98, 248, 0.1);
+  border-color: rgba(157, 98, 248, 0.7);
+}
+
+#guest-actions {
+  justify-content: center;
+  gap: 10px;
+}
+
 /* =============================================
    END-SAVE — guardar meditación al final
    ============================================= */
