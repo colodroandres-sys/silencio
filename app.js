@@ -126,11 +126,7 @@ function goToPreferences() {
 
   state.userInput = input;
   state.userName = (clerk?.user?.firstName || '').trim().slice(0, 50);
-  showScreen('screen-preferences');
-  applyDurationLocks();
-  // Mostrar campo de nombre solo si el usuario no tiene sesión
-  const guestBlock = document.getElementById('guest-name-block');
-  if (guestBlock) guestBlock.style.display = (!clerk?.user) ? 'block' : 'none';
+  generateMeditation();
 }
 
 function showCharError(el, msg) {
@@ -207,7 +203,7 @@ function cancelGeneration() {
   if (abortController) { abortController.abort(); abortController = null; }
   if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
   enableGenerateBtn();
-  showScreen('screen-preferences');
+  showScreen('screen-input');
 }
 
 async function generateMeditation() {
@@ -254,7 +250,7 @@ async function generateMeditation() {
     if (err.status === 402) {
       abortController = null;
       enableGenerateBtn();
-      showScreen('screen-preferences');
+      showScreen('screen-input');
       showPaywall();
       track('paywall_shown', { duration: state.duration, voice: state.voice });
       return;
@@ -377,7 +373,7 @@ function setLoadingState(type, title, sub) {
 
 function retryFromError() {
   enableGenerateBtn();
-  showScreen('screen-preferences');
+  showScreen('screen-input');
 }
 
 function backToInput() {
@@ -700,6 +696,9 @@ async function updateUserStatus() {
   if (!clerk || !clerk.user) {
     el.style.display = 'none';
     if (guest) guest.style.display = 'flex';
+    const guestBlock = document.getElementById('guest-name-block');
+    if (guestBlock) guestBlock.style.display = 'block';
+    applyDurationLocks();
     return;
   }
 
@@ -747,6 +746,10 @@ async function fetchUserStatus() {
         usageEl.textContent = `${remaining} meditación${remaining !== 1 ? 'es' : ''} disponible${remaining !== 1 ? 's' : ''}`;
       }
     }
+    // Ocultar campo de nombre (usuario logueado) y ajustar bloqueos de duración
+    const guestBlock = document.getElementById('guest-name-block');
+    if (guestBlock) guestBlock.style.display = 'none';
+    applyDurationLocks();
   } catch (e) {
     console.error('[user status] Error:', e);
   }

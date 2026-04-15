@@ -34,25 +34,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* =============================================
-   FONDO — glow sutil
-   ============================================= */
-.bg-glow {
-  position: fixed;
-  top: -20%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 800px;
-  height: 600px;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(59, 95, 224, 0.07) 0%,
-    rgba(124, 58, 237, 0.05) 45%,
-    transparent 70%
-  );
-  pointer-events: none;
-  z-index: 0;
-}
+/* .bg-glow eliminado — reemplazado por .bg-mesh (fondo atmosférico animado) */
 
 /* =============================================
    SCREENS
@@ -1309,4 +1291,331 @@ body {
 /* Dashboard responsive (estilos inline en dashboard.html — se aplican desde aquí con !important solo si hace falta) */
 @media (max-width: 360px) {
   .screen-inner { padding: 40px 16px 72px; }
+}
+
+/* =============================================
+   FONDO ATMOSFÉRICO ANIMADO
+   ============================================= */
+.bg-mesh {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-mesh::before {
+  content: '';
+  position: absolute;
+  width: 900px;
+  height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(59, 95, 224, 0.18) 0%, transparent 68%);
+  filter: blur(55px);
+  top: -25%;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: meshDrift1 22s ease-in-out infinite alternate;
+}
+
+.bg-mesh::after {
+  content: '';
+  position: absolute;
+  width: 650px;
+  height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(124, 58, 237, 0.13) 0%, transparent 68%);
+  filter: blur(65px);
+  bottom: -18%;
+  right: -12%;
+  animation: meshDrift2 26s ease-in-out infinite alternate;
+}
+
+.bg-mesh-accent {
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(13, 148, 136, 0.09) 0%, transparent 68%);
+  filter: blur(50px);
+  bottom: 12%;
+  left: -10%;
+  animation: meshDrift3 30s ease-in-out infinite alternate;
+}
+
+@keyframes meshDrift1 {
+  0%   { transform: translateX(-50%) translateY(0)   scale(1);    opacity: 1;    }
+  50%  { transform: translateX(-54%) translateY(4%)  scale(1.07); opacity: 0.85; }
+  100% { transform: translateX(-46%) translateY(-4%) scale(0.96); opacity: 1;    }
+}
+@keyframes meshDrift2 {
+  0%   { transform: translate(0, 0)     scale(1);    }
+  100% { transform: translate(-7%, -11%) scale(1.14); }
+}
+@keyframes meshDrift3 {
+  0%   { transform: translate(0, 0)    scale(1);   }
+  100% { transform: translate(11%, -9%) scale(1.2); }
+}
+
+/* =============================================
+   INPUT HERO — Pantalla principal
+   ============================================= */
+#screen-input .screen-inner {
+  padding-top: 36px;
+}
+
+.input-hero {
+  margin-bottom: 28px;
+}
+
+.input-headline {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 2.15rem;
+  color: var(--text);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin-bottom: 10px;
+}
+
+.input-subline {
+  font-size: 0.88rem;
+  font-weight: 300;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+#screen-input .textarea-main {
+  min-height: 150px;
+}
+
+/* =============================================
+   USER AVATAR MENU (dropdown)
+   ============================================= */
+.user-menu-wrap {
+  position: relative;
+}
+
+.user-avatar-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  flex-shrink: 0;
+}
+
+.user-avatar-btn:hover,
+.user-avatar-btn.open {
+  border-color: rgba(157, 98, 248, 0.5);
+  color: var(--purple-light);
+  background: rgba(157, 98, 248, 0.06);
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 12px;
+  min-width: 210px;
+  z-index: 100;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+.user-dropdown.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.user-dropdown-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 12px;
+}
+
+.user-dropdown-info .usage-info {
+  font-size: 0.75rem;
+  color: var(--muted);
+  display: block;
+}
+
+.user-dropdown-sep {
+  height: 1px;
+  background: var(--border);
+  margin: 0 0 8px;
+}
+
+.user-dropdown-link,
+.user-dropdown-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 6px;
+  font-size: 0.83rem;
+  color: var(--muted);
+  text-decoration: none;
+  background: none;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: color 0.2s, background 0.2s;
+  line-height: 1;
+}
+
+.user-dropdown-link:hover,
+.user-dropdown-btn:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* =============================================
+   INPUT MODE SWITCH LINK
+   ============================================= */
+.btn-mode-switch {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-family: 'Inter', sans-serif;
+  text-align: center;
+  padding: 14px 0 4px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.btn-mode-switch:hover { opacity: 1; }
+
+@media (max-width: 380px) {
+  .input-headline { font-size: 1.85rem; }
+}
+
+/* =============================================
+   INLINE PREFS
+   ============================================= */
+.inline-prefs {
+  background: rgba(12, 14, 36, 0.55);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.inline-pref-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inline-pref-label {
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0.75;
+}
+
+.inline-pref-row-split {
+  display: flex;
+  gap: 16px;
+}
+
+.inline-pref-mini {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inline-prefs .pill-row {
+  flex-wrap: nowrap;
+}
+
+.inline-prefs .pill {
+  flex: 1;
+  padding: 9px 4px;
+  font-size: 0.78rem;
+  min-width: unset;
+}
+
+.inline-prefs #grp-duration .pill {
+  flex: 1;
+}
+
+/* Guest name in input screen */
+.guest-name-wrap {
+  margin-bottom: 18px;
+}
+
+/* =============================================
+   PLAYER — inmersivo
+   ============================================= */
+.player-inner {
+  padding-top: 32px !important;
+  padding-bottom: 56px !important;
+}
+
+#screen-player .breathing-wrap {
+  width: 290px;
+  height: 290px;
+  margin-bottom: 32px;
+}
+
+#screen-player .b-core {
+  width: 96px;
+  height: 96px;
+}
+
+#screen-player .play-pause-btn svg {
+  width: 32px;
+  height: 32px;
+}
+
+/* Título de sesión más prominente */
+#screen-player .session-title {
+  font-size: 1.35rem;
+  margin-bottom: 24px;
+}
+
+/* =============================================
+   LOADING — centrado sin logo
+   ============================================= */
+#screen-loading .screen-inner.center {
+  gap: 0;
+}
+
+#screen-loading .breathing-wrap {
+  margin-bottom: 32px;
+}
+
+@media (max-width: 430px) {
+  .inline-pref-row-split { gap: 10px; }
+  .inline-prefs { padding: 14px 12px; }
+  #screen-player .breathing-wrap { width: 260px; height: 260px; }
+  #screen-player .b-core { width: 88px; height: 88px; }
 }

@@ -23,7 +23,7 @@
 </head>
 <body>
 
-  <div class="bg-glow"></div>
+  <div class="bg-mesh"><div class="bg-mesh-accent"></div></div>
 
   <!-- Pantalla 1: Input -->
   <div id="screen-input" class="screen active">
@@ -35,11 +35,22 @@
           <span>Stillova</span>
         </div>
 
-        <div id="user-status" style="display:none">
-          <span id="plan-badge" class="plan-badge plan-free">Gratis</span>
-          <span id="usage-info" class="usage-info">Primera meditación gratis</span>
-          <a href="/dashboard.html" class="btn-dashboard">Historial</a>
-          <button class="btn-signout" onclick="signOut()">Salir</button>
+        <div id="user-status" class="user-menu-wrap" style="display:none">
+          <button class="user-avatar-btn" id="user-avatar-btn" onclick="toggleUserMenu()" aria-label="Menú de usuario">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <circle cx="9" cy="6.5" r="3" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M2 16c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="user-dropdown-info">
+              <span id="plan-badge" class="plan-badge plan-free">Gratis</span>
+              <span id="usage-info" class="usage-info">Primera meditación gratis</span>
+            </div>
+            <div class="user-dropdown-sep"></div>
+            <a href="/dashboard.html" class="user-dropdown-link">Mi biblioteca</a>
+            <button class="user-dropdown-btn" onclick="signOut()">Cerrar sesión</button>
+          </div>
         </div>
 
         <div id="guest-actions" style="display:none">
@@ -47,16 +58,17 @@
         </div>
       </div>
 
-      <p class="tagline">Describe tu momento y te creo<br>una meditación única para ahora.</p>
-
-      <div class="mode-toggle">
-        <button id="btn-free" class="mode-btn active" onclick="setMode('free')">Texto libre</button>
-        <button id="btn-guided" class="mode-btn" onclick="setMode('guided')">Guiado</button>
+      <div class="input-hero">
+        <h1 class="input-headline">¿Cómo te sientes<br>ahora mismo?</h1>
+        <p class="input-subline">Te creo una meditación única para este momento.</p>
       </div>
 
+      <!-- Botones ocultos requeridos por setMode() en app.js -->
+      <button id="btn-free"   class="mode-btn active" style="display:none" onclick="setMode('free')"></button>
+      <button id="btn-guided" class="mode-btn"        style="display:none" onclick="setMode('guided')"></button>
+
       <div id="mode-free" class="input-block">
-        <label class="field-label">¿Cómo estás ahora?</label>
-        <textarea id="input-free" class="textarea-main" placeholder="Cuéntame cómo te sientes, qué está pasando o qué quieres lograr con esta meditación..."></textarea>
+        <textarea id="input-free" class="textarea-main" placeholder="Cuéntame... ¿qué está pasando? ¿cómo llevas el día?"></textarea>
       </div>
 
       <div id="mode-guided" class="input-block hidden">
@@ -69,74 +81,46 @@
           <textarea id="guided-2" class="textarea-small" placeholder="Ej: relajarme antes de dormir, calmar la ansiedad, enfocarme..."></textarea>
         </div>
         <div class="guided-item">
-          <label class="field-label">¿Algo más que quieras compartir? <span class="optional">(opcional)</span></label>
+          <label class="field-label">¿Algo más? <span class="optional">(opcional)</span></label>
           <textarea id="guided-3" class="textarea-small" placeholder="Ej: tuve un día muy difícil, mañana tengo algo importante..."></textarea>
         </div>
       </div>
 
-      <button class="btn-primary" onclick="goToPreferences()">
-        Continuar
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-
-    </div>
-  </div>
-
-  <!-- Pantalla 2: Preferencias -->
-  <div id="screen-preferences" class="screen">
-    <div class="screen-inner">
-
-      <button class="btn-back" onclick="showScreen('screen-input')">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-          <path d="M11 4L6 9l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-
-      <div class="logo small">
-        <div class="logo-dot"></div>
-        <span>Silencio</span>
-      </div>
-
-      <div class="pref-section">
-        <span class="pref-label">Duración</span>
-        <div id="grp-duration" class="pill-row">
-          <button class="pill active" data-value="5"  onclick="selectPill(this, 'grp-duration', 'duration')">5 min</button>
-          <button class="pill"        data-value="10" onclick="selectPill(this, 'grp-duration', 'duration')">10 min</button>
-          <button class="pill"        data-value="15" onclick="selectPill(this, 'grp-duration', 'duration')">15 min</button>
-          <button class="pill"        data-value="20" onclick="selectPill(this, 'grp-duration', 'duration')">20 min</button>
+      <!-- Preferencias inline -->
+      <div class="inline-prefs">
+        <div class="inline-pref-group">
+          <span class="inline-pref-label">Duración</span>
+          <div id="grp-duration" class="pill-row">
+            <button class="pill active" data-value="5"  onclick="selectPill(this,'grp-duration','duration')">5 min</button>
+            <button class="pill"        data-value="10" onclick="selectPill(this,'grp-duration','duration')">10 min</button>
+            <button class="pill"        data-value="15" onclick="selectPill(this,'grp-duration','duration')">15 min</button>
+            <button class="pill"        data-value="20" onclick="selectPill(this,'grp-duration','duration')">20 min</button>
+          </div>
+        </div>
+        <div class="inline-pref-row-split">
+          <div class="inline-pref-mini">
+            <span class="inline-pref-label">Voz</span>
+            <div id="grp-voice" class="pill-row">
+              <button class="pill active" data-value="feminine"  onclick="selectPill(this,'grp-voice','voice')">Femenina</button>
+              <button class="pill"        data-value="masculine" onclick="selectPill(this,'grp-voice','voice')">Masculina</button>
+            </div>
+          </div>
+          <div class="inline-pref-mini">
+            <span class="inline-pref-label">Me hablas</span>
+            <div id="grp-gender" class="pill-row">
+              <button class="pill active" data-value="femenino"  onclick="selectPill(this,'grp-gender','gender')">Femenino</button>
+              <button class="pill"        data-value="masculino" onclick="selectPill(this,'grp-gender','gender')">Masculino</button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="pref-section">
-        <span class="pref-label">Voz</span>
-        <div id="grp-voice" class="pill-row">
-          <button class="pill active" data-value="feminine"  onclick="selectPill(this, 'grp-voice', 'voice')">Voz femenina</button>
-          <button class="pill"        data-value="masculine" onclick="selectPill(this, 'grp-voice', 'voice')">Voz masculina</button>
-        </div>
+      <div id="guest-name-block" class="guest-name-wrap" style="display:none">
+        <input type="text" id="pref-name" class="input-text" placeholder="Tu nombre (opcional)" autocomplete="off" maxlength="50">
       </div>
 
-      <div class="pref-section">
-        <span class="pref-label">¿Cómo quieres que me dirija a ti?</span>
-        <div id="grp-gender" class="pill-row">
-          <button class="pill active" data-value="femenino"  onclick="selectPill(this, 'grp-gender', 'gender')">Femenino</button>
-          <button class="pill"        data-value="masculino" onclick="selectPill(this, 'grp-gender', 'gender')">Masculino</button>
-        </div>
-      </div>
-
-      <div id="guest-name-block" class="pref-section" style="display:none">
-        <span class="pref-label">Tu nombre <span class="optional">(opcional)</span></span>
-        <input type="text" id="pref-name" class="input-text" placeholder="¿Cómo te llamas?" autocomplete="off" maxlength="50">
-        <p class="field-hint">Lo usaré para personalizar tu meditación.</p>
-      </div>
-
-<button id="btn-generate" class="btn-primary" onclick="generateMeditation()">
-        Crear mi meditación
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M8 2l1.5 4.5H14l-3.8 2.8 1.5 4.5L8 11.1l-3.7 2.7 1.5-4.5L2 6.5h4.5L8 2z" fill="currentColor"/>
-        </svg>
-      </button>
+      <button id="btn-generate" class="btn-primary" onclick="goToPreferences()">Crear mi meditación</button>
+      <button class="btn-mode-switch" id="btn-mode-switch" onclick="switchInputMode()">¿Prefieres responder preguntas guiadas?</button>
 
     </div>
   </div>
@@ -144,11 +128,6 @@
   <!-- Pantalla 3: Carga -->
   <div id="screen-loading" class="screen">
     <div class="screen-inner center">
-
-      <div class="logo small">
-        <div class="logo-dot"></div>
-        <span>Silencio</span>
-      </div>
 
       <div class="breathing-wrap loading-mode">
         <div class="b-ring r1"></div>
@@ -169,12 +148,7 @@
 
   <!-- Pantalla 4: Reproductor -->
   <div id="screen-player" class="screen">
-    <div class="screen-inner center">
-
-      <div class="logo small">
-        <div class="logo-dot"></div>
-        <span>Silencio</span>
-      </div>
+    <div class="screen-inner center player-inner">
 
       <div id="breathing-player" class="breathing-wrap player-mode paused">
         <div class="b-ring r1"></div>
@@ -311,6 +285,35 @@
   </div>
 
   <script src="app.js"></script>
+  <script>
+    // ── User menu dropdown ──────────────────────────────────────
+    let _userMenuOpen = false;
+    function toggleUserMenu() {
+      _userMenuOpen = !_userMenuOpen;
+      document.getElementById('user-dropdown').classList.toggle('open', _userMenuOpen);
+      document.getElementById('user-avatar-btn').classList.toggle('open', _userMenuOpen);
+    }
+    document.addEventListener('click', function(e) {
+      if (_userMenuOpen && !e.target.closest('#user-status')) {
+        _userMenuOpen = false;
+        const d = document.getElementById('user-dropdown');
+        const b = document.getElementById('user-avatar-btn');
+        if (d) d.classList.remove('open');
+        if (b) b.classList.remove('open');
+      }
+    });
+
+    // ── Input mode switcher ─────────────────────────────────────
+    let _guidedMode = false;
+    function switchInputMode() {
+      _guidedMode = !_guidedMode;
+      setMode(_guidedMode ? 'guided' : 'free');
+      const btn = document.getElementById('btn-mode-switch');
+      if (btn) btn.textContent = _guidedMode
+        ? '← Prefiero escribir libremente'
+        : '¿Prefieres responder preguntas guiadas?';
+    }
+  </script>
 
   <footer class="site-footer">
     <a href="/privacy.html">Privacidad</a>
