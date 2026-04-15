@@ -6,7 +6,7 @@ const state = {
   userInput: '',
   userName: '',
   duration: '5',
-  voice: 'feminine',
+  voice: 'auto',
   gender: 'femenino',
   userPlan: 'free',
   userCanGenerate: true,
@@ -316,7 +316,9 @@ async function attemptGeneration(signal) {
     throw error;
   }
 
-  const { title, text, targetWords, silenceTotal } = await meditationRes.json();
+  const { title, text, targetWords, silenceTotal, resolvedVoice } = await meditationRes.json();
+  // Si la voz era 'auto', usar la voz resuelta que devolvió el servidor
+  if (resolvedVoice) state.voice = resolvedVoice;
   document.getElementById('session-title').textContent = title;
 
   // ── Paso 2: Convertir a audio con ElevenLabs ──────────────────

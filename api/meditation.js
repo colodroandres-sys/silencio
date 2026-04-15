@@ -314,14 +314,21 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'ANTHROPIC_API_KEY no configurada' });
   }
 
-  const voiceKey = voice === 'masculine' ? 'masculine' : 'feminine';
+  // Resolver voz automática aleatoriamente
+  const resolvedVoice = voice === 'auto'
+    ? (Math.random() < 0.5 ? 'feminine' : 'masculine')
+    : (voice === 'masculine' ? 'masculine' : 'feminine');
+
+  const voiceKey = resolvedVoice;
   const targetWords = (WORD_COUNTS[voiceKey] || WORD_COUNTS.feminine)[duration] || 1100;
-  const voiceContext = voice === 'masculine'
+  const voiceContext = voiceKey === 'masculine'
     ? 'La voz que leerá esto es masculina. Usa un tono firme, sereno y con autoridad tranquila.'
     : 'La voz que leerá esto es femenina. Usa un tono cálido, suave y envolvente.';
   const genderContext = gender === 'masculino'
-    ? 'Dirígete al usuario en masculino: adjetivos y artículos en masculino (ej: "estás tranquilo", "eres capaz", "te sientes libre").'
-    : 'Dirígete al usuario en femenino: adjetivos y artículos en femenino (ej: "estás tranquila", "eres capaz", "te sientes libre").';
+    ? 'Dirígete al usuario en masculino: adjetivos y participios en masculino (ej: "estás tranquilo", "eres capaz", "te sientes libre").'
+    : gender === 'neutro'
+    ? 'Dirígete al usuario en género neutro: evita completamente adjetivos o participios que requieran concordancia de género (ej: "tranquilo/a", "relajado/a"). Usa construcciones que no requieran género: sustantivos ("sientes calma", "hay paz en ti"), verbos sin adjetivos ("todo se asienta", "el cuerpo se libera"), o construcciones universales. Nunca uses "/a", "x" ni "e" en el texto — el texto debe sonar natural en voz alta.'
+    : 'Dirígete al usuario en femenino: adjetivos y participios en femenino (ej: "estás tranquila", "eres capaz", "te sientes libre").';
 
   const userPrompt = `El usuario comparte lo siguiente sobre su momento actual:
 
@@ -410,7 +417,7 @@ El campo "text" debe contener solo el texto de la meditación, sin títulos ni e
     });
     console.log(`[meditation] Silencio total: ${totalSilence}s / límite: ${maxTotalSil}s`);
 
-    return res.status(200).json({ title, text, targetWords, silenceTotal: totalSilence });
+    return res.status(200).json({ title, text, targetWords, silenceTotal: totalSilence, resolvedVoice });
 
   } catch (err) {
     console.error('Error interno en /api/meditation:', err);

@@ -62,11 +62,16 @@ module.exports = async (req, res) => {
     });
   }
 
-  const { text: rawText, voice, duration, targetWords, silenceTotal, title } = req.body || {};
+  const { text: rawText, voice: rawVoice, duration, targetWords, silenceTotal, title } = req.body || {};
 
-  if (!rawText || !voice) {
+  if (!rawText || !rawVoice) {
     return res.status(400).json({ error: 'Faltan campos requeridos: text, voice' });
   }
+
+  // Resolver voz automática (fallback por si llega 'auto' directamente)
+  const voice = rawVoice === 'auto'
+    ? (Math.random() < 0.5 ? 'feminine' : 'masculine')
+    : rawVoice;
 
   // Dividir el texto en segmentos hablados y silencios
   // Entrada:  "Frase uno. [silencio:10s] Frase dos. [silencio:15s] Frase tres."

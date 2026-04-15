@@ -101,15 +101,17 @@
           <div class="inline-pref-mini">
             <span class="inline-pref-label">Voz</span>
             <div id="grp-voice" class="pill-row">
-              <button class="pill active" data-value="feminine"  onclick="selectPill(this,'grp-voice','voice')">Femenina</button>
+              <button class="pill active" data-value="auto"      onclick="selectPill(this,'grp-voice','voice')">Automático</button>
+              <button class="pill"        data-value="feminine"  onclick="selectPill(this,'grp-voice','voice')">Femenina</button>
               <button class="pill"        data-value="masculine" onclick="selectPill(this,'grp-voice','voice')">Masculina</button>
             </div>
           </div>
           <div class="inline-pref-mini">
-            <span class="inline-pref-label">Me hablas</span>
+            <span class="inline-pref-label">Me diriges en</span>
             <div id="grp-gender" class="pill-row">
               <button class="pill active" data-value="femenino"  onclick="selectPill(this,'grp-gender','gender')">Femenino</button>
               <button class="pill"        data-value="masculino" onclick="selectPill(this,'grp-gender','gender')">Masculino</button>
+              <button class="pill"        data-value="neutro"    onclick="selectPill(this,'grp-gender','gender')">Neutro</button>
             </div>
           </div>
         </div>
