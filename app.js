@@ -235,7 +235,8 @@ async function generateMeditation() {
     const guestName = document.getElementById('pref-name')?.value.trim().slice(0, 50);
     if (guestName) state.userName = guestName;
     pendingGeneration = true;
-    clerk.openSignIn();
+    sessionStorage.setItem('pending_generation', '1'); // sobrevive OAuth redirect
+    clerk.openSignIn({ afterSignInUrl: window.location.href, afterSignUpUrl: window.location.href });
     return;
   }
   pendingGeneration = false;
@@ -686,6 +687,23 @@ function formatTime(sec) {
 let clerk = null;
 let pendingGeneration = false;
 
+// Abre el modal de sign-in esperando a que Clerk esté listo si aún no lo está
+async function openAuth() {
+  if (clerk) {
+    clerk.openSignIn({ afterSignInUrl: window.location.href, afterSignUpUrl: window.location.href });
+    return;
+  }
+  // Clerk aún inicializando — esperar máx 3s
+  let waited = 0;
+  while (!clerk && waited < 30) {
+    await new Promise(r => setTimeout(r, 100));
+    waited++;
+  }
+  if (clerk) {
+    clerk.openSignIn({ afterSignInUrl: window.location.href, afterSignUpUrl: window.location.href });
+  }
+}
+
 async function initClerk() {
   try {
     // Clerk v5 CDN auto-crea la instancia en window.Clerk desde el data-attribute
@@ -698,7 +716,31 @@ async function initClerk() {
     if (!window.Clerk) throw new Error('Clerk no cargó en 5 segundos');
 
     clerk = window.Clerk;
-    await clerk.load();
+    await clerk.load({
+      appearance: {
+        variables: {
+          colorPrimary:         '#c9a96e',
+          colorBackground:      '#0c1109',
+          colorText:            '#f2ede4',
+          colorTextSecondary:   'rgba(242,237,228,0.65)',
+          colorInputBackground: 'rgba(242,237,228,0.07)',
+          colorInputText:       '#f2ede4',
+          borderRadius:         '14px',
+          fontFamily:           'Inter, sans-serif'
+        },
+        elements: {
+          card:             'shadow-none',
+          formButtonPrimary: 'bg-[#c9a96e] text-[#0a0e08] font-medium',
+          socialButtonsBlockButton: 'border border-white/10 text-white/80 hover:bg-white/5'
+        }
+      }
+    });
+
+    // Restaurar pendingGeneration si el usuario volvió de un OAuth redirect
+    if (sessionStorage.getItem('pending_generation') === '1') {
+      pendingGeneration = true;
+      sessionStorage.removeItem('pending_generation');
+    }
 
     clerk.addListener(({ user }) => {
       updateUserStatus();
