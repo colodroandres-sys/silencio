@@ -93,6 +93,28 @@ function showScreen(id) {
   const next = document.getElementById(id);
   next.classList.add('active');
   next.scrollTop = 0;
+
+  // Ocultar nav durante carga y player
+  const nav = document.getElementById('bottom-nav');
+  if (nav) {
+    const hideNav = id === 'screen-loading' || id === 'screen-player';
+    nav.classList.toggle('hidden', hideNav);
+  }
+
+  // Actualizar tab activo en el nav
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  if (id === 'screen-home') {
+    const el = document.getElementById('nav-home');
+    if (el) el.classList.add('active');
+  }
+}
+
+function showHome() {
+  showScreen('screen-home');
+}
+
+function showCreate() {
+  showScreen('screen-create');
 }
 
 // =============================================
@@ -203,7 +225,7 @@ function cancelGeneration() {
   if (abortController) { abortController.abort(); abortController = null; }
   if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
   enableGenerateBtn();
-  showScreen('screen-input');
+  showScreen('screen-create');
 }
 
 async function generateMeditation() {
@@ -250,7 +272,7 @@ async function generateMeditation() {
     if (err.status === 402) {
       abortController = null;
       enableGenerateBtn();
-      showScreen('screen-input');
+      showScreen('screen-create');
       showPaywall();
       track('paywall_shown', { duration: state.duration, voice: state.voice });
       return;
@@ -375,12 +397,12 @@ function setLoadingState(type, title, sub) {
 
 function retryFromError() {
   enableGenerateBtn();
-  showScreen('screen-input');
+  showScreen('screen-create');
 }
 
 function backToInput() {
   enableGenerateBtn();
-  showScreen('screen-input');
+  showScreen('screen-create');
 }
 
 // =============================================
@@ -560,8 +582,8 @@ function newMeditation() {
   state.duration = '5';
 
   document.querySelectorAll('#grp-voice .pill').forEach(p => p.classList.remove('active'));
-  document.querySelector('#grp-voice .pill[data-value="feminine"]').classList.add('active');
-  state.voice = 'feminine';
+  document.querySelector('#grp-voice .pill[data-value="auto"]').classList.add('active');
+  state.voice = 'auto';
 
   document.querySelectorAll('#grp-gender .pill').forEach(p => p.classList.remove('active'));
   document.querySelector('#grp-gender .pill[data-value="femenino"]').classList.add('active');
@@ -575,7 +597,7 @@ function newMeditation() {
   if (document.getElementById('pref-name')) document.getElementById('pref-name').value = '';
 
   setMode('free');
-  showScreen('screen-input');
+  showScreen('screen-home');
 }
 
 // =============================================
@@ -752,6 +774,28 @@ async function fetchUserStatus() {
     const guestBlock = document.getElementById('guest-name-block');
     if (guestBlock) guestBlock.style.display = 'none';
     applyDurationLocks();
+
+    // Actualizar stats en home screen
+    const statsEl = document.getElementById('home-stats');
+    const statSessions = document.getElementById('stat-sessions');
+    const statRemaining = document.getElementById('stat-remaining');
+    const statPlan = document.getElementById('stat-plan');
+    if (statsEl && statSessions && statRemaining && statPlan) {
+      const remaining = plan === 'free' ? (canGenerate ? 1 : 0) : Math.max(0, limit - usage);
+      const planNames = { free: 'Free', essential: 'Essential', premium: 'Premium' };
+      statSessions.textContent = usage || '0';
+      statRemaining.textContent = remaining;
+      statPlan.textContent = planNames[plan] || plan;
+      statsEl.style.display = 'flex';
+    }
+
+    // Actualizar saludo con nombre del usuario
+    const greetEl = document.getElementById('home-greeting');
+    if (greetEl && clerk?.user?.firstName) {
+      const h = new Date().getHours();
+      const greet = h < 12 ? 'Buenos días' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
+      greetEl.textContent = `${greet}, ${clerk.user.firstName}`;
+    }
   } catch (e) {
     console.error('[user status] Error:', e);
   }

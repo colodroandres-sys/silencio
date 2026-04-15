@@ -4,17 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stillova</title>
-  <meta name="theme-color" content="#07081a">
+  <meta name="theme-color" content="#0a0e08">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script data-clerk-publishable-key="pk_live_Y2xlcmsuc3RpbGxvdmEuY29tJA" src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js" type="text/javascript"></script>
-  <!-- PostHog Analytics — reemplazar POSTHOG_KEY con la clave real -->
   <script>
     !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+" (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey identify alias group resetGroups setPersonProperties groupIdentify createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug reset".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
-    // IMPORTANTE: reemplazar 'POSTHOG_KEY' con tu clave de proyecto de posthog.com (gratis)
     var POSTHOG_KEY = 'phc_uvQ7Rb7EdE5cEnpNwycFDQEM3Tn2qcvchQ2uqktPzKoF';
     if (POSTHOG_KEY !== 'POSTHOG_KEY') {
       posthog.init(POSTHOG_KEY, { api_host: 'https://eu.i.posthog.com', person_profiles: 'identified_only' });
@@ -23,21 +21,22 @@
 </head>
 <body>
 
-  <div class="bg-mesh"><div class="bg-mesh-accent"></div></div>
+  <!-- Fondo -->
+  <div class="bg-photo"></div>
+  <div class="bg-overlay"></div>
 
-  <!-- Pantalla 1: Input -->
-  <div id="screen-input" class="screen active">
+  <!-- ══════════════════════════════════════════
+       PANTALLA 1 — Home
+       ══════════════════════════════════════════ -->
+  <div id="screen-home" class="screen active">
     <div class="screen-inner">
 
       <div class="top-bar">
-        <div class="logo">
-          <div class="logo-dot"></div>
-          <span>Stillova</span>
-        </div>
+        <div class="logo"><span>Stillova</span></div>
 
         <div id="user-status" class="user-menu-wrap" style="display:none">
           <button class="user-avatar-btn" id="user-avatar-btn" onclick="toggleUserMenu()" aria-label="Menú de usuario">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <svg width="17" height="17" viewBox="0 0 18 18" fill="none">
               <circle cx="9" cy="6.5" r="3" stroke="currentColor" stroke-width="1.5"/>
               <path d="M2 16c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
             </svg>
@@ -58,76 +57,125 @@
         </div>
       </div>
 
-      <div class="input-hero">
-        <h1 class="input-headline">¿Cómo te sientes<br>ahora mismo?</h1>
-        <p class="input-subline">Te creo una meditación única para este momento.</p>
-      </div>
+      <div class="home-body">
+        <p class="home-eyebrow" id="home-greeting">Bienvenido</p>
+        <h1 class="home-headline">Tu momento<br>de calma.</h1>
+        <p class="home-subline">Generada para ti,<br>en este preciso instante.</p>
 
-      <!-- Botones ocultos requeridos por setMode() en app.js -->
-      <button id="btn-free"   class="mode-btn active" style="display:none" onclick="setMode('free')"></button>
-      <button id="btn-guided" class="mode-btn"        style="display:none" onclick="setMode('guided')"></button>
+        <button class="home-cta" onclick="showCreate()">
+          <span>Crear mi meditación</span>
+          <span class="home-cta-arrow">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </button>
 
-      <div id="mode-free" class="input-block">
-        <textarea id="input-free" class="textarea-main" placeholder="Cuéntame... ¿qué está pasando? ¿cómo llevas el día?"></textarea>
-      </div>
-
-      <div id="mode-guided" class="input-block hidden">
-        <div class="guided-item">
-          <label class="field-label">¿Cómo te sientes ahora mismo?</label>
-          <textarea id="guided-1" class="textarea-small" placeholder="Ej: estresado, cansado, ansioso, bien pero disperso..."></textarea>
-        </div>
-        <div class="guided-item">
-          <label class="field-label">¿Qué quieres lograr?</label>
-          <textarea id="guided-2" class="textarea-small" placeholder="Ej: relajarme antes de dormir, calmar la ansiedad, enfocarme..."></textarea>
-        </div>
-        <div class="guided-item">
-          <label class="field-label">¿Algo más? <span class="optional">(opcional)</span></label>
-          <textarea id="guided-3" class="textarea-small" placeholder="Ej: tuve un día muy difícil, mañana tengo algo importante..."></textarea>
-        </div>
-      </div>
-
-      <!-- Preferencias inline -->
-      <div class="inline-prefs">
-        <div class="inline-pref-group">
-          <span class="inline-pref-label">Duración</span>
-          <div id="grp-duration" class="pill-row">
-            <button class="pill active" data-value="5"  onclick="selectPill(this,'grp-duration','duration')">5 min</button>
-            <button class="pill"        data-value="10" onclick="selectPill(this,'grp-duration','duration')">10 min</button>
-            <button class="pill"        data-value="15" onclick="selectPill(this,'grp-duration','duration')">15 min</button>
-            <button class="pill"        data-value="20" onclick="selectPill(this,'grp-duration','duration')">20 min</button>
+        <div class="home-stats" id="home-stats" style="display:none">
+          <div class="home-stat">
+            <div class="home-stat-value" id="stat-sessions">—</div>
+            <div class="home-stat-label">Sesiones</div>
           </div>
-        </div>
-        <div class="inline-pref-row-split">
-          <div class="inline-pref-mini">
-            <span class="inline-pref-label">Voz</span>
-            <div id="grp-voice" class="pill-row">
-              <button class="pill active" data-value="auto"      onclick="selectPill(this,'grp-voice','voice')">Automático</button>
-              <button class="pill"        data-value="feminine"  onclick="selectPill(this,'grp-voice','voice')">Femenina</button>
-              <button class="pill"        data-value="masculine" onclick="selectPill(this,'grp-voice','voice')">Masculina</button>
-            </div>
+          <div class="home-stat">
+            <div class="home-stat-value" id="stat-remaining">—</div>
+            <div class="home-stat-label">Restantes</div>
           </div>
-          <div class="inline-pref-mini">
-            <span class="inline-pref-label">Me diriges en</span>
-            <div id="grp-gender" class="pill-row">
-              <button class="pill active" data-value="femenino"  onclick="selectPill(this,'grp-gender','gender')">Femenino</button>
-              <button class="pill"        data-value="masculino" onclick="selectPill(this,'grp-gender','gender')">Masculino</button>
-              <button class="pill"        data-value="neutro"    onclick="selectPill(this,'grp-gender','gender')">Neutro</button>
-            </div>
+          <div class="home-stat">
+            <div class="home-stat-value" id="stat-plan">—</div>
+            <div class="home-stat-label">Plan</div>
           </div>
         </div>
       </div>
-
-      <div id="guest-name-block" class="guest-name-wrap" style="display:none">
-        <input type="text" id="pref-name" class="input-text" placeholder="Tu nombre (opcional)" autocomplete="off" maxlength="50">
-      </div>
-
-      <button id="btn-generate" class="btn-primary" onclick="goToPreferences()">Crear mi meditación</button>
-      <button class="btn-mode-switch" id="btn-mode-switch" onclick="switchInputMode()">¿Prefieres responder preguntas guiadas?</button>
 
     </div>
   </div>
 
-  <!-- Pantalla 3: Carga -->
+  <!-- ══════════════════════════════════════════
+       PANTALLA 2 — Crear meditación
+       ══════════════════════════════════════════ -->
+  <div id="screen-create" class="screen">
+    <div class="screen-inner">
+
+      <button class="create-back" onclick="showHome()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Volver
+      </button>
+
+      <div class="create-card">
+        <h2 class="create-headline">¿Cómo te sientes<br>ahora mismo?</h2>
+
+        <!-- Botones ocultos requeridos por setMode() -->
+        <button id="btn-free"   class="mode-btn active" onclick="setMode('free')"></button>
+        <button id="btn-guided" class="mode-btn"        onclick="setMode('guided')"></button>
+
+        <div id="mode-free" class="input-block">
+          <textarea id="input-free" class="textarea-main" placeholder="Cuéntame... ¿qué está pasando? ¿cómo llevas el día?"></textarea>
+        </div>
+
+        <div id="mode-guided" class="input-block hidden">
+          <div class="guided-item">
+            <label class="field-label">¿Cómo te sientes ahora mismo?</label>
+            <textarea id="guided-1" class="textarea-small" placeholder="Ej: estresado, cansado, ansioso, bien pero disperso..."></textarea>
+          </div>
+          <div class="guided-item">
+            <label class="field-label">¿Qué quieres lograr?</label>
+            <textarea id="guided-2" class="textarea-small" placeholder="Ej: relajarme antes de dormir, calmar la ansiedad, enfocarme..."></textarea>
+          </div>
+          <div class="guided-item">
+            <label class="field-label">¿Algo más? <span class="optional">(opcional)</span></label>
+            <textarea id="guided-3" class="textarea-small" placeholder="Ej: tuve un día muy difícil, mañana tengo algo importante..."></textarea>
+          </div>
+        </div>
+
+        <div class="prefs-section">
+          <div class="pref-group">
+            <span class="pref-label">Duración</span>
+            <div id="grp-duration" class="pill-row">
+              <button class="pill active" data-value="5"  onclick="selectPill(this,'grp-duration','duration')">5 min</button>
+              <button class="pill"        data-value="10" onclick="selectPill(this,'grp-duration','duration')">10 min</button>
+              <button class="pill"        data-value="15" onclick="selectPill(this,'grp-duration','duration')">15 min</button>
+              <button class="pill"        data-value="20" onclick="selectPill(this,'grp-duration','duration')">20 min</button>
+            </div>
+          </div>
+
+          <div class="prefs-split">
+            <div class="pref-group">
+              <span class="pref-label">Voz</span>
+              <div id="grp-voice" class="pill-row">
+                <button class="pill active" data-value="auto"      onclick="selectPill(this,'grp-voice','voice')">Automático</button>
+                <button class="pill"        data-value="feminine"  onclick="selectPill(this,'grp-voice','voice')">Femenina</button>
+                <button class="pill"        data-value="masculine" onclick="selectPill(this,'grp-voice','voice')">Masculina</button>
+              </div>
+            </div>
+            <div class="pref-group">
+              <span class="pref-label">Me diriges en</span>
+              <div id="grp-gender" class="pill-row">
+                <button class="pill active" data-value="femenino"  onclick="selectPill(this,'grp-gender','gender')">Femenino</button>
+                <button class="pill"        data-value="masculino" onclick="selectPill(this,'grp-gender','gender')">Masculino</button>
+                <button class="pill"        data-value="neutro"    onclick="selectPill(this,'grp-gender','gender')">Neutro</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="guest-name-block" class="guest-name-wrap" style="display:none">
+          <input type="text" id="pref-name" class="input-text" placeholder="Tu nombre (opcional)" autocomplete="off" maxlength="50">
+        </div>
+
+        <div class="btn-generate-wrap">
+          <button id="btn-generate" class="btn-primary" onclick="goToPreferences()">Crear mi meditación</button>
+          <button class="btn-mode-switch" id="btn-mode-switch" onclick="switchInputMode()">¿Prefieres responder preguntas guiadas?</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PANTALLA 3 — Cargando
+       ══════════════════════════════════════════ -->
   <div id="screen-loading" class="screen">
     <div class="screen-inner center">
 
@@ -141,14 +189,16 @@
       <p id="loading-title" class="loading-title">Escribiendo tu meditación</p>
       <p id="loading-sub" class="loading-sub">Analizando tu momento y diseñando algo único para ti...</p>
 
-      <button id="btn-retry"  class="btn-ghost" onclick="retryFromError()"        style="display:none">Intentar de nuevo</button>
-      <button id="btn-back-input" class="btn-ghost" onclick="backToInput()"    style="display:none">Cambiar el texto</button>
-      <button id="btn-cancel" class="btn-ghost" onclick="cancelGeneration()"   style="display:none">Cancelar</button>
+      <button id="btn-retry"     class="btn-ghost" onclick="retryFromError()"   style="display:none">Intentar de nuevo</button>
+      <button id="btn-back-input" class="btn-ghost" onclick="backToInput()"     style="display:none">Cambiar el texto</button>
+      <button id="btn-cancel"    class="btn-ghost" onclick="cancelGeneration()" style="display:none">Cancelar</button>
 
     </div>
   </div>
 
-  <!-- Pantalla 4: Reproductor -->
+  <!-- ══════════════════════════════════════════
+       PANTALLA 4 — Reproductor
+       ══════════════════════════════════════════ -->
   <div id="screen-player" class="screen">
     <div class="screen-inner center player-inner">
 
@@ -184,18 +234,14 @@
 
       <div id="end-save" style="display:none" class="end-save">
         <p class="end-save-hint">Guárdala para escucharla cuando quieras.</p>
-        <button id="btn-save-meditation" class="btn-save" onclick="saveMeditation()">
-          Guardar en mi biblioteca
-        </button>
+        <button id="btn-save-meditation" class="btn-save" onclick="saveMeditation()">Guardar en mi biblioteca</button>
         <button class="btn-upsell-skip" onclick="skipSave()">Ahora no</button>
       </div>
 
-      <!-- Perfil para ganar 1 crédito extra (solo free que ya usó su crédito) -->
       <div id="end-profile" style="display:none" class="end-profile">
         <p class="end-upsell-eyebrow">Cuéntanos sobre ti</p>
         <p class="end-profile-title">Gana 1 meditación<br>extra gratis.</p>
         <p class="end-profile-sub">3 preguntas rápidas para mejorar tus sesiones.</p>
-
         <div class="profile-questions">
           <div class="profile-q">
             <p class="profile-q-label">¿Qué buscas con la meditación?</p>
@@ -223,8 +269,7 @@
             </div>
           </div>
         </div>
-
-        <button class="btn-primary btn-upsell-cta" id="btn-profile-submit" onclick="submitProfile()" disabled>Recibir meditación gratis</button>
+        <button class="btn-upsell-cta" id="btn-profile-submit" onclick="submitProfile()" disabled>Recibir meditación gratis</button>
         <button class="btn-upsell-skip" onclick="skipProfile()">Prefiero no, ir al plan de pago</button>
       </div>
 
@@ -237,22 +282,24 @@
           <li>Meditaciones de hasta 20 minutos</li>
           <li>Guarda tus favoritas para volver a escucharlas</li>
         </ul>
-        <button class="btn-primary btn-upsell-cta" onclick="closeEndUpsell(); showPaywall()">Quiero acceso completo</button>
+        <button class="btn-upsell-cta" onclick="closeEndUpsell(); showPaywall()">Quiero acceso completo</button>
         <button class="btn-upsell-skip" onclick="closeEndUpsell(); newMeditation()">Ahora no</button>
       </div>
 
     </div>
   </div>
 
+  <!-- Audio -->
   <audio id="audio" onended="handleEnd()"></audio>
   <audio id="audio-ambient" loop preload="none"></audio>
 
-  <!-- Modal: Paywall -->
+  <!-- ══════════════════════════════════════════
+       MODAL — Paywall
+       ══════════════════════════════════════════ -->
   <div id="paywall-modal" class="paywall-overlay">
     <div class="paywall-card">
       <p class="paywall-title">Tu próxima meditación<br>te espera.</p>
       <p class="paywall-sub">Creada en segundos, solo para ti.</p>
-
       <div class="paywall-plans">
         <div class="plan-option plan-option-featured">
           <div class="plan-option-badge">Más popular</div>
@@ -280,32 +327,64 @@
           <button class="btn-upgrade" onclick="upgradePlan('essential')">Empezar con Essential</button>
         </div>
       </div>
-
       <p class="paywall-guarantee">Sin permanencia. Cancela cuando quieras.</p>
       <button class="btn-ghost paywall-close" onclick="closePaywall()">Ahora no</button>
     </div>
   </div>
 
+  <!-- ══════════════════════════════════════════
+       BOTTOM NAV
+       ══════════════════════════════════════════ -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="nav-item active" id="nav-home" onclick="showHome()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M3 9.5L10 3l7 6.5V17a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M7.5 18V13h5v5" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+      </svg>
+      Inicio
+    </button>
+
+    <div class="nav-create-wrap">
+      <button class="nav-create-btn" onclick="showCreate()" aria-label="Crear meditación">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <a class="nav-item" id="nav-library" href="/dashboard.html">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <rect x="3" y="4" width="4" height="13" rx="1" stroke="currentColor" stroke-width="1.4"/>
+        <rect x="8" y="4" width="4" height="13" rx="1" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M14.5 4.5l2.8 12.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      Biblioteca
+    </a>
+  </nav>
+
+  <footer class="site-footer">
+    <a href="/privacy.html">Privacidad</a>
+    <span>·</span>
+    <a href="/terms.html">Términos</a>
+  </footer>
+
   <script src="app.js"></script>
   <script>
-    // ── User menu dropdown ──────────────────────────────────────
+    // ── User menu ──────────────────────────────────────────────
     let _userMenuOpen = false;
     function toggleUserMenu() {
       _userMenuOpen = !_userMenuOpen;
       document.getElementById('user-dropdown').classList.toggle('open', _userMenuOpen);
-      document.getElementById('user-avatar-btn').classList.toggle('open', _userMenuOpen);
     }
     document.addEventListener('click', function(e) {
       if (_userMenuOpen && !e.target.closest('#user-status')) {
         _userMenuOpen = false;
         const d = document.getElementById('user-dropdown');
-        const b = document.getElementById('user-avatar-btn');
         if (d) d.classList.remove('open');
-        if (b) b.classList.remove('open');
       }
     });
 
-    // ── Input mode switcher ─────────────────────────────────────
+    // ── Input mode switcher ────────────────────────────────────
     let _guidedMode = false;
     function switchInputMode() {
       _guidedMode = !_guidedMode;
@@ -315,12 +394,15 @@
         ? '← Prefiero escribir libremente'
         : '¿Prefieres responder preguntas guiadas?';
     }
-  </script>
 
-  <footer class="site-footer">
-    <a href="/privacy.html">Privacidad</a>
-    <span>·</span>
-    <a href="/terms.html">Términos</a>
-  </footer>
+    // ── Greeting by time of day ────────────────────────────────
+    function updateGreeting() {
+      const h = new Date().getHours();
+      const greet = h < 12 ? 'Buenos días' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
+      const el = document.getElementById('home-greeting');
+      if (el) el.textContent = greet;
+    }
+    updateGreeting();
+  </script>
 </body>
 </html>
