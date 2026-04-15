@@ -66,6 +66,8 @@ body {
   transition: opacity 0.45s var(--ease), transform 0.45s var(--ease);
   z-index: 1;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 .screen.active {
   opacity: 1;
@@ -89,6 +91,11 @@ body {
   padding-top: 24px;
   padding-bottom: 24px;
 }
+/* Cuando los end states tienen contenido largo, el player hace scroll desde arriba */
+#screen-player.end-active .screen-inner.center {
+  justify-content: flex-start;
+  padding-top: 40px;
+}
 
 /* =============================================
    TOP BAR
@@ -97,7 +104,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 56px;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 52px);
   padding-bottom: 0;
   width: 100%;
 }
@@ -327,7 +334,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 52px 0 24px;
+  padding: calc(env(safe-area-inset-top, 0px) + 46px) 0 24px;
   color: var(--text-45);
   font-size: 0.83rem;
   cursor: pointer;
@@ -610,7 +617,7 @@ body {
    ============================================= */
 .player-inner {
   padding-top: 0;
-  padding-bottom: 56px;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 40px);
   gap: 0;
 }
 
@@ -689,6 +696,7 @@ body {
   flex-direction: column;
   align-items: center;
   text-align: center;
+  width: 100%;
   max-width: 300px;
   margin-top: 20px;
   gap: 8px;
@@ -890,8 +898,10 @@ body {
   border-top: 1px solid rgba(242,237,228,0.16);
   border-radius: 28px 28px 0 0;
   padding: 32px 24px calc(env(safe-area-inset-bottom, 0px) + 28px);
-  max-height: 92vh;
+  max-height: 92dvh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 .paywall-title {
   font-family: 'Fraunces', serif;
@@ -1206,11 +1216,65 @@ body {
 /* =============================================
    RESPONSIVE
    ============================================= */
-@media (max-width: 380px) {
-  .home-headline { font-size: 2.3rem; }
-  .pill { font-size: 0.73rem; padding: 6px 11px; }
+
+/* iPhone SE y pantallas muy pequeñas */
+@media (max-width: 375px) {
+  .home-headline { font-size: 2.2rem; }
+  .home-cta { padding: 15px 16px 15px 20px; font-size: 0.875rem; }
+  .create-card { padding: 22px 18px 20px; }
+  .create-headline { font-size: 1.3rem; }
+  .pill { font-size: 0.72rem; padding: 6px 10px; }
   .prefs-split { grid-template-columns: 1fr; }
+  .breathing-wrap.player-mode { width: 210px; height: 210px; }
+  .session-title { font-size: 1.05rem; }
+  .loading-title { font-size: 1.3rem; }
 }
+
+/* iPhone estándar (390–430px) — ningún cambio estructural, ajustes finos */
+@media (max-width: 430px) {
+  .home-stat-value { font-size: 1.5rem; }
+}
+
+/* Pantallas medianas cortas en altura (landscape, iPhones acostados) */
+@media (max-height: 700px) {
+  .home-body { padding-bottom: 16px; }
+  .home-headline { font-size: clamp(2rem, 8vw, 2.8rem); margin-bottom: 12px; }
+  .home-subline { margin-bottom: 24px; }
+  .create-card { padding: 20px 18px 18px; }
+  .textarea-main { min-height: 80px; }
+  .prefs-section { gap: 12px; }
+  .btn-generate-wrap { margin-top: 14px; }
+  .breathing-wrap.player-mode { width: 200px; height: 200px; margin-bottom: 14px; }
+  .player-inner { padding-bottom: 40px; }
+  .session-title { margin-bottom: 16px; }
+  .progress-area { margin-bottom: 16px; }
+}
+
+/* Pantallas muy cortas (< 600px altura) — compactar el create para que el botón siempre sea visible */
+@media (max-height: 600px) {
+  .breathing-wrap.player-mode { width: 170px; height: 170px; }
+  .player-inner { padding-top: 16px; padding-bottom: 30px; }
+}
+
+/* Fix: cuando el teclado está abierto en móvil (viewport cambia de tamaño) */
+@media (max-height: 500px) {
+  #screen-create .screen-inner { padding-bottom: 20px; }
+  .create-card { padding: 16px 16px 14px; }
+  .textarea-main { min-height: 64px; }
+  .prefs-section { display: none; } /* Se oculta temporalmente cuando el teclado está abierto */
+  .btn-generate-wrap { margin-top: 10px; }
+}
+
+/* Desktop / tablet */
 @media (min-width: 600px) {
-  .bottom-nav { left: 50%; right: auto; transform: translateX(-50%); width: 460px; border-radius: 20px 20px 0 0; }
+  .bottom-nav {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: 460px;
+    border-radius: 20px 20px 0 0;
+  }
+  .home-headline { font-size: clamp(3rem, 6vw, 4.2rem); }
+  .paywall-card { border-radius: 28px; margin: auto; }
+  .paywall-overlay { align-items: center; }
 }

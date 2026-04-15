@@ -249,12 +249,12 @@ async function generateMeditation() {
 
   track('meditation_started', { duration: state.duration, voice: state.voice, mode: state.mode });
 
-  setLoadingState('normal', 'Entendiéndote', 'Leyendo tu momento y creando algo solo para ti...');
+  setLoadingState('normal', 'Escuchándote...', 'Leyendo lo que sientes y creando algo que solo existe para este momento.');
   showScreen('screen-loading');
 
   // Aviso de tiempo si tarda más de 10 segundos
   slowTimer = setTimeout(() => {
-    document.getElementById('loading-sub').textContent = 'Tu meditación está tomando forma. Solo un momento más...';
+    document.getElementById('loading-sub').textContent = 'Cada palabra está siendo elegida para ti. Un momento más...';
     slowTimer = null;
   }, 10000);
 
@@ -292,7 +292,7 @@ async function generateMeditation() {
 
     // Errores de servidor (5xx / red): reintento automático una sola vez
     console.warn('Primer intento fallido, reintentando...', err);
-    setLoadingState('normal', 'Casi lista', 'Dando los últimos toques a tu meditación...');
+    setLoadingState('normal', 'Casi lista...', 'Refinando los últimos detalles de tu sesión.');
 
     abortController = new AbortController();
     try {
@@ -344,7 +344,7 @@ async function attemptGeneration(signal) {
   document.getElementById('session-title').textContent = title;
 
   // ── Paso 2: Convertir a audio con ElevenLabs ──────────────────
-  setLoadingState('normal', 'Dando voz a tu meditación', 'Ya queda poco...');
+  setLoadingState('normal', 'Preparando tu voz...', 'Tu guía está tomando vida. Ya casi.');
 
   const audioRes = await fetch('/api/audio', {
     method: 'POST',
@@ -524,8 +524,10 @@ function handleEnd() {
       // Free sin créditos: mostrar perfil bonus si no lo completó, o upsell si ya lo completó
       if (!state.profileCompleted) {
         document.getElementById('end-profile').style.display = 'flex';
+        document.getElementById('screen-player').classList.add('end-active');
       } else {
         document.getElementById('end-upsell').style.display = 'flex';
+        document.getElementById('screen-player').classList.add('end-active');
       }
     } else if (state.userPlan !== 'free' && state.currentMeditationId) {
       // Usuario de pago → opción de guardar
@@ -575,6 +577,7 @@ function newMeditation() {
   document.getElementById('end-upsell').style.display         = 'none';
   document.getElementById('end-profile').style.display        = 'none';
   document.getElementById('end-save').style.display           = 'none';
+  document.getElementById('screen-player').classList.remove('end-active');
 
   // Resetear pills a valores por defecto
   document.querySelectorAll('#grp-duration .pill').forEach(p => p.classList.remove('active'));
@@ -851,6 +854,7 @@ function showPaywall() {
 
 function closeEndUpsell() {
   document.getElementById('end-upsell').style.display = 'none';
+  document.getElementById('screen-player').classList.remove('end-active');
 }
 
 function closePaywall() {
@@ -1057,6 +1061,7 @@ async function submitProfile() {
       state.profileCompleted = true;
       state.userCanGenerate  = true;
       document.getElementById('end-profile').style.display = 'none';
+      document.getElementById('screen-player').classList.remove('end-active');
       showToast('¡Tienes 1 meditación extra gratis! Úsala cuando quieras.');
       document.getElementById('btn-new-meditation').style.display = 'block';
       // Actualizar badge de créditos
@@ -1078,6 +1083,7 @@ async function submitProfile() {
 function skipProfile() {
   document.getElementById('end-profile').style.display = 'none';
   document.getElementById('end-upsell').style.display = 'flex';
+  document.getElementById('screen-player').classList.add('end-active');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
