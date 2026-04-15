@@ -1082,7 +1082,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 56px 0 36px;
+  padding: calc(env(safe-area-inset-top, 0px) + 52px) 0 36px;
 }
 .dash-headline {
   font-family: 'Fraunces', serif;
@@ -1263,6 +1263,21 @@ body {
   .textarea-main { min-height: 64px; }
   .prefs-section { display: none; } /* Se oculta temporalmente cuando el teclado está abierto */
   .btn-generate-wrap { margin-top: 10px; }
+}
+
+/* Dashboard — iPhone SE y pantallas muy pequeñas */
+@media (max-width: 375px) {
+  .dash-headline { font-size: 1.5rem; }
+  .stat-value { font-size: 1.35rem; }
+  .stat-card { padding: 14px 6px; }
+  .med-card { padding: 14px 16px; }
+  .med-card-meta { gap: 6px; font-size: 0.68rem; }
+}
+
+/* Dashboard — pantallas cortas */
+@media (max-height: 700px) {
+  .dash-header { padding-bottom: 24px; }
+  .dash-stats { margin-bottom: 24px; }
 }
 
 /* Desktop / tablet */
