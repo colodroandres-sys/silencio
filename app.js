@@ -727,11 +727,6 @@ async function initClerk() {
           colorInputText:       '#f2ede4',
           borderRadius:         '14px',
           fontFamily:           'Inter, sans-serif'
-        },
-        elements: {
-          card:             'shadow-none',
-          formButtonPrimary: 'bg-[#c9a96e] text-[#0a0e08] font-medium',
-          socialButtonsBlockButton: 'border border-white/10 text-white/80 hover:bg-white/5'
         }
       }
     });
