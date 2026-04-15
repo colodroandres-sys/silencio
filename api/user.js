@@ -15,6 +15,7 @@ module.exports = async (req, res) => {
     plan: user.plan || 'free',
     usage: usage ?? 0,
     limit: limit ?? 1,
-    canGenerate: allowed
+    canGenerate: allowed,
+    profileCompleted: !!user.profile_completed
   });
 };

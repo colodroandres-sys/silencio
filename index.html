@@ -214,11 +214,54 @@
         <button class="btn-upsell-skip" onclick="skipSave()">Ahora no</button>
       </div>
 
+      <!-- Perfil para ganar 1 crédito extra (solo free que ya usó su crédito) -->
+      <div id="end-profile" style="display:none" class="end-profile">
+        <p class="end-upsell-eyebrow">Cuéntanos sobre ti</p>
+        <p class="end-profile-title">Gana 1 meditación<br>extra gratis.</p>
+        <p class="end-profile-sub">3 preguntas rápidas para mejorar tus sesiones.</p>
+
+        <div class="profile-questions">
+          <div class="profile-q">
+            <p class="profile-q-label">¿Qué buscas con la meditación?</p>
+            <div class="profile-pills" id="profile-goal">
+              <button class="profile-pill" data-value="ansiedad">Reducir ansiedad</button>
+              <button class="profile-pill" data-value="sueno">Dormir mejor</button>
+              <button class="profile-pill" data-value="claridad">Claridad mental</button>
+              <button class="profile-pill" data-value="estres">Calmarme</button>
+            </div>
+          </div>
+          <div class="profile-q">
+            <p class="profile-q-label">¿Con qué frecuencia quieres meditar?</p>
+            <div class="profile-pills" id="profile-frequency">
+              <button class="profile-pill" data-value="diario">Cada día</button>
+              <button class="profile-pill" data-value="frecuente">3-4 veces/semana</button>
+              <button class="profile-pill" data-value="cuando_puedo">Cuando lo necesito</button>
+            </div>
+          </div>
+          <div class="profile-q">
+            <p class="profile-q-label">¿Cuándo sueles meditar?</p>
+            <div class="profile-pills" id="profile-timing">
+              <button class="profile-pill" data-value="manana">Por la mañana</button>
+              <button class="profile-pill" data-value="tarde">Por la tarde</button>
+              <button class="profile-pill" data-value="noche">Por la noche</button>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-primary btn-upsell-cta" id="btn-profile-submit" onclick="submitProfile()" disabled>Recibir meditación gratis</button>
+        <button class="btn-upsell-skip" onclick="skipProfile()">Prefiero no, ir al plan de pago</button>
+      </div>
+
       <div id="end-upsell" style="display:none" class="end-upsell">
         <p class="end-upsell-eyebrow">Primera meditación completada</p>
         <p class="end-upsell-title">Así de bien puedes<br>sentirte cada día.</p>
-        <p class="end-upsell-sub">Meditaciones creadas en segundos,<br>personalizadas para lo que vives ahora mismo.</p>
-        <button class="btn-primary btn-upsell-cta" onclick="closeEndUpsell(); showPaywall()">Quiero más meditaciones</button>
+        <ul class="end-upsell-benefits">
+          <li>Música de fondo adaptada a tu sesión</li>
+          <li>Silencios estratégicos en el momento exacto</li>
+          <li>Meditaciones de hasta 20 minutos</li>
+          <li>Guarda tus favoritas para volver a escucharlas</li>
+        </ul>
+        <button class="btn-primary btn-upsell-cta" onclick="closeEndUpsell(); showPaywall()">Quiero acceso completo</button>
         <button class="btn-upsell-skip" onclick="closeEndUpsell(); newMeditation()">Ahora no</button>
       </div>
 

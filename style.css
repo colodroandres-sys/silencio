@@ -620,6 +620,35 @@ body {
   margin: 0;
 }
 
+.end-upsell-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.end-upsell-benefits li {
+  font-size: 0.82rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  text-align: left;
+}
+
+.end-upsell-benefits li::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--purple-light);
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
 .btn-upsell-cta {
   margin-top: 6px;
   font-size: 0.92rem;
@@ -1161,4 +1190,123 @@ body {
 .toast.visible {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+/* =============================================
+   END-PROFILE — pantalla 3 preguntas bonus
+   ============================================= */
+.end-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 28px;
+  width: 100%;
+  max-width: 320px;
+  animation: fadeUp 0.5s var(--ease) both;
+}
+
+.end-profile-title {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  font-size: 1.45rem;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.end-profile-sub {
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-align: center;
+  margin: 0;
+}
+
+.profile-questions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-q { width: 100%; }
+
+.profile-q-label {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 0 0 8px;
+  text-align: left;
+}
+
+.profile-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.profile-pill {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-family: inherit;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.profile-pill.selected {
+  background: rgba(124, 58, 237, 0.15);
+  border-color: var(--purple-light);
+  color: var(--purple-light);
+}
+
+#btn-profile-submit:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* =============================================
+   RESPONSIVE — MOBILE (≤ 430px)
+   ============================================= */
+@media (max-width: 430px) {
+
+  /* Paywall: scrollable si el contenido supera la pantalla */
+  .paywall-overlay {
+    align-items: flex-start;
+    padding: 16px;
+    overflow-y: auto;
+  }
+
+  .paywall-card {
+    padding: 28px 20px;
+    margin: auto 0;
+  }
+
+  .paywall-title { font-size: 1.25rem; }
+
+  .plan-option {
+    padding: 16px;
+  }
+
+  .plan-option-price { font-size: 1.2rem; }
+
+  /* End-upsell */
+  .end-upsell { max-width: 100%; }
+
+  .btn-upsell-cta { width: 100%; }
+
+  /* End-save */
+  .end-save { max-width: 100%; width: 100%; }
+
+  #btn-save-meditation { width: 100%; }
+}
+
+/* Dashboard responsive (estilos inline en dashboard.html — se aplican desde aquí con !important solo si hace falta) */
+@media (max-width: 360px) {
+  .screen-inner { padding: 40px 16px 72px; }
 }
