@@ -830,6 +830,14 @@ async function updateUserStatus() {
 
   el.style.display = 'flex';
   if (guest) guest.style.display = 'none';
+
+  // Restaurar plan cacheado para evitar el flash de locks en usuarios premium
+  const cachedPlan = localStorage.getItem('stillova_plan');
+  if (cachedPlan && cachedPlan !== 'free') {
+    state.userPlan = cachedPlan;
+    applyDurationLocks();
+  }
+
   fetchUserStatus();
 }
 
@@ -857,6 +865,7 @@ async function fetchUserStatus() {
     state.userPlan = plan;
     state.userCanGenerate = canGenerate;
     state.profileCompleted = !!profileCompleted;
+    localStorage.setItem('stillova_plan', plan);
 
     if (planEl) {
       const planNames = { free: 'Gratis', essential: 'Essential', premium: 'Premium' };
@@ -893,10 +902,11 @@ async function fetchUserStatus() {
 
     // Actualizar saludo con nombre del usuario
     const greetEl = document.getElementById('home-greeting');
-    if (greetEl && clerk?.user?.firstName) {
+    const displayName = clerk?.user?.firstName || clerk?.user?.fullName?.split(' ')[0] || '';
+    if (greetEl && displayName) {
       const h = new Date().getHours();
       const greet = h < 12 ? 'Buenos días' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
-      greetEl.textContent = `${greet}, ${clerk.user.firstName}`;
+      greetEl.textContent = `${greet}, ${displayName}`;
     }
   } catch (e) {
     console.error('[user status] Error:', e);
@@ -1030,6 +1040,7 @@ async function upgradePlan(plan) {
 
 function signOut() {
   if (clerk) {
+    localStorage.removeItem('stillova_plan');
     clerk.signOut().then(() => {
       const el = document.getElementById('user-status');
       if (el) el.style.display = 'none';
