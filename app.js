@@ -144,6 +144,14 @@ function showHome() {
   showScreen('screen-home');
 }
 
+function openLibrary() {
+  if (!clerk?.user) {
+    clerk?.openSignIn({ afterSignInUrl: '/dashboard.html', afterSignUpUrl: '/dashboard.html' });
+    return;
+  }
+  window.location.href = '/dashboard.html';
+}
+
 function showCreate(skipToConfig = false) {
   // Aplicar preferencias de onboarding la primera vez
   if (obPrefs.voice !== 'auto' && state.userPlan !== 'free') {
@@ -334,8 +342,8 @@ function obSkipToFree() {
   applyObPrefsToState();
 
   if (!clerk || !clerk.user) {
-    sessionStorage.setItem('ob_pending_plan', 'free');
-    clerk?.openSignIn({ afterSignInUrl: window.location.href, afterSignUpUrl: window.location.href });
+    // Guest: ir directo al home — pueden crear su primera meditación sin cuenta
+    showScreen('screen-home');
     return;
   }
   showHome();
