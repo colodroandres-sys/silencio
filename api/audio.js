@@ -62,7 +62,7 @@ module.exports = async (req, res) => {
     });
   }
 
-  const { text: rawText, voice: rawVoice, duration, targetWords, silenceTotal, title } = req.body || {};
+  const { text: rawText, voice: rawVoice, duration, targetWords, silenceTotal, title, intent, emotionTag } = req.body || {};
 
   if (!rawText || !rawVoice) {
     return res.status(400).json({ error: 'Faltan campos requeridos: text, voice' });
@@ -114,7 +114,9 @@ module.exports = async (req, res) => {
         duration: parseInt(duration) || 5,
         voice: voice || 'feminine',
         silence_map: silenceMap || [],
-        is_saved: false
+        is_saved: false,
+        intent: intent || null,
+        emotion_tag: emotionTag || null
       });
     } catch (e) {
       console.error('[audio] DB insert error:', e);

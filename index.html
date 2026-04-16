@@ -21,14 +21,212 @@
 </head>
 <body>
 
-  <!-- Fondo -->
   <div class="bg-photo"></div>
   <div class="bg-overlay"></div>
 
   <!-- ══════════════════════════════════════════
-       PANTALLA 1 — Home
+       ONBOARDING — solo primera vez
        ══════════════════════════════════════════ -->
-  <div id="screen-home" class="screen active">
+  <div id="screen-onboarding" class="screen">
+    <div class="ob-wrap">
+
+      <!-- Progress bar -->
+      <div class="ob-progress" id="ob-progress">
+        <div class="ob-progress-fill" id="ob-progress-fill"></div>
+      </div>
+
+      <!-- Back button -->
+      <button class="ob-back" id="ob-back" onclick="obBack()" style="display:none">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M11 4L6 9l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <!-- ── Paso 1 — ¿Qué ocupa tu mente? ── -->
+      <div class="ob-step active" id="ob-1">
+        <div class="ob-inner">
+          <p class="ob-eyebrow">Bienvenido a Stillova</p>
+          <h2 class="ob-headline">¿Qué ha estado<br>ocupando tu mente<br>últimamente?</h2>
+          <p class="ob-sub">Elige lo que más resuene. Puedes seleccionar varios.</p>
+          <div class="ob-chips" id="ob-topics">
+            <button class="ob-chip" data-value="ansiedad" onclick="obChipToggle(this)">Ansiedad</button>
+            <button class="ob-chip" data-value="trabajo" onclick="obChipToggle(this)">Trabajo</button>
+            <button class="ob-chip" data-value="relaciones" onclick="obChipToggle(this)">Relaciones</button>
+            <button class="ob-chip" data-value="familia" onclick="obChipToggle(this)">Familia</button>
+            <button class="ob-chip" data-value="sueno" onclick="obChipToggle(this)">Sueño</button>
+            <button class="ob-chip" data-value="enfoque" onclick="obChipToggle(this)">Enfoque</button>
+            <button class="ob-chip" data-value="decisiones" onclick="obChipToggle(this)">Decisiones</button>
+            <button class="ob-chip" data-value="soltar" onclick="obChipToggle(this)">Soltar algo</button>
+          </div>
+          <button class="ob-btn-primary" onclick="obNext(2)">Continuar</button>
+        </div>
+      </div>
+
+      <!-- ── Paso 2 — Personalización ── -->
+      <div class="ob-step" id="ob-2">
+        <div class="ob-inner">
+          <p class="ob-eyebrow">Paso 2 de 5</p>
+          <h2 class="ob-headline">Personalicemos<br>tu experiencia.</h2>
+
+          <p class="ob-section-label">Voz que te guiará</p>
+          <div class="ob-voice-cards">
+            <button class="ob-voice-card active" data-group="voice" data-value="auto" onclick="obSelect(this,'voice')">
+              <div class="ob-voice-icon">◎</div>
+              <div class="ob-voice-name">Automático</div>
+              <div class="ob-voice-desc">Elegida por la IA</div>
+            </button>
+            <button class="ob-voice-card" data-group="voice" data-value="feminine" onclick="obSelect(this,'voice')">
+              <div class="ob-voice-icon">♀</div>
+              <div class="ob-voice-name">Femenina</div>
+              <div class="ob-voice-desc">Cálida y envolvente</div>
+            </button>
+            <button class="ob-voice-card" data-group="voice" data-value="masculine" onclick="obSelect(this,'voice')">
+              <div class="ob-voice-icon">♂</div>
+              <div class="ob-voice-name">Masculina</div>
+              <div class="ob-voice-desc">Firme y serena</div>
+            </button>
+          </div>
+
+          <p class="ob-section-label" style="margin-top:22px">La app se dirige a mí en</p>
+          <div class="ob-pill-row">
+            <button class="ob-pill active" data-group="gender" data-value="neutro" onclick="obSelect(this,'gender')">Neutro</button>
+            <button class="ob-pill" data-group="gender" data-value="femenino" onclick="obSelect(this,'gender')">Femenino</button>
+            <button class="ob-pill" data-group="gender" data-value="masculino" onclick="obSelect(this,'gender')">Masculino</button>
+          </div>
+
+          <button class="ob-btn-primary" onclick="obNext(3)">Continuar</button>
+        </div>
+      </div>
+
+      <!-- ── Paso 3 — Objetivo ── -->
+      <div class="ob-step" id="ob-3">
+        <div class="ob-inner">
+          <p class="ob-eyebrow">Paso 3 de 5</p>
+          <h2 class="ob-headline">¿Para qué<br>quieres meditar?</h2>
+          <div class="ob-goal-cards">
+            <button class="ob-goal-card" data-value="calma" onclick="obSelectGoal(this)">
+              <div class="ob-goal-emoji">🌊</div>
+              <div class="ob-goal-name">Calma</div>
+              <div class="ob-goal-desc">Soltar el estrés y encontrar paz interior</div>
+            </button>
+            <button class="ob-goal-card" data-value="claridad" onclick="obSelectGoal(this)">
+              <div class="ob-goal-emoji">✦</div>
+              <div class="ob-goal-name">Claridad</div>
+              <div class="ob-goal-desc">Ordenar la mente y ver las cosas con perspectiva</div>
+            </button>
+            <button class="ob-goal-card" data-value="liberacion" onclick="obSelectGoal(this)">
+              <div class="ob-goal-emoji">◯</div>
+              <div class="ob-goal-name">Liberación</div>
+              <div class="ob-goal-desc">Soltar emociones y sentirme más libre</div>
+            </button>
+          </div>
+          <button class="ob-btn-primary" id="ob-3-next" onclick="obNext(4)" disabled>Continuar</button>
+        </div>
+      </div>
+
+      <!-- ── Paso 4 — Duración ── -->
+      <div class="ob-step" id="ob-4">
+        <div class="ob-inner">
+          <p class="ob-eyebrow">Paso 4 de 5</p>
+          <h2 class="ob-headline">¿Cuánto tiempo<br>tienes ahora?</h2>
+          <div class="ob-dur-grid">
+            <button class="ob-dur-card active" data-value="5" onclick="obSelectDur(this)">
+              <div class="ob-dur-num">5</div>
+              <div class="ob-dur-label">min</div>
+              <div class="ob-dur-desc">Una pausa rápida</div>
+            </button>
+            <button class="ob-dur-card" data-value="10" onclick="obSelectDur(this)">
+              <div class="ob-dur-num">10</div>
+              <div class="ob-dur-label">min</div>
+              <div class="ob-dur-desc">Presencia real</div>
+            </button>
+            <button class="ob-dur-card" data-value="15" onclick="obSelectDur(this)">
+              <div class="ob-dur-num">15</div>
+              <div class="ob-dur-label">min</div>
+              <div class="ob-dur-desc">Transformación</div>
+            </button>
+            <button class="ob-dur-card" data-value="20" onclick="obSelectDur(this)">
+              <div class="ob-dur-num">20</div>
+              <div class="ob-dur-label">min</div>
+              <div class="ob-dur-desc">Inmersión total</div>
+            </button>
+          </div>
+          <button class="ob-btn-primary" onclick="obNext(5)">Continuar</button>
+        </div>
+      </div>
+
+      <!-- ── Paso 5 — Preview ── -->
+      <div class="ob-step" id="ob-5">
+        <div class="ob-inner ob-inner-center">
+          <p class="ob-eyebrow">Paso 5 de 5</p>
+          <h2 class="ob-headline" style="text-align:center">Así suena<br>tu meditación.</h2>
+          <p class="ob-sub" style="text-align:center">Cada sesión es única, generada<br>solo para ti en ese momento.</p>
+
+          <div class="breathing-wrap loading-mode" id="ob-orb" style="margin:32px auto">
+            <div class="b-ring r1"></div>
+            <div class="b-ring r2"></div>
+            <div class="b-ring r3"></div>
+            <div class="b-core">
+              <button class="play-pause-btn" onclick="obTogglePreview()" id="ob-play-btn">
+                <svg id="ob-icon-play" width="22" height="22" viewBox="0 0 28 28" fill="none">
+                  <path d="M10 7l12 7-12 7V7z" fill="currentColor"/>
+                </svg>
+                <svg id="ob-icon-pause" width="22" height="22" viewBox="0 0 28 28" fill="none" style="display:none">
+                  <rect x="8" y="6" width="4" height="16" rx="1.5" fill="currentColor"/>
+                  <rect x="16" y="6" width="4" height="16" rx="1.5" fill="currentColor"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <p class="ob-preview-hint" id="ob-preview-hint">Toca para escuchar una muestra</p>
+
+          <button class="ob-btn-primary" onclick="obNext(6)" style="margin-top:auto">Ver planes</button>
+        </div>
+      </div>
+
+      <!-- ── Paso 6 — Paywall onboarding ── -->
+      <div class="ob-step" id="ob-6">
+        <div class="ob-inner">
+          <p class="ob-eyebrow">Elige tu plan</p>
+          <h2 class="ob-headline">Tu práctica,<br>sin límites.</h2>
+
+          <div class="ob-plan-cards">
+            <button class="ob-plan-card ob-plan-featured" onclick="obStartPlan('premium')">
+              <div class="ob-plan-badge">★ Recomendado</div>
+              <div class="ob-plan-name">Premium</div>
+              <div class="ob-plan-price">€19.99<span class="ob-plan-period">/mes</span></div>
+              <ul class="ob-plan-features">
+                <li>25 meditaciones al mes</li>
+                <li>Guardado ilimitado</li>
+                <li>Todas las duraciones</li>
+                <li>Voz personalizable</li>
+              </ul>
+              <div class="ob-plan-cta-btn">Empezar</div>
+            </button>
+            <button class="ob-plan-card" onclick="obStartPlan('essential')">
+              <div class="ob-plan-name">Essential</div>
+              <div class="ob-plan-price">€9.99<span class="ob-plan-period">/mes</span></div>
+              <ul class="ob-plan-features">
+                <li>10 meditaciones al mes</li>
+                <li>Guardar hasta 20</li>
+                <li>Duraciones hasta 15 min</li>
+              </ul>
+              <div class="ob-plan-cta-btn ob-plan-cta-ghost">Elegir</div>
+            </button>
+          </div>
+
+          <p class="ob-plan-guarantee">Sin permanencia · Cancela cuando quieras</p>
+          <button class="ob-free-link" onclick="obSkipToFree()">Empezar gratis con 1 meditación</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PANTALLA HOME
+       ══════════════════════════════════════════ -->
+  <div id="screen-home" class="screen">
     <div class="screen-inner">
 
       <div class="top-bar">
@@ -58,40 +256,59 @@
       </div>
 
       <div class="home-body">
-        <p class="home-eyebrow" id="home-greeting">Bienvenido</p>
-        <h1 class="home-headline">Tu momento<br>de calma.</h1>
-        <p class="home-subline">Generada para ti,<br>en este preciso instante.</p>
 
-        <button class="home-cta" onclick="showCreate()">
-          <span>Crear mi meditación</span>
-          <span class="home-cta-arrow">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-        </button>
+        <!-- Saludo + CTA principal -->
+        <div class="home-hero">
+          <p class="home-greeting" id="home-greeting">¿Cómo te sientes hoy... de verdad?</p>
+          <button class="home-cta" onclick="showCreate()">
+            <span>Crear meditación para mí</span>
+            <span class="home-cta-arrow">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </button>
+        </div>
 
-        <div class="home-stats" id="home-stats" style="display:none">
-          <div class="home-stat">
-            <div class="home-stat-value" id="stat-sessions">—</div>
-            <div class="home-stat-label">Sesiones</div>
+        <!-- Accesos rápidos -->
+        <div class="quick-access">
+          <button class="quick-btn" onclick="quickAccess('ansiedad','Me siento ansioso y necesito calmarme')">Ansiedad</button>
+          <button class="quick-btn" onclick="quickAccess('sueno','Necesito prepararme para dormir')">Dormir</button>
+          <button class="quick-btn" onclick="quickAccess('claridad','Necesito claridad mental y enfocarme')">Claridad</button>
+          <button class="quick-btn" onclick="quickAccess('liberacion','Necesito soltar algo que me está pesando')">Soltar</button>
+          <button class="quick-btn" onclick="quickAccess('enfoque','Quiero concentrarme y ser más productivo')">Enfoque</button>
+        </div>
+
+        <!-- Gamificación -->
+        <div class="home-gam" id="home-gam" style="display:none">
+          <div class="gam-stat">
+            <div class="gam-value" id="gam-streak">0</div>
+            <div class="gam-label">Racha</div>
           </div>
-          <div class="home-stat">
-            <div class="home-stat-value" id="stat-remaining">—</div>
-            <div class="home-stat-label">Restantes</div>
+          <div class="gam-divider"></div>
+          <div class="gam-stat">
+            <div class="gam-value" id="gam-minutes">0</div>
+            <div class="gam-label">Min esta semana</div>
           </div>
-          <div class="home-stat">
-            <div class="home-stat-value" id="stat-plan">—</div>
-            <div class="home-stat-label">Plan</div>
+          <div class="gam-divider"></div>
+          <div class="gam-stat">
+            <div class="gam-value gam-level" id="gam-level">—</div>
+            <div class="gam-label">Nivel</div>
           </div>
         </div>
-      </div>
 
+        <!-- Meditaciones recientes -->
+        <div id="home-recents" style="display:none">
+          <p class="home-section-title">Recientes</p>
+          <div id="home-recents-list" class="home-recents-list"></div>
+        </div>
+
+      </div>
     </div>
   </div>
 
   <!-- ══════════════════════════════════════════
-       PANTALLA 2 — Crear meditación
+       PANTALLA CREAR — conversacional
        ══════════════════════════════════════════ -->
   <div id="screen-create" class="screen">
     <div class="screen-inner">
@@ -103,76 +320,90 @@
         Volver
       </button>
 
-      <div class="create-card">
-        <h2 class="create-headline">¿Cómo te sientes<br>ahora mismo?</h2>
+      <!-- Sección 1: Input -->
+      <div class="convo-section" id="cs-input">
+        <h2 class="convo-headline">¿Qué quieres trabajar<br>ahora mismo?</h2>
+        <textarea
+          id="input-free"
+          class="convo-textarea"
+          placeholder="Escribe lo que sientes o lo que tienes en la cabeza..."
+          oninput="onInputChange()"
+        ></textarea>
+        <button class="convo-continue-btn" id="btn-continue-input" onclick="convoRevealIntent()" disabled>
+          Continuar
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
 
-        <!-- Mode tabs — visibles arriba del textarea -->
-        <div class="mode-tabs">
-          <button class="mode-tab active" id="tab-free" onclick="setMode('free')">Texto libre</button>
-          <button class="mode-tab" id="tab-guided" onclick="setMode('guided')">Preguntas guiadas</button>
+      <!-- Sección 2: Intent (oculta hasta que hay texto) -->
+      <div class="convo-section convo-hidden" id="cs-intent">
+        <p class="convo-question">¿Qué quieres hacer con esto?</p>
+        <div class="intent-grid">
+          <button class="intent-card" data-value="soltar" onclick="selectIntent(this)">
+            <div class="intent-icon">◯</div>
+            <div class="intent-name">Soltarlo</div>
+            <div class="intent-desc">Dejar ir lo que me pesa</div>
+          </button>
+          <button class="intent-card" data-value="entender" onclick="selectIntent(this)">
+            <div class="intent-icon">✦</div>
+            <div class="intent-name">Entenderlo</div>
+            <div class="intent-desc">Ver con más claridad</div>
+          </button>
+          <button class="intent-card" data-value="calmar" onclick="selectIntent(this)">
+            <div class="intent-icon">∿</div>
+            <div class="intent-name">Calmarme</div>
+            <div class="intent-desc">Bajar la intensidad</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sección 3: Config (oculta hasta que hay intent) -->
+      <div class="convo-section convo-hidden" id="cs-config">
+        <p class="convo-question">Configura tu sesión</p>
+
+        <div class="convo-pref-group">
+          <span class="pref-label">Duración</span>
+          <div id="grp-duration" class="pill-row">
+            <button class="pill active" data-value="5"  onclick="selectPill(this,'grp-duration','duration')">5 min</button>
+            <button class="pill"        data-value="10" onclick="selectPill(this,'grp-duration','duration')">10 min</button>
+            <button class="pill"        data-value="15" onclick="selectPill(this,'grp-duration','duration')">15 min</button>
+            <button class="pill"        data-value="20" onclick="selectPill(this,'grp-duration','duration')">20 min</button>
+          </div>
+          <div id="credits-info" class="credits-info" style="display:none">
+            <span class="credits-costs">5 min = 1 cr · 10 min = 2 cr · 15 min = 3 cr · 20 min = 4 cr</span>
+            <span id="credits-remaining-text" class="credits-remaining"></span>
+          </div>
         </div>
 
-        <div id="mode-free" class="input-block">
-          <textarea id="input-free" class="textarea-main" placeholder="Cuéntame... ¿qué está pasando? ¿cómo llevas el día?"></textarea>
+        <div class="convo-prefs-split">
+          <div class="convo-pref-group">
+            <span class="pref-label">Voz</span>
+            <div id="grp-voice" class="pill-row">
+              <button class="pill active" data-value="auto"      onclick="selectPill(this,'grp-voice','voice')">Auto</button>
+              <button class="pill"        data-value="feminine"  onclick="selectPill(this,'grp-voice','voice')">Femenina</button>
+              <button class="pill"        data-value="masculine" onclick="selectPill(this,'grp-voice','voice')">Masculina</button>
+            </div>
+          </div>
+          <div class="convo-pref-group">
+            <span class="pref-label">Me diriges en</span>
+            <div id="grp-gender" class="pill-row">
+              <button class="pill"        data-value="femenino"  onclick="selectPill(this,'grp-gender','gender')">Fem.</button>
+              <button class="pill"        data-value="masculino" onclick="selectPill(this,'grp-gender','gender')">Masc.</button>
+              <button class="pill active" data-value="neutro"    onclick="selectPill(this,'grp-gender','gender')">Neutro</button>
+            </div>
+          </div>
         </div>
 
-        <div id="mode-guided" class="input-block hidden">
-          <div class="guided-item">
-            <label class="field-label">¿Cómo te sientes ahora mismo?</label>
-            <textarea id="guided-1" class="textarea-small" placeholder="Ej: estresado, cansado, ansioso, bien pero disperso..."></textarea>
-          </div>
-          <div class="guided-item">
-            <label class="field-label">¿Qué quieres lograr?</label>
-            <textarea id="guided-2" class="textarea-small" placeholder="Ej: relajarme antes de dormir, calmar la ansiedad, enfocarme..."></textarea>
-          </div>
-          <div class="guided-item">
-            <label class="field-label">¿Algo más? <span class="optional">(opcional)</span></label>
-            <textarea id="guided-3" class="textarea-small" placeholder="Ej: tuve un día muy difícil, mañana tengo algo importante..."></textarea>
-          </div>
-        </div>
-
-        <div class="prefs-section">
-          <div class="pref-group">
-            <span class="pref-label">Duración</span>
-            <div id="grp-duration" class="pill-row">
-              <button class="pill active" data-value="5"  onclick="selectPill(this,'grp-duration','duration')">5 min</button>
-              <button class="pill"        data-value="10" onclick="selectPill(this,'grp-duration','duration')">10 min</button>
-              <button class="pill"        data-value="15" onclick="selectPill(this,'grp-duration','duration')">15 min</button>
-              <button class="pill"        data-value="20" onclick="selectPill(this,'grp-duration','duration')">20 min</button>
-            </div>
-            <div id="credits-info" class="credits-info" style="display:none">
-              <span class="credits-costs">5 min = 1 cr · 10 min = 2 cr · 15 min = 3 cr · 20 min = 4 cr</span>
-              <span id="credits-remaining-text" class="credits-remaining"></span>
-            </div>
-          </div>
-
-          <div class="prefs-split">
-            <div class="pref-group">
-              <span class="pref-label">Voz</span>
-              <div id="grp-voice" class="pill-row">
-                <button class="pill active" data-value="auto"      onclick="selectPill(this,'grp-voice','voice')">Automático</button>
-                <button class="pill"        data-value="feminine"  onclick="selectPill(this,'grp-voice','voice')">Femenina</button>
-                <button class="pill"        data-value="masculine" onclick="selectPill(this,'grp-voice','voice')">Masculina</button>
-              </div>
-            </div>
-            <div class="pref-group">
-              <span class="pref-label">Me diriges en</span>
-              <div id="grp-gender" class="pill-row">
-                <button class="pill"        data-value="femenino"  onclick="selectPill(this,'grp-gender','gender')">Femenino</button>
-                <button class="pill"        data-value="masculino" onclick="selectPill(this,'grp-gender','gender')">Masculino</button>
-                <button class="pill active" data-value="neutro"    onclick="selectPill(this,'grp-gender','gender')">Neutro</button>
-              </div>
-            </div>
-          </div>
-          <div class="pref-group">
-            <span class="pref-label">Sonido de fondo</span>
-            <div id="grp-music" class="pill-row">
-              <button class="pill active" data-value="auto"           onclick="selectPill(this,'grp-music','music')">Automático (Recomendado)</button>
-              <button class="pill"        data-value="calma"          onclick="selectPill(this,'grp-music','music')">Calma</button>
-              <button class="pill"        data-value="transformacion" onclick="selectPill(this,'grp-music','music')">Transformación</button>
-              <button class="pill"        data-value="amor"           onclick="selectPill(this,'grp-music','music')">Amor</button>
-              <button class="pill"        data-value="espiritual"     onclick="selectPill(this,'grp-music','music')">Espiritual</button>
-            </div>
+        <div class="convo-pref-group">
+          <span class="pref-label">Sonido de fondo</span>
+          <div id="grp-music" class="pill-row">
+            <button class="pill active" data-value="auto"           onclick="selectPill(this,'grp-music','music')">Auto</button>
+            <button class="pill"        data-value="calma"          onclick="selectPill(this,'grp-music','music')">Calma</button>
+            <button class="pill"        data-value="transformacion" onclick="selectPill(this,'grp-music','music')">Transformación</button>
+            <button class="pill"        data-value="amor"           onclick="selectPill(this,'grp-music','music')">Amor</button>
+            <button class="pill"        data-value="espiritual"     onclick="selectPill(this,'grp-music','music')">Espiritual</button>
           </div>
         </div>
 
@@ -181,15 +412,16 @@
         </div>
       </div>
 
+      <!-- Botón generar: sticky -->
       <div class="btn-generate-wrap">
-        <button id="btn-generate" class="btn-primary" onclick="goToPreferences()">Crear mi meditación</button>
+        <button id="btn-generate" class="btn-primary" onclick="goToGenerate()">Crear mi meditación</button>
       </div>
 
     </div>
   </div>
 
   <!-- ══════════════════════════════════════════
-       PANTALLA 3 — Cargando
+       PANTALLA CARGANDO
        ══════════════════════════════════════════ -->
   <div id="screen-loading" class="screen">
     <div class="screen-inner center">
@@ -204,15 +436,15 @@
       <p id="loading-title" class="loading-title">Escuchándote...</p>
       <p id="loading-sub" class="loading-sub">Leyendo lo que sientes y creando algo que solo existe para este momento.</p>
 
-      <button id="btn-retry"     class="btn-ghost" onclick="retryFromError()"   style="display:none">Intentar de nuevo</button>
-      <button id="btn-back-input" class="btn-ghost" onclick="backToInput()"     style="display:none">Cambiar el texto</button>
-      <button id="btn-cancel"    class="btn-ghost" onclick="cancelGeneration()" style="display:none">Cancelar</button>
+      <button id="btn-retry"      class="btn-ghost" onclick="retryFromError()"   style="display:none">Intentar de nuevo</button>
+      <button id="btn-back-input" class="btn-ghost" onclick="backToInput()"      style="display:none">Cambiar el texto</button>
+      <button id="btn-cancel"     class="btn-ghost" onclick="cancelGeneration()" style="display:none">Cancelar</button>
 
     </div>
   </div>
 
   <!-- ══════════════════════════════════════════
-       PANTALLA 4 — Reproductor
+       PANTALLA REPRODUCTOR
        ══════════════════════════════════════════ -->
   <div id="screen-player" class="screen">
     <div class="screen-inner center player-inner">
@@ -307,6 +539,7 @@
   <!-- Audio -->
   <audio id="audio" onended="handleEnd()"></audio>
   <audio id="audio-ambient" loop preload="none"></audio>
+  <audio id="audio-preview" preload="none"></audio>
 
   <!-- ══════════════════════════════════════════
        MODAL — Paywall
@@ -316,53 +549,46 @@
       <p class="paywall-title">Tu próxima meditación<br>te espera.</p>
 
       <div class="plan-compare">
-        <!-- Cabecera de planes -->
         <div class="pc-head pc-label-head"></div>
         <div class="pc-head">
           <div class="pc-name">Gratis</div>
-          <div class="pc-price">$0</div>
+          <div class="pc-price">€0</div>
         </div>
         <div class="pc-head">
           <div class="pc-name">Essential</div>
-          <div class="pc-price">$11.99<span class="pc-per-month">/mes</span></div>
+          <div class="pc-price">€9.99<span class="pc-per-month">/mes</span></div>
         </div>
         <div class="pc-head pc-head-feat">
           <div class="pc-badge-inline">★ Popular</div>
           <div class="pc-name">Premium</div>
-          <div class="pc-price">$22.99<span class="pc-per-month">/mes</span></div>
+          <div class="pc-price">€19.99<span class="pc-per-month">/mes</span></div>
         </div>
 
-        <!-- Meditaciones -->
         <div class="pc-label">Meditaciones</div>
         <div class="pc-cell">1</div>
         <div class="pc-cell">10/mes †</div>
         <div class="pc-cell pc-cell-feat">25/mes †</div>
 
-        <!-- Duración -->
         <div class="pc-label">Duración</div>
         <div class="pc-cell pc-dim">5 min</div>
         <div class="pc-cell">≤ 15 min</div>
         <div class="pc-cell pc-cell-feat">≤ 20 min</div>
 
-        <!-- Voz -->
         <div class="pc-label">Voz</div>
         <div class="pc-cell pc-dim">Auto</div>
         <div class="pc-cell pc-personalizable">Personalizable</div>
         <div class="pc-cell pc-cell-feat pc-personalizable">Personalizable</div>
 
-        <!-- Sonido de fondo -->
         <div class="pc-label">Sonido</div>
         <div class="pc-cell pc-dim">Auto</div>
         <div class="pc-cell pc-personalizable">Personalizable</div>
         <div class="pc-cell pc-cell-feat pc-personalizable">Personalizable</div>
 
-        <!-- Guardar -->
         <div class="pc-label">Guardar</div>
         <div class="pc-cell pc-no">—</div>
         <div class="pc-cell">Hasta 20</div>
         <div class="pc-cell pc-cell-feat">Sin límite</div>
 
-        <!-- CTAs -->
         <div class="pc-label"></div>
         <div class="pc-cta-cell"><span class="pc-current-label">Tu plan</span></div>
         <div class="pc-cta-cell"><button class="btn-pc" onclick="upgradePlan('essential')">Elegir</button></div>
@@ -426,15 +652,6 @@
         if (d) d.classList.remove('open');
       }
     });
-
-    // ── Greeting by time of day ────────────────────────────────
-    function updateGreeting() {
-      const h = new Date().getHours();
-      const greet = h < 12 ? 'Buenos días' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
-      const el = document.getElementById('home-greeting');
-      if (el) el.textContent = greet;
-    }
-    updateGreeting();
   </script>
 </body>
 </html>

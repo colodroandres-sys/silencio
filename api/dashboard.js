@@ -12,12 +12,12 @@ module.exports = async (req, res) => {
   const db = getSupabase();
 
   // Obtener datos en paralelo
-  const [user, limitData, savedResult, allResult] = await Promise.all([
+  const [user, limitData, savedResult, allResult, recentResult] = await Promise.all([
     getOrCreateUser(clerkId, email),
     checkUsageLimit(clerkId),
     db
       .from('meditations')
-      .select('id, title, duration, voice, audio_path, silence_map, created_at')
+      .select('id, title, duration, voice, audio_path, silence_map, created_at, emotion_tag, intent')
       .eq('clerk_id', clerkId)
       .eq('is_saved', true)
       .order('created_at', { ascending: false })
@@ -26,11 +26,18 @@ module.exports = async (req, res) => {
       .from('meditations')
       .select('duration, created_at')
       .eq('clerk_id', clerkId)
+      .order('created_at', { ascending: false }),
+    db
+      .from('meditations')
+      .select('id, title, duration, voice, created_at, emotion_tag, intent')
+      .eq('clerk_id', clerkId)
       .order('created_at', { ascending: false })
+      .limit(5)
   ]);
 
   const savedMeds = savedResult.data || [];
   const allMeds = allResult.data || [];
+  const recentMeds = recentResult.data || [];
 
   // Total de minutos meditados (todas las sesiones, no solo guardadas)
   const totalMinutes = allMeds.reduce((s, m) => s + (m.duration || 0), 0);
@@ -78,6 +85,7 @@ module.exports = async (req, res) => {
     streak,
     totalSessions: allMeds.length,
     savedCount: savedMeds.length,
-    meditations
+    meditations,
+    recentMeditations: recentMeds
   });
 };

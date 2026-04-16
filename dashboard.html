@@ -26,6 +26,30 @@
     .dash-loading { text-align: center; padding: 80px 20px; color: var(--text-45); font-size: 0.875rem; }
     .dash-error { text-align: center; padding: 64px 20px; color: var(--text-45); font-size: 0.875rem; line-height: 1.6; }
     .dash-error a { color: var(--sand); text-decoration: none; display: inline-block; margin-top: 12px; }
+
+    /* Filtros */
+    .dash-filters { margin-bottom: 8px; }
+    .filter-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+    .filter-label { font-size: 0.7rem; color: var(--text-45); text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0; width: 58px; }
+    .filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+    .filter-pill {
+      font-size: 0.75rem; font-family: 'Inter', sans-serif; padding: 5px 12px;
+      border-radius: 20px; border: 1px solid rgba(242,237,228,0.15);
+      background: rgba(242,237,228,0.05); color: var(--text-70);
+      cursor: pointer; transition: all 0.18s; white-space: nowrap;
+    }
+    .filter-pill:hover { border-color: rgba(242,237,228,0.3); color: var(--text-85); }
+    .filter-pill.active { background: rgba(201,169,110,0.18); border-color: rgba(201,169,110,0.5); color: var(--sand); }
+
+    /* Tag en la tarjeta */
+    .med-tags { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+    .med-tag {
+      font-size: 0.65rem; padding: 2px 8px; border-radius: 10px;
+      background: rgba(201,169,110,0.12); color: rgba(201,169,110,0.75);
+      border: 1px solid rgba(201,169,110,0.2); text-transform: capitalize;
+    }
+    .med-tag.intent { background: rgba(180,160,220,0.1); color: rgba(180,160,220,0.75); border-color: rgba(180,160,220,0.2); }
+    .dash-empty-filter { text-align: center; padding: 48px 20px; color: var(--text-45); font-size: 0.875rem; line-height: 1.6; }
   </style>
 </head>
 <body>
@@ -78,6 +102,30 @@
       </div>
 
       <p class="dash-section-title">Guardadas</p>
+
+      <div class="dash-filters">
+        <div class="filter-row">
+          <span class="filter-label">Emoción</span>
+          <div class="filter-pills" id="filter-emotion">
+            <button class="filter-pill active" data-val="">Todas</button>
+            <button class="filter-pill" data-val="ansiedad">Ansiedad</button>
+            <button class="filter-pill" data-val="sueno">Sueño</button>
+            <button class="filter-pill" data-val="claridad">Claridad</button>
+            <button class="filter-pill" data-val="liberacion">Liberación</button>
+            <button class="filter-pill" data-val="enfoque">Enfoque</button>
+          </div>
+        </div>
+        <div class="filter-row">
+          <span class="filter-label">Duración</span>
+          <div class="filter-pills" id="filter-duration">
+            <button class="filter-pill active" data-val="">Todas</button>
+            <button class="filter-pill" data-val="5">5 min</button>
+            <button class="filter-pill" data-val="10">10 min</button>
+            <button class="filter-pill" data-val="15">15 min</button>
+          </div>
+        </div>
+      </div>
+
       <div id="dash-library" class="med-list"></div>
 
     </div>
@@ -120,6 +168,55 @@
 
   <script>
     let clerk = null;
+    let allMeditations = [];
+    let activeEmotion = '';
+    let activeDuration = '';
+
+    // ── Filtros ────────────────────────────────────────────────────
+    function initFilters() {
+      document.getElementById('filter-emotion').addEventListener('click', e => {
+        const pill = e.target.closest('.filter-pill');
+        if (!pill) return;
+        document.querySelectorAll('#filter-emotion .filter-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        activeEmotion = pill.dataset.val;
+        applyFilters();
+      });
+      document.getElementById('filter-duration').addEventListener('click', e => {
+        const pill = e.target.closest('.filter-pill');
+        if (!pill) return;
+        document.querySelectorAll('#filter-duration .filter-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        activeDuration = pill.dataset.val;
+        applyFilters();
+      });
+    }
+
+    function applyFilters() {
+      let filtered = allMeditations;
+      if (activeEmotion) filtered = filtered.filter(m => m.emotion_tag === activeEmotion);
+      if (activeDuration) filtered = filtered.filter(m => String(m.duration) === activeDuration);
+      renderLibrary(filtered);
+    }
+
+    function renderLibrary(meditations) {
+      const library = document.getElementById('dash-library');
+      if (!meditations || meditations.length === 0) {
+        if (allMeditations.length === 0) {
+          library.innerHTML = `
+            <div class="dash-empty">
+              <strong>Aún no hay nada guardado.</strong>
+              Cuando termines una meditación, pulsa "Guardar en mi biblioteca" para volver a escucharla.
+              <br>
+              <a class="dash-create-btn" href="/">Crear una meditación</a>
+            </div>`;
+        } else {
+          library.innerHTML = `<div class="dash-empty-filter">Ninguna meditación coincide con los filtros seleccionados.</div>`;
+        }
+      } else {
+        library.innerHTML = meditations.map(m => renderMedCard(m)).join('');
+      }
+    }
 
     async function initClerk() {
       let attempts = 0;
@@ -173,18 +270,9 @@
       document.getElementById('stat-minutes').textContent  = totalMinutes || 0;
       document.getElementById('stat-sessions').textContent = totalSessions || 0;
 
-      const library = document.getElementById('dash-library');
-      if (!meditations || meditations.length === 0) {
-        library.innerHTML = `
-          <div class="dash-empty">
-            <strong>Aún no hay nada guardado.</strong>
-            Cuando termines una meditación, pulsa "Guardar en mi biblioteca" para volver a escucharla.
-            <br>
-            <a class="dash-create-btn" href="/">Crear una meditación</a>
-          </div>`;
-      } else {
-        library.innerHTML = meditations.map(m => renderMedCard(m)).join('');
-      }
+      allMeditations = meditations || [];
+      renderLibrary(allMeditations);
+      initFilters();
 
       document.getElementById('dash-loading').style.display  = 'none';
       document.getElementById('dash-content').style.display  = 'block';
@@ -218,6 +306,14 @@
           </div>
         </div>` : '';
 
+      const emotionLabels = { ansiedad: 'Ansiedad', sueno: 'Sueño', claridad: 'Claridad', liberacion: 'Liberación', enfoque: 'Enfoque' };
+      const intentLabels  = { soltar: 'Soltar', entender: 'Entender', calmar: 'Calmar' };
+      const tagsHtml = (m.emotion_tag || m.intent) ? `
+        <div class="med-tags">
+          ${m.emotion_tag ? `<span class="med-tag">${emotionLabels[m.emotion_tag] || m.emotion_tag}</span>` : ''}
+          ${m.intent      ? `<span class="med-tag intent">${intentLabels[m.intent] || m.intent}</span>` : ''}
+        </div>` : '';
+
       return `
         <div class="med-card">
           <div class="med-card-header">
@@ -228,6 +324,7 @@
                 <span>${m.duration} min</span>
                 <span>${voiceLabel}</span>
               </div>
+              ${tagsHtml}
               ${player}
             </div>
             ${playBtn}

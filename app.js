@@ -2,33 +2,49 @@
 //  ESTADO
 // =============================================
 const state = {
-  mode: 'free',
-  userInput: '',
-  userName: '',
-  duration: '5',
-  voice: 'auto',
-  music: 'auto',
-  gender: 'neutro',
-  userPlan: 'free',
+  userInput:   '',
+  userName:    '',
+  duration:    '5',
+  voice:       'auto',
+  music:       'auto',
+  gender:      'neutro',
+  intent:      null,   // 'soltar' | 'entender' | 'calmar'
+  emotionTag:  null,   // 'ansiedad' | 'sueno' | 'claridad' | 'liberacion' | 'enfoque'
+  userPlan:    'free',
   userCanGenerate: true,
-  isPlaying: false,
-  currentSec: 0,
-  totalSec: 0,
-  audioBlobUrl: null,
+  isPlaying:   false,
+  currentSec:  0,
+  totalSec:    0,
+  audioBlobUrl:         null,
   currentMeditationId: null,
-  silenceMap: [],        // [{time, duration}] — silencios a insertar durante la reproducción
-  silenceOffset: 0,     // segundos acumulados de silencio ya ejecutados
-  silenceTimer: null,   // setInterval activo durante un silencio
-  silenceTimeoutId: null, // setTimeout para disparar el próximo silencio con precisión
-  introTimeoutId: null,  // setTimeout del intro de 3s de música antes de arrancar la voz
+  silenceMap:          [],
+  silenceOffset:       0,
+  silenceTimer:        null,
+  silenceTimeoutId:    null,
+  introTimeoutId:      null,
   ambientFadeInterval: null,
-  inSilence: false,     // true solo mientras dura un silencio programado
-  profileCompleted: false  // true si el usuario ya completó el perfil bonus
+  inSilence:           false,
+  profileCompleted:    false,
+  // gamificación
+  streak:          0,
+  minutesThisWeek: 0,
+  totalSessions:   0,
+  level:           'Inquieto'
+};
+
+// onboarding preferences (cargadas de localStorage)
+const obPrefs = {
+  voice:    localStorage.getItem('ob_voice')    || 'auto',
+  gender:   localStorage.getItem('ob_gender')   || 'neutro',
+  duration: localStorage.getItem('ob_duration') || '5',
+  goal:     localStorage.getItem('ob_goal')     || null,
+  topics:   JSON.parse(localStorage.getItem('ob_topics') || '[]')
 };
 
 let abortController = null;
-let slowTimer = null;
-let shakeInterval = null;
+let slowTimer       = null;
+let shakeInterval   = null;
+let obPreviewPlaying = false;
 
 // =============================================
 //  SONIDO DE FONDO
@@ -41,10 +57,10 @@ const AMBIENT_TRACKS = [
 ];
 
 const MUSIC_MAP = {
-  calma:        0,  // 258Hz
-  transformacion: 1, // 417Hz
-  amor:         2,  // 528Hz
-  espiritual:   3
+  calma:         0,
+  transformacion: 1,
+  amor:          2,
+  espiritual:    3
 };
 
 function loadRandomAmbient() {
@@ -73,12 +89,10 @@ function ambientPause() {
 function ambientFadeOut() {
   const ambient = document.getElementById('audio-ambient');
   if (ambient.paused || !ambient.src || ambient.src === window.location.href) return;
-
   const startVol = ambient.volume;
-  const steps    = 40; // 4 segundos, un tick cada 100ms
-  let step       = 0;
-
-  if (state.ambientFadeInterval) { clearInterval(state.ambientFadeInterval); }
+  const steps    = 40;
+  let   step     = 0;
+  if (state.ambientFadeInterval) clearInterval(state.ambientFadeInterval);
   state.ambientFadeInterval = setInterval(() => {
     step++;
     ambient.volume = Math.max(0, startVol * (1 - step / steps));
@@ -86,7 +100,7 @@ function ambientFadeOut() {
       clearInterval(state.ambientFadeInterval);
       state.ambientFadeInterval = null;
       ambient.pause();
-      ambient.volume = 0.25; // restaurar para la próxima sesión
+      ambient.volume = 0.25;
     }
   }, 100);
 }
@@ -104,25 +118,20 @@ function ambientStop() {
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const next = document.getElementById(id);
-  next.classList.add('active');
-  next.scrollTop = 0;
+  if (next) { next.classList.add('active'); next.scrollTop = 0; }
 
-  // Ocultar nav durante carga y player
   const nav = document.getElementById('bottom-nav');
   if (nav) {
-    const hideNav = id === 'screen-loading' || id === 'screen-player';
+    const hideNav = id === 'screen-loading' || id === 'screen-player' || id === 'screen-onboarding';
     nav.classList.toggle('hidden', hideNav);
   }
 
-  // Ocultar footer en todas las pantallas excepto home
   const footer = document.querySelector('.site-footer');
-  if (footer) footer.style.display = id === 'screen-home' ? '' : 'none';
+  if (footer) footer.style.display = (id === 'screen-home') ? '' : 'none';
 
-  // Actualizar tab activo en el nav
   document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
   if (id === 'screen-home') {
-    const el = document.getElementById('nav-home');
-    if (el) el.classList.add('active');
+    document.getElementById('nav-home')?.classList.add('active');
   }
 }
 
@@ -130,78 +139,290 @@ function showHome() {
   showScreen('screen-home');
 }
 
-function showCreate() {
+function showCreate(skipToConfig = false) {
+  // Aplicar preferencias de onboarding la primera vez
+  if (obPrefs.voice !== 'auto' && state.userPlan !== 'free') {
+    state.voice = obPrefs.voice;
+    document.querySelectorAll('#grp-voice .pill').forEach(p => p.classList.remove('active'));
+    document.querySelector(`#grp-voice .pill[data-value="${obPrefs.voice}"]`)?.classList.add('active');
+  }
+  if (obPrefs.gender !== 'neutro') {
+    state.gender = obPrefs.gender;
+    document.querySelectorAll('#grp-gender .pill').forEach(p => p.classList.remove('active'));
+    document.querySelector(`#grp-gender .pill[data-value="${obPrefs.gender}"]`)?.classList.add('active');
+  }
+  if (obPrefs.duration && obPrefs.duration !== '5') {
+    const allowed = state.userPlan === 'premium' || (state.userPlan === 'essential' && obPrefs.duration !== '20');
+    if (allowed) {
+      state.duration = obPrefs.duration;
+      document.querySelectorAll('#grp-duration .pill').forEach(p => p.classList.remove('active'));
+      document.querySelector(`#grp-duration .pill[data-value="${obPrefs.duration}"]`)?.classList.add('active');
+    }
+  }
+
+  if (skipToConfig) {
+    // Quick access: ya tenemos texto, revelar intent + config directamente
+    document.getElementById('input-free').value = state.userInput;
+    const btnContinue = document.getElementById('btn-continue-input');
+    if (btnContinue) btnContinue.disabled = false;
+    convoRevealIntent();
+  }
+
+  applyAllLocks();
   showScreen('screen-create');
 }
 
 // =============================================
-//  PANTALLA 1 — Input
+//  ONBOARDING
 // =============================================
-function setMode(mode) {
-  state.mode = mode;
-  document.getElementById('mode-free').classList.toggle('hidden', mode !== 'free');
-  document.getElementById('mode-guided').classList.toggle('hidden', mode !== 'guided');
-  document.getElementById('tab-free')?.classList.toggle('active', mode === 'free');
-  document.getElementById('tab-guided')?.classList.toggle('active', mode === 'guided');
+let obCurrentStep = 1;
+const OB_TOTAL_STEPS = 5; // sin contar el paso de plan
+
+function checkOnboarding() {
+  if (!localStorage.getItem('stillova_ob_done')) {
+    showOnboarding();
+  }
 }
 
-function goToPreferences() {
-  let input = '';
+function showOnboarding() {
+  showScreen('screen-onboarding');
+  obGoToStep(1);
+}
 
-  if (state.mode === 'free') {
-    const el = document.getElementById('input-free');
-    input = el.value.trim();
-    if (!input) { shake(el); return; }
-    if (input.length > 500) { showCharError(el, `Máximo 500 caracteres (tienes ${input.length})`); return; }
-  } else {
-    const g1 = document.getElementById('guided-1').value.trim();
-    const g2 = document.getElementById('guided-2').value.trim();
-    if (!g1) { shake(document.getElementById('guided-1')); return; }
-    if (!g2) { shake(document.getElementById('guided-2')); return; }
-    const g3 = document.getElementById('guided-3').value.trim();
-    input = [g1, g2, g3].filter(Boolean).join('\n');
-    if (input.length > 500) { showCharError(document.getElementById('guided-1'), `Máximo 500 caracteres en total (tienes ${input.length})`); return; }
+function obGoToStep(n) {
+  obCurrentStep = n;
+
+  // Activar el step correcto
+  document.querySelectorAll('.ob-step').forEach(s => s.classList.remove('active'));
+  const step = document.getElementById(`ob-${n}`);
+  if (step) step.classList.add('active');
+
+  // Barra de progreso (no contar el paso 6 de planes)
+  const pct = n <= OB_TOTAL_STEPS ? (n / OB_TOTAL_STEPS) * 100 : 100;
+  const fill = document.getElementById('ob-progress-fill');
+  if (fill) fill.style.width = `${pct}%`;
+
+  // Botón atrás: visible desde paso 2
+  const back = document.getElementById('ob-back');
+  if (back) back.style.display = n > 1 ? 'flex' : 'none';
+}
+
+function obNext(nextStep) {
+  // Guardar preferencias según el paso actual
+  if (obCurrentStep === 1) {
+    const selected = [...document.querySelectorAll('#ob-topics .ob-chip.active')].map(c => c.dataset.value);
+    obPrefs.topics = selected;
+    localStorage.setItem('ob_topics', JSON.stringify(selected));
   }
+  obGoToStep(nextStep);
+  // Parar preview si se navega desde paso 5
+  if (obCurrentStep !== 5) obStopPreview();
+}
 
+function obBack() {
+  if (obCurrentStep > 1) {
+    obGoToStep(obCurrentStep - 1);
+    obStopPreview();
+  }
+}
+
+function obChipToggle(el) {
+  el.classList.toggle('active');
+}
+
+function obSelect(el, group) {
+  document.querySelectorAll(`[data-group="${group}"]`).forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  const val = el.dataset.value;
+  if (group === 'voice')  { obPrefs.voice  = val; localStorage.setItem('ob_voice', val); }
+  if (group === 'gender') { obPrefs.gender = val; localStorage.setItem('ob_gender', val); }
+}
+
+function obSelectGoal(el) {
+  document.querySelectorAll('.ob-goal-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  obPrefs.goal = el.dataset.value;
+  localStorage.setItem('ob_goal', el.dataset.value);
+  const btn = document.getElementById('ob-3-next');
+  if (btn) btn.disabled = false;
+}
+
+function obSelectDur(el) {
+  document.querySelectorAll('.ob-dur-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  obPrefs.duration = el.dataset.value;
+  localStorage.setItem('ob_duration', el.dataset.value);
+}
+
+// Preview audio en onboarding (paso 5)
+function obTogglePreview() {
+  const audio = document.getElementById('audio-preview');
+  if (!audio) return;
+
+  if (obPreviewPlaying) {
+    audio.pause();
+    obPreviewPlaying = false;
+    document.getElementById('ob-icon-play').style.display  = 'block';
+    document.getElementById('ob-icon-pause').style.display = 'none';
+    document.getElementById('ob-preview-hint').textContent = 'Toca para escuchar una muestra';
+  } else {
+    // Usar primer track ambient como fallback hasta que exista /sounds/preview.mp3
+    const src = '/sounds/preview.mp3';
+    if (audio.src !== window.location.origin + src) {
+      audio.src = src;
+      audio.load();
+    }
+    audio.play().then(() => {
+      obPreviewPlaying = true;
+      document.getElementById('ob-icon-play').style.display  = 'none';
+      document.getElementById('ob-icon-pause').style.display = 'block';
+      document.getElementById('ob-preview-hint').textContent = 'Reproduciendo muestra...';
+    }).catch(() => {
+      // Fallback: usar ambient track
+      audio.src = AMBIENT_TRACKS[0];
+      audio.load();
+      audio.play().catch(() => {});
+      obPreviewPlaying = true;
+      document.getElementById('ob-icon-play').style.display  = 'none';
+      document.getElementById('ob-icon-pause').style.display = 'block';
+      document.getElementById('ob-preview-hint').textContent = 'Reproduciendo muestra...';
+    });
+    audio.onended = () => {
+      obPreviewPlaying = false;
+      document.getElementById('ob-icon-play').style.display  = 'block';
+      document.getElementById('ob-icon-pause').style.display = 'none';
+      document.getElementById('ob-preview-hint').textContent = 'Toca para escuchar de nuevo';
+    };
+  }
+}
+
+function obStopPreview() {
+  const audio = document.getElementById('audio-preview');
+  if (!audio) return;
+  audio.pause();
+  obPreviewPlaying = false;
+  const iconPlay  = document.getElementById('ob-icon-play');
+  const iconPause = document.getElementById('ob-icon-pause');
+  if (iconPlay)  iconPlay.style.display  = 'block';
+  if (iconPause) iconPause.style.display = 'none';
+}
+
+function obStartPlan(plan) {
+  obStopPreview();
+  // Guardar onboarding como completado
+  localStorage.setItem('stillova_ob_done', '1');
+  // Aplicar preferencias al estado
+  applyObPrefsToState();
+
+  if (!clerk || !clerk.user) {
+    // Guardar plan pendiente y abrir sign-up
+    sessionStorage.setItem('ob_pending_plan', plan);
+    clerk?.openSignIn({ afterSignInUrl: window.location.href, afterSignUpUrl: window.location.href });
+    return;
+  }
+  upgradePlan(plan);
+}
+
+function obSkipToFree() {
+  obStopPreview();
+  localStorage.setItem('stillova_ob_done', '1');
+  applyObPrefsToState();
+
+  if (!clerk || !clerk.user) {
+    sessionStorage.setItem('ob_pending_plan', 'free');
+    clerk?.openSignIn({ afterSignInUrl: window.location.href, afterSignUpUrl: window.location.href });
+    return;
+  }
+  showHome();
+  updateUserStatus();
+}
+
+function applyObPrefsToState() {
+  state.voice    = obPrefs.voice;
+  state.gender   = obPrefs.gender;
+  state.duration = obPrefs.duration;
+}
+
+// =============================================
+//  ACCESOS RÁPIDOS (home)
+// =============================================
+function quickAccess(emotionTag, prefillText) {
+  state.emotionTag = emotionTag;
+  state.userInput  = prefillText;
+  showCreate(true);
+}
+
+// =============================================
+//  CREACIÓN CONVERSACIONAL
+// =============================================
+function onInputChange() {
+  const val = document.getElementById('input-free')?.value.trim() || '';
+  const btn = document.getElementById('btn-continue-input');
+  if (btn) btn.disabled = val.length < 3;
+}
+
+function convoRevealIntent() {
+  const el = document.getElementById('input-free');
+  const input = el?.value.trim() || '';
+  if (input.length < 3) { if (el) shake(el); return; }
+  if (input.length > 500) { showCharError(el, `Máximo 500 caracteres (tienes ${input.length})`); return; }
+  state.userInput = input;
+
+  const section = document.getElementById('cs-intent');
+  if (section && section.classList.contains('convo-hidden') && !section.classList.contains('convo-revealed')) {
+    section.classList.add('convo-revealed');
+    setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+  }
+}
+
+function selectIntent(el) {
+  // Marcar card activa
+  document.querySelectorAll('.intent-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  state.intent = el.dataset.value;
+
+  // Revelar config
+  const section = document.getElementById('cs-config');
+  if (section && section.classList.contains('convo-hidden') && !section.classList.contains('convo-revealed')) {
+    section.classList.add('convo-revealed');
+    setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+  }
+}
+
+function goToGenerate() {
+  const input = document.getElementById('input-free')?.value.trim() || '';
+  if (!input) { shake(document.getElementById('input-free')); return; }
+  if (input.length > 500) { showCharError(document.getElementById('input-free'), `Máximo 500 caracteres`); return; }
   state.userInput = input;
   state.userName = (clerk?.user?.firstName || '').trim().slice(0, 50);
   generateMeditation();
 }
 
-function showCharError(el, msg) {
-  const id = el.id + '-char-error';
-  let err = document.getElementById(id);
-  if (!err) {
-    err = document.createElement('p');
-    err.id = id;
-    err.style.cssText = 'color:#f87171;font-size:0.78rem;margin-top:6px;';
-    el.parentNode.insertBefore(err, el.nextSibling);
-  }
-  err.textContent = msg;
-  shake(el);
-  setTimeout(() => { if (err.parentNode) err.parentNode.removeChild(err); }, 4000);
-}
+function resetCreateScreen() {
+  // Limpiar input
+  const inputEl = document.getElementById('input-free');
+  if (inputEl) inputEl.value = '';
 
-function shake(el) {
-  if (shakeInterval) { clearInterval(shakeInterval); shakeInterval = null; }
-  el.style.transform   = 'translateX(0)';
-  el.style.borderColor = 'rgba(157, 98, 248, 0.6)';
-  let n = 0;
-  shakeInterval = setInterval(() => {
-    el.style.transform = n % 2 === 0 ? 'translateX(-5px)' : 'translateX(5px)';
-    n++;
-    if (n >= 6) {
-      clearInterval(shakeInterval);
-      shakeInterval = null;
-      el.style.transform = 'translateX(0)';
-      setTimeout(() => { el.style.borderColor = ''; }, 800);
-    }
-  }, 55);
-  el.focus();
+  // Ocultar intent y config
+  const csIntent  = document.getElementById('cs-intent');
+  const csConfig  = document.getElementById('cs-config');
+  if (csIntent) { csIntent.classList.remove('convo-revealed'); csIntent.classList.add('convo-hidden'); }
+  if (csConfig) { csConfig.classList.remove('convo-revealed'); csConfig.classList.add('convo-hidden'); }
+
+  // Desactivar intent cards
+  document.querySelectorAll('.intent-card').forEach(c => c.classList.remove('active'));
+
+  // Resetear continue button
+  const btnContinue = document.getElementById('btn-continue-input');
+  if (btnContinue) btnContinue.disabled = true;
+
+  state.intent    = null;
+  state.emotionTag = null;
+  state.userInput  = '';
 }
 
 // =============================================
-//  PANTALLA 2 — Preferencias
+//  PILLS Y LOCKS
 // =============================================
 function setPillLock(pill, locked) {
   pill.classList.toggle('pill-locked', locked);
@@ -215,10 +436,9 @@ function setPillLock(pill, locked) {
 }
 
 function applyAllLocks() {
-  const isFree = !clerk?.user || state.userPlan === 'free';
+  const isFree      = !clerk?.user || state.userPlan === 'free';
+  const isPremium   = state.userPlan === 'premium';
 
-  // Duración: free solo 5 min; essential hasta 15 min; premium todo
-  const isPremium = state.userPlan === 'premium';
   document.querySelectorAll('#grp-duration .pill').forEach(pill => {
     const val = pill.dataset.value;
     if (val === '20') {
@@ -227,29 +447,23 @@ function applyAllLocks() {
       setPillLock(pill, isFree && val !== '5');
     }
   });
-  // Si essential tenía 20 min seleccionado, resetear a 15
+
   if (!isPremium && state.duration === '20') {
     document.querySelectorAll('#grp-duration .pill').forEach(p => p.classList.remove('active'));
     document.querySelector('#grp-duration .pill[data-value="15"]')?.classList.add('active');
     state.duration = '15';
   }
 
-  // Voz: solo automático en free
   document.querySelectorAll('#grp-voice .pill').forEach(pill => {
     setPillLock(pill, isFree && pill.dataset.value !== 'auto');
   });
-
-  // Género: solo neutro en free
   document.querySelectorAll('#grp-gender .pill').forEach(pill => {
     setPillLock(pill, isFree && pill.dataset.value !== 'neutro');
   });
-
-  // Música: solo automático en free
   document.querySelectorAll('#grp-music .pill').forEach(pill => {
     setPillLock(pill, isFree && pill.dataset.value !== 'auto');
   });
 
-  // Forzar selecciones por defecto si es free
   if (isFree) {
     if (state.voice !== 'auto') {
       document.querySelectorAll('#grp-voice .pill').forEach(p => p.classList.remove('active'));
@@ -269,13 +483,12 @@ function applyAllLocks() {
   }
 }
 
-// Alias para compatibilidad con llamadas existentes
 function applyDurationLocks() { applyAllLocks(); }
 
 function selectPill(el, groupId, key) {
   if (el.classList.contains('pill-locked')) {
     showPaywall();
-    track('paywall_shown', { trigger: 'duration_lock', duration: el.dataset.value });
+    track('paywall_shown', { trigger: 'pill_lock', value: el.dataset.value });
     return;
   }
   document.querySelectorAll(`#${groupId} .pill`).forEach(p => p.classList.remove('active'));
@@ -284,7 +497,7 @@ function selectPill(el, groupId, key) {
 }
 
 // =============================================
-//  GENERACIÓN — llamadas a la API
+//  GENERACIÓN
 // =============================================
 function enableGenerateBtn() {
   const btn = document.getElementById('btn-generate');
@@ -299,63 +512,51 @@ function cancelGeneration() {
 }
 
 async function generateMeditation() {
-  // Requiere login antes de proceder
   if (!clerk || !clerk.user) {
-    // Capturar nombre del campo guest antes de abrir el modal
     const guestName = document.getElementById('pref-name')?.value.trim().slice(0, 50);
     if (guestName) state.userName = guestName;
     pendingGeneration = true;
-    sessionStorage.setItem('pending_generation', '1'); // sobrevive OAuth redirect
+    sessionStorage.setItem('pending_generation', '1');
     clerk.openSignIn({ afterSignInUrl: window.location.href, afterSignUpUrl: window.location.href });
     return;
   }
   pendingGeneration = false;
-  // Si hay nombre de Clerk disponible y el usuario no escribió uno manualmente, usarlo
   if (!state.userName) state.userName = (clerk.user.firstName || '').trim().slice(0, 50);
 
   const btn = document.getElementById('btn-generate');
-  btn.disabled = true;
+  if (btn) btn.disabled = true;
 
   state.currentSec = 0;
-
-  track('meditation_started', { duration: state.duration, voice: state.voice, mode: state.mode });
+  track('meditation_started', { duration: state.duration, voice: state.voice, intent: state.intent, emotionTag: state.emotionTag });
 
   setLoadingState('normal', 'Escuchándote...', 'Leyendo lo que sientes y creando algo que solo existe para este momento.');
   showScreen('screen-loading');
 
-  // Aviso de tiempo si tarda más de 10 segundos
   slowTimer = setTimeout(() => {
     document.getElementById('loading-sub').textContent = 'Cada palabra está siendo elegida para ti. Un momento más...';
     slowTimer = null;
   }, 10000);
 
   abortController = new AbortController();
-  const { signal } = abortController;
-
   try {
-    await attemptGeneration(signal);
+    await attemptGeneration(abortController.signal);
   } catch (err) {
     if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
-
     if (err.name === 'AbortError') { abortController = null; enableGenerateBtn(); return; }
 
-    // Paywall (402): sin créditos — aviso visible + paywall
     if (err.status === 402) {
       abortController = null;
       enableGenerateBtn();
       showScreen('screen-create');
       showToast(err.message || 'Sin créditos disponibles. Elige un plan para continuar.');
       setTimeout(() => showPaywall(), 900);
-      track('paywall_shown', { duration: state.duration, voice: state.voice });
+      track('paywall_shown', { duration: state.duration });
       return;
     }
-
-    // Errores de cliente (4xx): mostrar inmediatamente, sin reintentar
     if (err.status && err.status < 500) {
       abortController = null;
       enableGenerateBtn();
       if (err.status === 401) {
-        // Sesión expirada: aviso + reabrir login
         showScreen('screen-create');
         showToast('Sesión expirada. Inicia sesión de nuevo.');
         setTimeout(() => openAuth(), 800);
@@ -367,17 +568,14 @@ async function generateMeditation() {
       return;
     }
 
-    // Errores de servidor (5xx / red): reintento automático una sola vez
     console.warn('Primer intento fallido, reintentando...', err);
     setLoadingState('normal', 'Casi lista...', 'Refinando los últimos detalles de tu sesión.');
-
     abortController = new AbortController();
     try {
       await attemptGeneration(abortController.signal);
     } catch (retryErr) {
       if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
       abortController = null;
-
       if (retryErr.name === 'AbortError') { enableGenerateBtn(); return; }
       console.error('Error generando meditación (reintento):', retryErr);
       enableGenerateBtn();
@@ -387,14 +585,12 @@ async function generateMeditation() {
 }
 
 async function attemptGeneration(signal) {
-  // Obtener token de Clerk para las llamadas autenticadas
   const token = await getAuthToken();
   const email = await getUserEmail();
   const authHeaders = token
     ? { 'Authorization': `Bearer ${token}`, 'x-user-email': email }
     : {};
 
-  // ── Paso 1: Generar texto con Claude ──────────────────────────
   const meditationRes = await fetch('/api/meditation', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeaders },
@@ -402,37 +598,45 @@ async function attemptGeneration(signal) {
     body: JSON.stringify({
       userInput: state.userInput,
       userName:  state.userName,
-      duration: state.duration,
-      voice: state.voice,
-      gender: state.gender
+      duration:  state.duration,
+      voice:     state.voice,
+      gender:    state.gender,
+      intent:    state.intent
     })
   });
 
   if (!meditationRes.ok) {
     const err = await meditationRes.json().catch(() => ({}));
-    const error = new Error(err.error || `Error ${meditationRes.status} en /api/meditation`);
+    const error = new Error(err.error || `Error ${meditationRes.status}`);
     error.status = meditationRes.status;
     throw error;
   }
 
   const { title, text, targetWords, silenceTotal, resolvedVoice } = await meditationRes.json();
-  // Si la voz era 'auto', usar la voz resuelta que devolvió el servidor
   if (resolvedVoice) state.voice = resolvedVoice;
   document.getElementById('session-title').textContent = title;
 
-  // ── Paso 2: Convertir a audio con ElevenLabs ──────────────────
   setLoadingState('normal', 'Preparando tu voz...', 'Tu guía está tomando vida. Ya casi.');
 
   const audioRes = await fetch('/api/audio', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeaders },
     signal,
-    body: JSON.stringify({ text, voice: state.voice, duration: state.duration, targetWords, silenceTotal, title })
+    body: JSON.stringify({
+      text,
+      voice:      state.voice,
+      duration:   state.duration,
+      targetWords,
+      silenceTotal,
+      title,
+      intent:     state.intent,
+      emotionTag: state.emotionTag
+    })
   });
 
   if (!audioRes.ok) {
     const err = await audioRes.json().catch(() => ({}));
-    const error = new Error(err.error || `Error ${audioRes.status} en /api/audio`);
+    const error = new Error(err.error || `Error ${audioRes.status}`);
     error.status = audioRes.status;
     throw error;
   }
@@ -442,7 +646,6 @@ async function attemptGeneration(signal) {
   if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
   abortController = null;
 
-  // Convertir base64 a Blob
   const binary = atob(audioData.audioBase64);
   const bytes  = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
@@ -457,7 +660,7 @@ async function attemptGeneration(signal) {
 
   document.getElementById('time-end').textContent = formatTime(state.totalSec);
 
-  track('meditation_generated', { duration: state.duration, voice: state.voice });
+  track('meditation_generated', { duration: state.duration, voice: state.voice, intent: state.intent });
 
   connectAudio(state.audioBlobUrl);
   showScreen('screen-player');
@@ -465,35 +668,27 @@ async function attemptGeneration(signal) {
 
 function setLoadingState(type, title, sub) {
   document.getElementById('loading-title').textContent = title;
-  document.getElementById('loading-sub').textContent = sub;
+  document.getElementById('loading-sub').textContent   = sub;
   const isError = type === 'error';
   document.getElementById('btn-retry').style.display      = isError ? 'block' : 'none';
   document.getElementById('btn-back-input').style.display = isError ? 'block' : 'none';
   document.getElementById('btn-cancel').style.display     = isError ? 'none'  : 'block';
 }
 
-function retryFromError() {
-  enableGenerateBtn();
-  showScreen('screen-create');
-}
-
-function backToInput() {
-  enableGenerateBtn();
-  showScreen('screen-create');
-}
+function retryFromError()  { enableGenerateBtn(); showScreen('screen-create'); }
+function backToInput()     { enableGenerateBtn(); showScreen('screen-create'); }
 
 // =============================================
-//  PANTALLA 4 — Reproductor
+//  REPRODUCTOR
 // =============================================
 function togglePlay() {
   const audio = document.getElementById('audio');
   const wrap  = document.getElementById('breathing-player');
 
   if (state.isPlaying) {
-    // Cancelar cualquier silencio activo o próximo
-    if (state.silenceTimer) { clearInterval(state.silenceTimer); state.silenceTimer = null; }
+    if (state.silenceTimer)     { clearInterval(state.silenceTimer); state.silenceTimer = null; }
     if (state.silenceTimeoutId) { clearTimeout(state.silenceTimeoutId); state.silenceTimeoutId = null; }
-    if (state.introTimeoutId) { clearTimeout(state.introTimeoutId); state.introTimeoutId = null; }
+    if (state.introTimeoutId)   { clearTimeout(state.introTimeoutId); state.introTimeoutId = null; }
     state.inSilence = false;
     audio.pause();
     ambientPause();
@@ -504,9 +699,7 @@ function togglePlay() {
   } else {
     if (audio.src && audio.src !== window.location.href) {
       const isFirstPlay = audio.currentTime === 0;
-
       if (isFirstPlay) {
-        // Intro de 3s: música sola antes de arrancar la voz
         ambientPlay();
         state.isPlaying = true;
         state.inSilence = false;
@@ -535,8 +728,8 @@ function togglePlay() {
 
 function updateProgress() {
   const pct = state.totalSec > 0 ? Math.min(100, (state.currentSec / state.totalSec) * 100) : 0;
-  document.getElementById('progress-fill').style.width = `${pct}%`;
-  document.getElementById('time-now').textContent = formatTime(Math.min(state.currentSec, state.totalSec));
+  document.getElementById('progress-fill').style.width    = `${pct}%`;
+  document.getElementById('time-now').textContent         = formatTime(Math.min(state.currentSec, state.totalSec));
 }
 
 function seekTo(event) {
@@ -550,24 +743,16 @@ function seekTo(event) {
   const audio = document.getElementById('audio');
   if (audio.duration) {
     if (state.silenceTimeoutId) { clearTimeout(state.silenceTimeoutId); state.silenceTimeoutId = null; }
-    if (state.silenceTimer) { clearInterval(state.silenceTimer); state.silenceTimer = null; }
+    if (state.silenceTimer)     { clearInterval(state.silenceTimer); state.silenceTimer = null; }
     state.inSilence = false;
     audio.currentTime = ratio * audio.duration;
-
-    // Recalcular silenceOffset y flags _done según la nueva posición
     state.silenceOffset = 0;
     for (const s of state.silenceMap) {
-      if (s.time < audio.currentTime) {
-        s._done = true;
-        state.silenceOffset += s.duration;
-      } else {
-        s._done = false;
-      }
+      if (s.time < audio.currentTime) { s._done = true; state.silenceOffset += s.duration; }
+      else s._done = false;
     }
-
     state.currentSec = Math.round(audio.currentTime + state.silenceOffset);
     updateProgress();
-
     if (state.isPlaying) {
       audio.play().then(() => { scheduleNextSilence(audio); }).catch(console.error);
     }
@@ -575,7 +760,7 @@ function seekTo(event) {
 }
 
 function handleEnd() {
-  track('meditation_completed', { duration: state.duration, voice: state.voice });
+  track('meditation_completed', { duration: state.duration, voice: state.voice, intent: state.intent });
   state.isPlaying  = false;
   state.inSilence  = false;
   state.currentSec = state.totalSec;
@@ -585,20 +770,17 @@ function handleEnd() {
   document.getElementById('breathing-player').classList.add('paused');
   ambientFadeOut();
 
-  // Pantalla de cierre: refrescar estado del usuario y luego mostrar acción
   document.getElementById('end-message').style.display        = 'block';
   document.getElementById('btn-new-meditation').style.display = 'none';
   document.getElementById('end-upsell').style.display         = 'none';
   document.getElementById('end-profile').style.display        = 'none';
 
-  // Esperar a fetchUserStatus antes de decidir qué mostrar (fix race condition)
   const statusPromise = fetchUserStatus();
   const delayPromise  = new Promise(resolve => setTimeout(resolve, 5000));
 
   Promise.all([statusPromise, delayPromise]).then(() => {
     document.getElementById('end-message').style.display = 'none';
     if (state.userPlan === 'free' && !state.userCanGenerate) {
-      // Free sin créditos: mostrar perfil bonus si no lo completó, o upsell si ya lo completó
       if (!state.profileCompleted) {
         document.getElementById('end-profile').style.display = 'flex';
         document.getElementById('screen-player').classList.add('end-active');
@@ -607,7 +789,6 @@ function handleEnd() {
         document.getElementById('screen-player').classList.add('end-active');
       }
     } else if (state.userPlan !== 'free' && state.currentMeditationId) {
-      // Usuario de pago → opción de guardar
       document.getElementById('end-save').style.display = 'flex';
     } else {
       document.getElementById('btn-new-meditation').style.display = 'block';
@@ -626,29 +807,24 @@ function newMeditation() {
   audio.removeAttribute('src');
   audio.load();
 
-  if (state.silenceTimer) { clearInterval(state.silenceTimer); state.silenceTimer = null; }
+  if (state.silenceTimer)     { clearInterval(state.silenceTimer); state.silenceTimer = null; }
   if (state.silenceTimeoutId) { clearTimeout(state.silenceTimeoutId); state.silenceTimeoutId = null; }
   state.silenceMap    = [];
   state.silenceOffset = 0;
 
-  if (state.audioBlobUrl) {
-    URL.revokeObjectURL(state.audioBlobUrl);
-    state.audioBlobUrl = null;
-  }
+  if (state.audioBlobUrl) { URL.revokeObjectURL(state.audioBlobUrl); state.audioBlobUrl = null; }
 
-  // Detener sonido de fondo
   ambientStop();
   const ambientEl = document.getElementById('audio-ambient');
   ambientEl.removeAttribute('src');
   ambientEl.load();
 
-  document.getElementById('progress-fill').style.width = '0%';
-  document.getElementById('time-now').textContent = '0:00';
-  document.getElementById('icon-play').style.display  = 'block';
-  document.getElementById('icon-pause').style.display = 'none';
+  document.getElementById('progress-fill').style.width    = '0%';
+  document.getElementById('time-now').textContent         = '0:00';
+  document.getElementById('icon-play').style.display      = 'block';
+  document.getElementById('icon-pause').style.display     = 'none';
   document.getElementById('breathing-player').classList.add('paused');
 
-  // Resetear pantalla de fin
   document.getElementById('end-message').style.display        = 'none';
   document.getElementById('btn-new-meditation').style.display = 'none';
   document.getElementById('end-upsell').style.display         = 'none';
@@ -656,39 +832,17 @@ function newMeditation() {
   document.getElementById('end-save').style.display           = 'none';
   document.getElementById('screen-player').classList.remove('end-active');
 
-  // Resetear pills a valores por defecto
-  document.querySelectorAll('#grp-duration .pill').forEach(p => p.classList.remove('active'));
-  document.querySelector('#grp-duration .pill[data-value="5"]').classList.add('active');
-  state.duration = '5';
-
-  document.querySelectorAll('#grp-voice .pill').forEach(p => p.classList.remove('active'));
-  document.querySelector('#grp-voice .pill[data-value="auto"]').classList.add('active');
-  state.voice = 'auto';
-
-  document.querySelectorAll('#grp-gender .pill').forEach(p => p.classList.remove('active'));
-  document.querySelector('#grp-gender .pill[data-value="neutro"]').classList.add('active');
-  state.gender = 'neutro';
-
-
-  document.getElementById('input-free').value  = '';
-  document.getElementById('guided-1').value    = '';
-  document.getElementById('guided-2').value    = '';
-  document.getElementById('guided-3').value    = '';
-  if (document.getElementById('pref-name')) document.getElementById('pref-name').value = '';
-
-  setMode('free');
+  resetCreateScreen();
   showScreen('screen-home');
 }
 
 // =============================================
-//  CONECTAR AUDIO REAL
+//  CONECTAR AUDIO Y SILENCIOS
 // =============================================
 function connectAudio(url) {
   const audio = document.getElementById('audio');
   audio.src = url;
   loadRandomAmbient();
-
-  // ontimeupdate solo actualiza la barra de progreso
   audio.ontimeupdate = () => {
     if (!state.isPlaying || state.inSilence) return;
     state.currentSec = Math.round(audio.currentTime + state.silenceOffset);
@@ -696,22 +850,17 @@ function connectAudio(url) {
   };
 }
 
-// Programa el próximo silencio con setTimeout (precisión ~4ms vs ~250ms de ontimeupdate)
 function scheduleNextSilence(audio) {
   if (state.silenceTimeoutId) { clearTimeout(state.silenceTimeoutId); state.silenceTimeoutId = null; }
   const next = state.silenceMap.find(s => !s._done);
   if (!next) return;
-
   const delayMs = Math.max(0, (next.time - audio.currentTime) * 1000);
   state.silenceTimeoutId = setTimeout(() => {
     state.silenceTimeoutId = null;
     if (!state.isPlaying) return;
-
     next._done = true;
     audio.pause();
     state.inSilence = true;
-    // state.isPlaying se mantiene en true — el usuario no pausó, es un silencio programado
-
     let elapsed = 0;
     const tick = 250;
     state.silenceTimer = setInterval(() => {
@@ -727,9 +876,7 @@ function scheduleNextSilence(audio) {
           handleEnd();
         } else {
           audio.play().then(() => {
-            if (!audio.ended) {
-              scheduleNextSilence(audio);
-            }
+            if (!audio.ended) scheduleNextSilence(audio);
           }).catch(console.error);
         }
       }
@@ -738,14 +885,93 @@ function scheduleNextSilence(audio) {
 }
 
 // =============================================
-//  ANALYTICS — POSTHOG
+//  GAMIFICACIÓN
+// =============================================
+function calculateLevel(totalSessions) {
+  if (totalSessions >= 30) return 'Calma';
+  if (totalSessions >= 15) return 'Presente';
+  if (totalSessions >= 5)  return 'Consciente';
+  if (totalSessions >= 1)  return 'Explorador';
+  return 'Inquieto';
+}
+
+function updateHomeGamification(data) {
+  const { streak, minutesThisWeek, totalSessions, level } = data;
+  state.streak          = streak   || 0;
+  state.minutesThisWeek = minutesThisWeek || 0;
+  state.totalSessions   = totalSessions   || 0;
+  state.level           = level || calculateLevel(totalSessions);
+
+  const gamEl = document.getElementById('home-gam');
+  if (!gamEl) return;
+
+  document.getElementById('gam-streak').textContent  = state.streak;
+  document.getElementById('gam-minutes').textContent = state.minutesThisWeek;
+  document.getElementById('gam-level').textContent   = state.level;
+  gamEl.style.display = 'flex';
+}
+
+function renderHomeRecents(meditations) {
+  if (!meditations || meditations.length === 0) return;
+  const container = document.getElementById('home-recents');
+  const list      = document.getElementById('home-recents-list');
+  if (!container || !list) return;
+
+  const EMOTION_LABELS = {
+    ansiedad:   'Ansiedad',
+    sueno:      'Dormir',
+    claridad:   'Claridad',
+    liberacion: 'Liberación',
+    enfoque:    'Enfoque'
+  };
+
+  list.innerHTML = meditations.slice(0, 3).map(m => {
+    const dateStr = formatRelativeDate(m.created_at);
+    const tagHtml = m.emotion_tag
+      ? `<span class="home-recent-tag">${EMOTION_LABELS[m.emotion_tag] || m.emotion_tag}</span>`
+      : '';
+    return `
+      <div class="home-recent-card" onclick="showCreate()">
+        <div>
+          <div class="home-recent-title">${escapeHtml(m.title)}</div>
+          <div class="home-recent-meta">
+            <span>${dateStr}</span>
+            <span>${m.duration} min</span>
+            ${tagHtml}
+          </div>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;color:var(--text-45)">
+          <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>`;
+  }).join('');
+
+  container.style.display = 'block';
+}
+
+function formatRelativeDate(iso) {
+  const d   = new Date(iso);
+  const now = new Date();
+  const s   = dt => dt.toISOString().slice(0, 10);
+  if (s(d) === s(now)) return 'Hoy';
+  if (s(d) === s(new Date(Date.now() - 86400000))) return 'Ayer';
+  const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return `${d.getDate()} ${months[d.getMonth()]}`;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// =============================================
+//  ANALYTICS
 // =============================================
 function track(event, props) {
   try {
     if (window.posthog && typeof posthog.capture === 'function') {
       posthog.capture(event, props || {});
     }
-  } catch (e) { /* falla silenciosamente */ }
+  } catch (e) { /* silencioso */ }
 }
 
 // =============================================
@@ -757,39 +983,74 @@ function formatTime(sec) {
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 
+function showCharError(el, msg) {
+  const id = el.id + '-char-error';
+  let err = document.getElementById(id);
+  if (!err) {
+    err = document.createElement('p');
+    err.id = id;
+    err.style.cssText = 'color:#f87171;font-size:0.78rem;margin-top:6px;';
+    el.parentNode.insertBefore(err, el.nextSibling);
+  }
+  err.textContent = msg;
+  shake(el);
+  setTimeout(() => { if (err.parentNode) err.parentNode.removeChild(err); }, 4000);
+}
+
+function shake(el) {
+  if (!el) return;
+  if (shakeInterval) { clearInterval(shakeInterval); shakeInterval = null; }
+  el.style.borderColor = 'rgba(157, 98, 248, 0.6)';
+  let n = 0;
+  shakeInterval = setInterval(() => {
+    el.style.transform = n % 2 === 0 ? 'translateX(-5px)' : 'translateX(5px)';
+    n++;
+    if (n >= 6) {
+      clearInterval(shakeInterval);
+      shakeInterval = null;
+      el.style.transform = 'translateX(0)';
+      setTimeout(() => { el.style.borderColor = ''; }, 800);
+    }
+  }, 55);
+  el.focus();
+}
+
+function showToast(msg) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.classList.add('visible'), 10);
+  setTimeout(() => {
+    toast.classList.remove('visible');
+    setTimeout(() => toast.remove(), 400);
+  }, 4000);
+}
+
 // =============================================
 //  AUTH — CLERK
 // =============================================
 let clerk = null;
 let pendingGeneration = false;
 
-// Abre el modal de sign-in esperando a que Clerk esté listo si aún no lo está
 async function openAuth() {
   if (clerk) {
     clerk.openSignIn({ afterSignInUrl: window.location.href, afterSignUpUrl: window.location.href });
     return;
   }
-  // Clerk aún inicializando — esperar máx 3s
   let waited = 0;
-  while (!clerk && waited < 30) {
-    await new Promise(r => setTimeout(r, 100));
-    waited++;
-  }
-  if (clerk) {
-    clerk.openSignIn({ afterSignInUrl: window.location.href, afterSignUpUrl: window.location.href });
-  }
+  while (!clerk && waited < 30) { await new Promise(r => setTimeout(r, 100)); waited++; }
+  if (clerk) clerk.openSignIn({ afterSignInUrl: window.location.href, afterSignUpUrl: window.location.href });
 }
 
 async function initClerk() {
   try {
-    // Clerk v5 CDN auto-crea la instancia en window.Clerk desde el data-attribute
-    // Esperamos a que esté disponible (máx 5s)
     let attempts = 0;
     while (!window.Clerk && attempts < 50) {
       await new Promise(r => setTimeout(r, 100));
       attempts++;
     }
-    if (!window.Clerk) throw new Error('Clerk no cargó en 5 segundos');
+    if (!window.Clerk) throw new Error('Clerk no cargó');
 
     clerk = window.Clerk;
     await clerk.load({
@@ -807,7 +1068,6 @@ async function initClerk() {
       }
     });
 
-    // Restaurar pendingGeneration si el usuario volvió de un OAuth redirect
     if (sessionStorage.getItem('pending_generation') === '1') {
       pendingGeneration = true;
       sessionStorage.removeItem('pending_generation');
@@ -815,6 +1075,20 @@ async function initClerk() {
 
     clerk.addListener(({ user }) => {
       updateUserStatus();
+
+      // Post-onboarding: plan pendiente
+      const pendingPlan = sessionStorage.getItem('ob_pending_plan');
+      if (user && pendingPlan) {
+        sessionStorage.removeItem('ob_pending_plan');
+        if (pendingPlan !== 'free') {
+          upgradePlan(pendingPlan);
+        } else {
+          showHome();
+          fetchUserStatus();
+        }
+        return;
+      }
+
       if (user && pendingGeneration) {
         pendingGeneration = false;
         generateMeditation();
@@ -823,18 +1097,42 @@ async function initClerk() {
 
     updateUserStatus();
     checkUrlParams();
+
+    // Mostrar onboarding o home
+    if (!localStorage.getItem('stillova_ob_done')) {
+      showOnboarding();
+    } else {
+      // Cargar recientes si hay usuario logueado
+      if (clerk.user) loadHomeData();
+    }
   } catch (e) {
     console.error('[clerk] Error de inicialización:', e);
   }
 }
 
+async function loadHomeData() {
+  try {
+    const token = await getAuthToken();
+    const email = await getUserEmail();
+    const res = await fetch('/api/dashboard', {
+      headers: { 'Authorization': `Bearer ${token}`, 'x-user-email': email }
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    updateHomeGamification(data);
+    renderHomeRecents(data.recentMeditations);
+  } catch (e) {
+    console.error('[homeData]', e);
+  }
+}
+
 async function updateUserStatus() {
-  const el = document.getElementById('user-status');
+  const el    = document.getElementById('user-status');
   const guest = document.getElementById('guest-actions');
   if (!el) return;
 
   if (!clerk || !clerk.user) {
-    el.style.display = 'none';
+    el.style.display    = 'none';
     if (guest) guest.style.display = 'flex';
     const guestBlock = document.getElementById('guest-name-block');
     if (guestBlock) guestBlock.style.display = 'block';
@@ -842,10 +1140,9 @@ async function updateUserStatus() {
     return;
   }
 
-  el.style.display = 'flex';
+  el.style.display    = 'flex';
   if (guest) guest.style.display = 'none';
 
-  // Restaurar plan cacheado para evitar el flash de locks en usuarios premium
   const cachedPlan = localStorage.getItem('stillova_plan');
   if (cachedPlan && cachedPlan !== 'free') {
     state.userPlan = cachedPlan;
@@ -857,26 +1154,22 @@ async function updateUserStatus() {
 
 async function fetchUserStatus() {
   if (!clerk || !clerk.user || !clerk.session) return;
-
   try {
     const token = await clerk.session.getToken();
     const email = clerk.user.primaryEmailAddress?.emailAddress || '';
 
     const res = await fetch('/api/user', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'x-user-email': email
-      }
+      headers: { 'Authorization': `Bearer ${token}`, 'x-user-email': email }
     });
-
     if (!res.ok) return;
 
-    const { plan, usage, limit, canGenerate, profileCompleted } = await res.json();
+    const { plan, usage, limit, canGenerate, profileCompleted,
+            streak, minutesThisWeek, totalSessions, level } = await res.json();
 
-    const planEl = document.getElementById('plan-badge');
+    const planEl  = document.getElementById('plan-badge');
     const usageEl = document.getElementById('usage-info');
 
-    state.userPlan = plan;
+    state.userPlan       = plan;
     state.userCanGenerate = canGenerate;
     state.profileCompleted = !!profileCompleted;
     localStorage.setItem('stillova_plan', plan);
@@ -884,46 +1177,36 @@ async function fetchUserStatus() {
     if (planEl) {
       const planNames = { free: 'Gratis', essential: 'Essential', premium: 'Premium' };
       planEl.textContent = planNames[plan] || plan;
-      planEl.className = `plan-badge plan-${plan}`;
+      planEl.className   = `plan-badge plan-${plan}`;
     }
-
     if (usageEl) {
       if (plan === 'free') {
         usageEl.textContent = canGenerate ? 'Meditación gratis disponible' : 'Sin créditos disponibles';
       } else {
-        const remaining = limit - usage;
-        usageEl.textContent = `${remaining} meditación${remaining !== 1 ? 'es' : ''} disponible${remaining !== 1 ? 's' : ''}`;
+        const rem = limit - usage;
+        usageEl.textContent = `${rem} meditación${rem !== 1 ? 'es' : ''} disponible${rem !== 1 ? 's' : ''}`;
       }
     }
-    // Ocultar campo de nombre (usuario logueado) y ajustar bloqueos de duración
+
     const guestBlock = document.getElementById('guest-name-block');
     if (guestBlock) guestBlock.style.display = 'none';
     applyDurationLocks();
 
-    // Actualizar stats en home screen
-    const statsEl = document.getElementById('home-stats');
-    const statSessions = document.getElementById('stat-sessions');
-    const statRemaining = document.getElementById('stat-remaining');
-    const statPlan = document.getElementById('stat-plan');
-    if (statsEl && statSessions && statRemaining && statPlan) {
-      const remaining = plan === 'free' ? (canGenerate ? 1 : 0) : Math.max(0, limit - usage);
-      const planNames = { free: 'Free', essential: 'Essential', premium: 'Premium' };
-      statSessions.textContent = usage || '0';
-      statRemaining.textContent = remaining;
-      statPlan.textContent = planNames[plan] || plan;
-      statsEl.style.display = 'flex';
-    }
+    // Gamificación en home
+    updateHomeGamification({ streak, minutesThisWeek, totalSessions, level });
 
-    // Actualizar saludo con nombre del usuario
+    // Saludo personalizado
     const greetEl = document.getElementById('home-greeting');
     const displayName = clerk?.user?.firstName || clerk?.user?.fullName?.split(' ')[0] || '';
-    if (greetEl && displayName) {
+    if (greetEl) {
       const h = new Date().getHours();
       const greet = h < 12 ? 'Buenos días' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
-      greetEl.textContent = `${greet}, ${displayName}`;
+      greetEl.textContent = displayName
+        ? `${greet}, ${displayName}.`
+        : '¿Cómo te sientes hoy... de verdad?';
     }
 
-    // Actualizar info de créditos en pantalla de crear (solo planes de pago)
+    // Créditos en pantalla de crear
     const creditsInfoEl = document.getElementById('credits-info');
     if (creditsInfoEl) {
       if (plan !== 'free') {
@@ -942,11 +1225,7 @@ async function fetchUserStatus() {
 
 async function getAuthToken() {
   if (!clerk || !clerk.session) return null;
-  try {
-    return await clerk.session.getToken();
-  } catch (e) {
-    return null;
-  }
+  try { return await clerk.session.getToken(); } catch { return null; }
 }
 
 async function getUserEmail() {
@@ -968,18 +1247,6 @@ function checkUrlParams() {
   }
 }
 
-function showToast(msg) {
-  const toast = document.createElement('div');
-  toast.className = 'toast';
-  toast.textContent = msg;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.classList.add('visible'), 10);
-  setTimeout(() => {
-    toast.classList.remove('visible');
-    setTimeout(() => toast.remove(), 400);
-  }, 4000);
-}
-
 // =============================================
 //  PAYWALL
 // =============================================
@@ -998,7 +1265,6 @@ function closePaywall() {
   if (modal) modal.classList.remove('active');
   enableGenerateBtn();
 
-  // Si es free sin créditos, identificar en PostHog y mostrar captura de lead
   if (state.userPlan === 'free' && !state.userCanGenerate && clerk?.user) {
     const email = clerk.user.primaryEmailAddress?.emailAddress || '';
     if (email && window.posthog) {
@@ -1018,9 +1284,8 @@ function showLeadCapture() {
     <p class="lead-capture-text">¿Te avisamos cuando haya nuevas funciones y ofertas?</p>
     <div class="lead-capture-actions">
       <button class="btn-lead-yes" onclick="confirmLead()">Sí, avísame</button>
-      <button class="btn-lead-no" onclick="dismissLead()">No, gracias</button>
-    </div>
-  `;
+      <button class="btn-lead-no"  onclick="dismissLead()">No, gracias</button>
+    </div>`;
   document.body.appendChild(el);
   setTimeout(() => el.classList.add('visible'), 50);
 }
@@ -1040,22 +1305,15 @@ function dismissLead() {
 
 async function upgradePlan(plan) {
   if (!clerk || !clerk.session) return;
-
   try {
     const token = await clerk.session.getToken();
     const email = await getUserEmail();
-
     const res = await fetch('/api/checkout', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ plan, email })
     });
-
     if (!res.ok) throw new Error('Error al crear sesión de pago');
-
     const { url } = await res.json();
     track('checkout_started', { plan });
     window.location.href = url;
@@ -1084,10 +1342,9 @@ async function saveMeditation() {
   btn.textContent = 'Guardando...';
 
   try {
-    const token = await getAuthToken();
+    const token   = await getAuthToken();
     const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
 
-    // Paso 1: verificar límites y obtener URL de subida firmada
     const presignRes = await fetch('/api/save-meditation', {
       method: 'POST',
       headers,
@@ -1104,40 +1361,29 @@ async function saveMeditation() {
       }
       return;
     }
-
     if (!presignRes.ok) throw new Error('Error al preparar el guardado');
 
     const { signedUrl, path, already_saved } = await presignRes.json();
+    if (already_saved) { showToast('Ya estaba guardada en tu biblioteca'); skipSave(); return; }
 
-    if (already_saved) {
-      showToast('Ya estaba guardada en tu biblioteca');
-      skipSave();
-      return;
-    }
-
-    // Paso 2: subir el audio directamente a Supabase Storage
     const audioBlob = await fetch(state.audioBlobUrl).then(r => r.blob());
     const uploadRes = await fetch(signedUrl, {
       method: 'PUT',
       headers: { 'Content-Type': 'audio/mpeg' },
       body: audioBlob
     });
-
     if (!uploadRes.ok) throw new Error('Error al subir el audio');
 
-    // Paso 3: confirmar el guardado en base de datos
     const confirmRes = await fetch('/api/save-meditation', {
       method: 'POST',
       headers,
       body: JSON.stringify({ meditationId: state.currentMeditationId, action: 'confirm', path })
     });
-
     if (!confirmRes.ok) throw new Error('Error al confirmar el guardado');
 
     track('meditation_saved', { duration: state.duration });
     showToast('Guardada en tu biblioteca');
     skipSave();
-
   } catch (e) {
     console.error('[save] Error:', e);
     btn.disabled = false;
@@ -1147,15 +1393,13 @@ async function saveMeditation() {
 }
 
 function skipSave() {
-  document.getElementById('end-save').style.display = 'none';
+  document.getElementById('end-save').style.display           = 'none';
   document.getElementById('btn-new-meditation').style.display = 'block';
 }
 
 // =============================================
-//  PERFIL BONUS — 1 crédito extra
+//  PERFIL BONUS
 // =============================================
-
-// Activa/desactiva el botón de submit según selecciones
 function profilePillSelect(groupId, btn) {
   document.querySelectorAll(`#${groupId} .profile-pill`).forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
@@ -1174,7 +1418,6 @@ async function submitProfile() {
   const goal      = document.querySelector('#profile-goal .profile-pill.active')?.dataset.value;
   const frequency = document.querySelector('#profile-frequency .profile-pill.active')?.dataset.value;
   const timing    = document.querySelector('#profile-timing .profile-pill.active')?.dataset.value;
-
   if (!goal || !frequency || !timing) return;
 
   const btn = document.getElementById('btn-profile-submit');
@@ -1185,15 +1428,10 @@ async function submitProfile() {
     const token = await getAuthToken();
     const res = await fetch('/api/profile-bonus', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ goal, frequency, timing })
     });
-
     const data = await res.json();
-
     if (res.ok && (data.success || data.already_completed)) {
       state.profileCompleted = true;
       state.userCanGenerate  = true;
@@ -1201,7 +1439,6 @@ async function submitProfile() {
       document.getElementById('screen-player').classList.remove('end-active');
       showToast('¡Tienes 1 meditación extra gratis! Úsala cuando quieras.');
       document.getElementById('btn-new-meditation').style.display = 'block';
-      // Actualizar badge de créditos
       const usageEl = document.getElementById('usage-info');
       if (usageEl) usageEl.textContent = 'Meditación gratis disponible';
     } else {
@@ -1219,14 +1456,17 @@ async function submitProfile() {
 
 function skipProfile() {
   document.getElementById('end-profile').style.display = 'none';
-  document.getElementById('end-upsell').style.display = 'flex';
+  document.getElementById('end-upsell').style.display  = 'flex';
   document.getElementById('screen-player').classList.add('end-active');
 }
 
+// =============================================
+//  INIT
+// =============================================
 document.addEventListener('DOMContentLoaded', () => {
   initClerk();
 
-  // Event delegation para pills del perfil
+  // Event delegation para pills del perfil bonus
   document.addEventListener('click', (e) => {
     const pill = e.target.closest('.profile-pill');
     if (!pill) return;

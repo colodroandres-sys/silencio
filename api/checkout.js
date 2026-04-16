@@ -8,7 +8,7 @@ const PRICE_IDS = {
   premium: process.env.STRIPE_PREMIUM_PRICE_ID
 };
 
-const APP_URL = 'https://silencio-xi.vercel.app';
+const APP_URL = 'https://stillova.com';
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).end();
