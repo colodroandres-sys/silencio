@@ -274,6 +274,43 @@ body {
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 32px);
 }
 
+.player-exit-btn {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 20px);
+  left: 20px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-45);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  z-index: 10;
+}
+.player-exit-btn:hover { background: rgba(255,255,255,0.12); color: var(--text-70); }
+
+.create-steps {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  padding-bottom: 28px;
+}
+.create-step {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  transition: background 0.3s, transform 0.3s;
+}
+.create-step.active {
+  background: var(--sand);
+  transform: scale(1.2);
+}
+
 .create-back {
   display: inline-flex;
   align-items: center;
@@ -757,6 +794,7 @@ body {
   flex-shrink: 0;
 }
 .nav-create-btn:hover { opacity: 0.88; transform: scale(1.06); }
+.nav-create-btn.active { box-shadow: 0 0 0 3px rgba(201,169,110,0.45); transform: scale(1.05); }
 
 /* =============================================
    PAYWALL

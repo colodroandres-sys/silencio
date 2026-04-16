@@ -130,8 +130,12 @@ function showScreen(id) {
   if (footer) footer.style.display = (id === 'screen-home') ? '' : 'none';
 
   document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  const createBtn = document.querySelector('.nav-create-btn');
+  if (createBtn) createBtn.classList.remove('active');
   if (id === 'screen-home') {
     document.getElementById('nav-home')?.classList.add('active');
+  } else if (id === 'screen-create') {
+    if (createBtn) createBtn.classList.add('active');
   }
 }
 
@@ -374,6 +378,7 @@ function convoRevealIntent() {
     section.classList.add('convo-revealed');
     setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
   }
+  document.getElementById('cstep-2')?.classList.add('active');
 }
 
 function selectIntent(el) {
@@ -388,6 +393,7 @@ function selectIntent(el) {
     section.classList.add('convo-revealed');
     setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
   }
+  document.getElementById('cstep-3')?.classList.add('active');
 }
 
 function goToGenerate() {
@@ -409,6 +415,10 @@ function resetCreateScreen() {
   const csConfig  = document.getElementById('cs-config');
   if (csIntent) { csIntent.classList.remove('convo-revealed'); csIntent.classList.add('convo-hidden'); }
   if (csConfig) { csConfig.classList.remove('convo-revealed'); csConfig.classList.add('convo-hidden'); }
+
+  // Resetear indicador de pasos
+  document.getElementById('cstep-2')?.classList.remove('active');
+  document.getElementById('cstep-3')?.classList.remove('active');
 
   // Desactivar intent cards
   document.querySelectorAll('.intent-card').forEach(c => c.classList.remove('active'));

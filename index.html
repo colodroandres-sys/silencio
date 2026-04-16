@@ -320,6 +320,12 @@
         Volver
       </button>
 
+      <div class="create-steps" id="create-steps">
+        <span class="create-step active" id="cstep-1"></span>
+        <span class="create-step" id="cstep-2"></span>
+        <span class="create-step" id="cstep-3"></span>
+      </div>
+
       <!-- Sección 1: Input -->
       <div class="convo-section" id="cs-input">
         <h2 class="convo-headline">¿Qué quieres trabajar<br>ahora mismo?</h2>
@@ -448,6 +454,12 @@
        ══════════════════════════════════════════ -->
   <div id="screen-player" class="screen">
     <div class="screen-inner center player-inner">
+
+      <button class="player-exit-btn" onclick="newMeditation()" aria-label="Salir">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
 
       <div id="breathing-player" class="breathing-wrap player-mode paused">
         <div class="b-ring r1"></div>
