@@ -327,7 +327,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  padding-bottom: 120px;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 140px);
 }
 
 .create-back {
