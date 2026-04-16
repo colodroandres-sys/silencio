@@ -499,12 +499,20 @@ body {
 .input-text:focus { border-color: var(--sand-dim); }
 
 .btn-generate-wrap {
-  position: sticky;
+  position: fixed;
   bottom: calc(env(safe-area-inset-bottom, 0px) + 68px);
-  margin-top: 16px;
-  padding: 20px 0 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 460px;
+  padding: 20px 24px 0;
   background: linear-gradient(to top, #050804 55%, transparent);
   z-index: 10;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+.btn-generate-wrap > * {
+  pointer-events: auto;
 }
 
 .btn-primary {
@@ -1423,7 +1431,7 @@ body {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  padding: 0 24px calc(env(safe-area-inset-bottom, 0px) + 32px);
+  padding: 0 24px calc(env(safe-area-inset-bottom, 0px) + 80px);
 }
 
 .ob-progress {
@@ -1823,8 +1831,12 @@ body {
   cursor: pointer;
   letter-spacing: 0.01em;
   transition: opacity 0.2s;
-  margin-top: auto;
-  padding-bottom: 16px;
+  margin-top: 32px;
+  position: sticky;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+  z-index: 10;
+  /* gradiente visual sobre el contenido que scrollea por detrás */
+  box-shadow: 0 -36px 40px 24px #050804;
 }
 .ob-btn-primary:hover { opacity: 0.90; }
 .ob-btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
@@ -2023,7 +2035,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 100px);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 150px);
 }
 
 .convo-section {
@@ -2169,6 +2181,31 @@ body {
   .ob-headline { font-size: 1.7rem; }
   .ob-goal-cards { gap: 8px; }
   .ob-dur-grid { gap: 8px; }
+}
+
+/* Paso 6 compacto en pantallas que no tienen altura suficiente */
+@media (max-height: 750px) {
+  .ob-plan-card {
+    padding: 16px 18px 14px;
+  }
+  .ob-plan-price {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+  }
+  .ob-plan-features {
+    margin-bottom: 10px;
+  }
+  .ob-plan-features li {
+    padding: 2px 0 2px 14px;
+    font-size: 0.78rem;
+  }
+  .ob-plan-cta-btn {
+    padding: 10px 16px;
+    font-size: 0.83rem;
+  }
+  .ob-plan-name {
+    font-size: 0.95rem;
+  }
 }
 
 @media (min-width: 600px) {
