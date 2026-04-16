@@ -1025,6 +1025,7 @@ body {
   border-right: 1px solid rgba(201,169,110,0.10);
 }
 .pc-ok { color: var(--sand); font-size: 0.8rem; font-weight: 600; }
+.pc-personalizable { font-size: 0.7rem; color: var(--text-70); }
 .pc-no { color: var(--text-20); }
 .pc-dim { color: var(--text-45); }
 .pc-cta-cell {
@@ -1036,28 +1037,29 @@ body {
 .pc-current-label { font-size: 0.62rem; color: var(--text-45); text-align: center; line-height: 1.3; }
 .btn-pc {
   width: 100%;
-  padding: 7px 3px;
+  padding: 11px 3px;
   border-radius: 100px;
-  border: 1px solid var(--glass-brd);
-  background: rgba(242,237,228,0.07);
+  border: 1px solid rgba(242,237,228,0.25);
+  background: rgba(242,237,228,0.10);
   color: var(--text-70);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
+  font-weight: 500;
   font-family: 'Inter', sans-serif;
   cursor: pointer;
   transition: all 0.2s;
 }
-.btn-pc:hover { background: rgba(242,237,228,0.14); color: var(--text); }
+.btn-pc:hover { background: rgba(242,237,228,0.18); color: var(--text); }
 .btn-pc-feat {
   background: var(--sand);
   border-color: var(--sand);
   color: #0a0e08;
-  font-weight: 500;
+  font-weight: 600;
 }
 .btn-pc-feat:hover { opacity: 0.9; background: var(--sand); }
 
 .plan-footnote { font-size: 0.67rem; color: var(--text-45); text-align: center; line-height: 1.5; margin-bottom: 12px; }
 .paywall-guarantee { font-size: 0.75rem; color: var(--text-45); text-align: center; margin-bottom: 14px; }
-.paywall-close { display: block; margin: 0 auto; width: auto; padding: 10px 24px; }
+.paywall-close { display: block; margin: 0 auto; width: auto; padding: 8px 20px; font-size: 0.78rem; opacity: 0.6; background: none; border-color: transparent; }
 
 /* =============================================
    TOAST

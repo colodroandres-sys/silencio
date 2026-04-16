@@ -217,10 +217,22 @@ function setPillLock(pill, locked) {
 function applyAllLocks() {
   const isFree = !clerk?.user || state.userPlan === 'free';
 
-  // Duración: solo 5 min en free
+  // Duración: free solo 5 min; essential hasta 15 min; premium todo
+  const isPremium = state.userPlan === 'premium';
   document.querySelectorAll('#grp-duration .pill').forEach(pill => {
-    setPillLock(pill, isFree && pill.dataset.value !== '5');
+    const val = pill.dataset.value;
+    if (val === '20') {
+      setPillLock(pill, !isPremium);
+    } else {
+      setPillLock(pill, isFree && val !== '5');
+    }
   });
+  // Si essential tenía 20 min seleccionado, resetear a 15
+  if (!isPremium && state.duration === '20') {
+    document.querySelectorAll('#grp-duration .pill').forEach(p => p.classList.remove('active'));
+    document.querySelector('#grp-duration .pill[data-value="15"]')?.classList.add('active');
+    state.duration = '15';
+  }
 
   // Voz: solo automático en free
   document.querySelectorAll('#grp-voice .pill').forEach(pill => {
