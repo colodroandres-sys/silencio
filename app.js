@@ -136,6 +136,7 @@ function showScreen(id) {
 }
 
 function showHome() {
+  resetCreateScreen();
   showScreen('screen-home');
 }
 
@@ -834,6 +835,7 @@ function newMeditation() {
 
   resetCreateScreen();
   showScreen('screen-home');
+  if (clerk?.user) loadHomeData();
 }
 
 // =============================================
@@ -1102,7 +1104,7 @@ async function initClerk() {
     if (!localStorage.getItem('stillova_ob_done')) {
       showOnboarding();
     } else {
-      // Cargar recientes si hay usuario logueado
+      showHome();
       if (clerk.user) loadHomeData();
     }
   } catch (e) {
