@@ -2,7 +2,6 @@
 // Recibe el contexto del usuario, llama a Claude API y devuelve el texto de la meditación
 
 const checkRateLimit = require('./_ratelimit');
-const { verifyAuth } = require('./_auth');
 const { getOrCreateUser, checkUsageLimit } = require('./_limits');
 
 const WORD_COUNTS = {
@@ -250,30 +249,47 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Rate limiting: 10 meditaciones por IP por hora
+  // Rate limiting general: 10 por IP por hora (aplica a todos)
   const allowed = await checkRateLimit(req, res, 'meditation', 10, '1 h');
   if (!allowed) return;
 
-  // Auth: requiere usuario autenticado con Clerk
-  const clerkId = await verifyAuth(req, res);
-  if (!clerkId) return;
+  // Auth: opcional — guests pueden generar sin cuenta (primera meditación wow)
+  const authHeader = req.headers.authorization || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+  const isGuest = !token;
+  let clerkId = null;
+  let limitCheck = { allowed: true, plan: 'guest' };
 
-  // Crear usuario en Supabase si no existe
-  const email = req.headers['x-user-email'] || '';
-  await getOrCreateUser(clerkId, email);
+  if (isGuest) {
+    // Guests: rate limit estricto — máx 2 generaciones por IP por 24h
+    const guestAllowed = await checkRateLimit(req, res, 'guest_generation', 2, '24 h');
+    if (!guestAllowed) return;
+  } else {
+    // Usuario con cuenta: verificar token y plan
+    const { verifyToken } = require('@clerk/backend');
+    try {
+      const payload = await verifyToken(token, { secretKey: process.env.CLERK_SECRET_KEY });
+      clerkId = payload.sub;
+    } catch (e) {
+      console.error('[auth] Token inválido:', e.message);
+      return res.status(401).json({ error: 'Sesión expirada. Vuelve a iniciar sesión.' });
+    }
 
-  // Verificar límite de plan
-  const limitCheck = await checkUsageLimit(clerkId);
-  if (!limitCheck.allowed) {
-    const msg = limitCheck.reason === 'free_limit'
-      ? 'Has usado tu meditación gratuita. Elige un plan para continuar.'
-      : `Has alcanzado tu límite de ${limitCheck.limit} meditaciones este mes.`;
-    return res.status(402).json({
-      error: msg,
-      currentPlan: limitCheck.plan,
-      usage: limitCheck.usage,
-      limit: limitCheck.limit
-    });
+    const email = req.headers['x-user-email'] || '';
+    await getOrCreateUser(clerkId, email);
+
+    limitCheck = await checkUsageLimit(clerkId);
+    if (!limitCheck.allowed) {
+      const msg = limitCheck.reason === 'free_limit'
+        ? 'Has usado tu meditación gratuita. Elige un plan para continuar.'
+        : `Has alcanzado tu límite de ${limitCheck.limit} meditaciones este mes.`;
+      return res.status(402).json({
+        error: msg,
+        currentPlan: limitCheck.plan,
+        usage: limitCheck.usage,
+        limit: limitCheck.limit
+      });
+    }
   }
 
   const { userInput, userName, duration, voice, gender } = req.body || {};
@@ -286,9 +302,18 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'Duración no válida. Debe ser 5, 10, 15 o 20 minutos.' });
   }
 
-  // Plan Free: solo puede generar meditaciones de 5 minutos
-  if (limitCheck.plan === 'free' && duration !== '5') {
-    return res.status(403).json({ error: 'El plan gratuito solo permite meditaciones de 5 minutos.' });
+  // Guests y plan free: solo meditaciones de 5 minutos
+  if ((isGuest || limitCheck.plan === 'free') && duration !== '5') {
+    return res.status(403).json({ error: 'Solo se permiten meditaciones de 5 minutos sin cuenta.' });
+  }
+
+  // Log guest en Supabase (fail silently — la tabla puede no existir aún)
+  if (isGuest) {
+    try {
+      const { getSupabase } = require('./_supabase');
+      const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
+      await getSupabase().from('guest_usage').insert({ ip, timestamp: new Date().toISOString() });
+    } catch (_) { /* silencioso */ }
   }
 
   if (userInput.length > 500) {

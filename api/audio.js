@@ -48,18 +48,26 @@ module.exports = async (req, res) => {
   const allowed = await checkRateLimit(req, res, 'audio', 10, '1 h');
   if (!allowed) return;
 
-  // Auth: requiere usuario autenticado
-  const clerkId = await verifyAuth(req, res);
-  if (!clerkId) return;
+  // Auth: opcional — guests pueden generar audio sin cuenta
+  const authHeader = req.headers.authorization || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+  const isGuest = !token;
+  let clerkId = null;
+  let limitCheck = { allowed: true, plan: 'guest' };
 
-  // Verificar límite de uso — previene llamadas directas a /api/audio que saltean /api/meditation
-  const limitCheck = await checkUsageLimit(clerkId);
-  if (!limitCheck.allowed) {
-    return res.status(402).json({
-      error: 'Límite de meditaciones alcanzado.',
-      reason: limitCheck.reason,
-      plan: limitCheck.plan
-    });
+  if (!isGuest) {
+    clerkId = await verifyAuth(req, res);
+    if (!clerkId) return;
+
+    // Verificar límite de uso — previene llamadas directas que saltean /api/meditation
+    limitCheck = await checkUsageLimit(clerkId);
+    if (!limitCheck.allowed) {
+      return res.status(402).json({
+        error: 'Límite de meditaciones alcanzado.',
+        reason: limitCheck.reason,
+        plan: limitCheck.plan
+      });
+    }
   }
 
   const { text: rawText, voice: rawVoice, duration, targetWords, silenceTotal, title, intent, emotionTag } = req.body || {};
@@ -98,9 +106,9 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'ELEVENLABS_API_KEY no configurada' });
   }
 
-  // Generar ID para guardar la meditación (solo planes de pago)
+  // Generar ID para guardar la meditación (solo planes de pago, no guests)
   const plan = limitCheck.plan || 'free';
-  const meditationId = plan !== 'free' ? randomUUID() : null;
+  const meditationId = (!isGuest && plan !== 'free') ? randomUUID() : null;
 
   // Helper para insertar el registro en Supabase (no bloquea la respuesta)
   async function saveMeditationRecord(silenceMap) {
@@ -230,11 +238,11 @@ module.exports = async (req, res) => {
       totalDuration: Math.round(totalDuration)
     });
 
-    // Incrementar créditos usados según duración de la meditación generada
-    await incrementUsage(clerkId, duration);
-
-    // Guardar registro de meditación en Supabase (para historial y guardado posterior)
-    await saveMeditationRecord(silenceMap);
+    // Incrementar créditos y guardar registro solo para usuarios con cuenta
+    if (!isGuest) {
+      await incrementUsage(clerkId, duration);
+      await saveMeditationRecord(silenceMap);
+    }
 
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('Cache-Control', 'no-store');

@@ -454,6 +454,11 @@ function applyAllLocks() {
     document.querySelector('#grp-duration .pill[data-value="15"]')?.classList.add('active');
     state.duration = '15';
   }
+  if (isFree && state.duration !== '5') {
+    document.querySelectorAll('#grp-duration .pill').forEach(p => p.classList.remove('active'));
+    document.querySelector('#grp-duration .pill[data-value="5"]')?.classList.add('active');
+    state.duration = '5';
+  }
 
   document.querySelectorAll('#grp-voice .pill').forEach(pill => {
     setPillLock(pill, isFree && pill.dataset.value !== 'auto');
@@ -516,13 +521,19 @@ async function generateMeditation() {
   if (!clerk || !clerk.user) {
     const guestName = document.getElementById('pref-name')?.value.trim().slice(0, 50);
     if (guestName) state.userName = guestName;
-    pendingGeneration = true;
-    sessionStorage.setItem('pending_generation', '1');
-    clerk.openSignIn({ afterSignInUrl: window.location.href, afterSignUpUrl: window.location.href });
-    return;
+
+    // Segunda generación como guest: pedir cuenta
+    if (localStorage.getItem('stillova_guest_used')) {
+      pendingGeneration = true;
+      sessionStorage.setItem('pending_generation', '1');
+      clerk?.openSignIn({ afterSignInUrl: window.location.href, afterSignUpUrl: window.location.href });
+      return;
+    }
+    // Primera generación: experiencia wow directa, sin fricción
+  } else {
+    pendingGeneration = false;
+    if (!state.userName) state.userName = (clerk.user.firstName || '').trim().slice(0, 50);
   }
-  pendingGeneration = false;
-  if (!state.userName) state.userName = (clerk.user.firstName || '').trim().slice(0, 50);
 
   const btn = document.getElementById('btn-generate');
   if (btn) btn.disabled = true;
@@ -663,6 +674,13 @@ async function attemptGeneration(signal) {
 
   track('meditation_generated', { duration: state.duration, voice: state.voice, intent: state.intent });
 
+  // Guest: marcar que ya usó su primera generación y trackear
+  if (!clerk?.user) {
+    const guestAttempt = localStorage.getItem('stillova_guest_used') ? 2 : 1;
+    localStorage.setItem('stillova_guest_used', '1');
+    track('free_guest_generation', { guest: true, attempt: guestAttempt, duration: state.duration });
+  }
+
   connectAudio(state.audioBlobUrl);
   showScreen('screen-player');
 }
@@ -775,12 +793,21 @@ function handleEnd() {
   document.getElementById('btn-new-meditation').style.display = 'none';
   document.getElementById('end-upsell').style.display         = 'none';
   document.getElementById('end-profile').style.display        = 'none';
+  document.getElementById('end-guest')?.setAttribute('style', 'display:none');
 
   const statusPromise = fetchUserStatus();
   const delayPromise  = new Promise(resolve => setTimeout(resolve, 5000));
 
   Promise.all([statusPromise, delayPromise]).then(() => {
     document.getElementById('end-message').style.display = 'none';
+
+    // Guest (sin cuenta): mostrar CTA para crear cuenta o hacer otra
+    if (!clerk?.user) {
+      document.getElementById('end-guest').style.display = 'flex';
+      document.getElementById('screen-player').classList.add('end-active');
+      return;
+    }
+
     if (state.userPlan === 'free' && !state.userCanGenerate) {
       if (!state.profileCompleted) {
         document.getElementById('end-profile').style.display = 'flex';
@@ -831,6 +858,7 @@ function newMeditation() {
   document.getElementById('end-upsell').style.display         = 'none';
   document.getElementById('end-profile').style.display        = 'none';
   document.getElementById('end-save').style.display           = 'none';
+  document.getElementById('end-guest').style.display          = 'none';
   document.getElementById('screen-player').classList.remove('end-active');
 
   resetCreateScreen();
@@ -1260,6 +1288,12 @@ function showPaywall() {
 function closeEndUpsell() {
   document.getElementById('end-upsell').style.display = 'none';
   document.getElementById('screen-player').classList.remove('end-active');
+}
+
+function closeEndGuest() {
+  document.getElementById('end-guest').style.display = 'none';
+  document.getElementById('screen-player').classList.remove('end-active');
+  newMeditation();
 }
 
 function closePaywall() {
