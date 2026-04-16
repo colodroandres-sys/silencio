@@ -38,3 +38,6 @@ Siempre debe seguir un arco: relajación física → respiración → trabajo es
 
 ## Estándar de calidad
 Si la meditación generada no es notablemente mejor que algo genérico de Calm, no está lista. El objetivo es que el usuario sienta que fue creada específicamente para él.
+
+## Mantenimiento de código
+Al final de cualquier sesión donde se haya eliminado o refactorizado UI (pantallas, secciones, componentes), revisar si quedaron clases CSS huérfanas en style.css o funciones JS sin llamadas en app.js. Solo borrar si está 100% confirmado que no se usan en ningún archivo HTML, JS ni se generan dinámicamente.
