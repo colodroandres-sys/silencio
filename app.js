@@ -8,7 +8,7 @@ const state = {
   duration: '5',
   voice: 'auto',
   music: 'auto',
-  gender: 'femenino',
+  gender: 'neutro',
   userPlan: 'free',
   userCanGenerate: true,
   isPlaying: false,
@@ -114,6 +114,10 @@ function showScreen(id) {
     nav.classList.toggle('hidden', hideNav);
   }
 
+  // Ocultar footer en todas las pantallas excepto home
+  const footer = document.querySelector('.site-footer');
+  if (footer) footer.style.display = id === 'screen-home' ? '' : 'none';
+
   // Actualizar tab activo en el nav
   document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
   if (id === 'screen-home') {
@@ -199,21 +203,62 @@ function shake(el) {
 // =============================================
 //  PANTALLA 2 — Preferencias
 // =============================================
-function applyDurationLocks() {
-  const isFree = !clerk?.user || state.userPlan === 'free';
-  document.querySelectorAll('#grp-duration .pill').forEach(pill => {
-    const val = pill.dataset.value;
-    const locked = isFree && val !== '5';
-    pill.classList.toggle('pill-locked', locked);
-    pill.querySelector('.pill-lock')?.remove();
-    if (locked) {
-      const icon = document.createElement('span');
-      icon.className = 'pill-lock';
-      icon.textContent = ' 🔒';
-      pill.appendChild(icon);
-    }
-  });
+function setPillLock(pill, locked) {
+  pill.classList.toggle('pill-locked', locked);
+  pill.querySelector('.pill-lock')?.remove();
+  if (locked) {
+    const icon = document.createElement('span');
+    icon.className = 'pill-lock';
+    icon.textContent = ' 🔒';
+    pill.appendChild(icon);
+  }
 }
+
+function applyAllLocks() {
+  const isFree = !clerk?.user || state.userPlan === 'free';
+
+  // Duración: solo 5 min en free
+  document.querySelectorAll('#grp-duration .pill').forEach(pill => {
+    setPillLock(pill, isFree && pill.dataset.value !== '5');
+  });
+
+  // Voz: solo automático en free
+  document.querySelectorAll('#grp-voice .pill').forEach(pill => {
+    setPillLock(pill, isFree && pill.dataset.value !== 'auto');
+  });
+
+  // Género: solo neutro en free
+  document.querySelectorAll('#grp-gender .pill').forEach(pill => {
+    setPillLock(pill, isFree && pill.dataset.value !== 'neutro');
+  });
+
+  // Música: solo automático en free
+  document.querySelectorAll('#grp-music .pill').forEach(pill => {
+    setPillLock(pill, isFree && pill.dataset.value !== 'auto');
+  });
+
+  // Forzar selecciones por defecto si es free
+  if (isFree) {
+    if (state.voice !== 'auto') {
+      document.querySelectorAll('#grp-voice .pill').forEach(p => p.classList.remove('active'));
+      document.querySelector('#grp-voice .pill[data-value="auto"]')?.classList.add('active');
+      state.voice = 'auto';
+    }
+    if (state.gender !== 'neutro') {
+      document.querySelectorAll('#grp-gender .pill').forEach(p => p.classList.remove('active'));
+      document.querySelector('#grp-gender .pill[data-value="neutro"]')?.classList.add('active');
+      state.gender = 'neutro';
+    }
+    if (state.music !== 'auto') {
+      document.querySelectorAll('#grp-music .pill').forEach(p => p.classList.remove('active'));
+      document.querySelector('#grp-music .pill[data-value="auto"]')?.classList.add('active');
+      state.music = 'auto';
+    }
+  }
+}
+
+// Alias para compatibilidad con llamadas existentes
+function applyDurationLocks() { applyAllLocks(); }
 
 function selectPill(el, groupId, key) {
   if (el.classList.contains('pill-locked')) {
@@ -296,7 +341,11 @@ async function generateMeditation() {
     if (err.status && err.status < 500) {
       abortController = null;
       enableGenerateBtn();
-      if (err.status === 429) {
+      if (err.status === 401) {
+        // Sesión expirada: volver al create y reabrir login automáticamente
+        showScreen('screen-create');
+        openAuth();
+      } else if (err.status === 429) {
         setLoadingState('error', 'Límite alcanzado', 'Has alcanzado el límite de meditaciones por hora. Vuelve en un momento.');
       } else {
         setLoadingState('error', 'Algo salió mal', err.message || 'Revisa los datos e inténtalo de nuevo.');
@@ -603,8 +652,8 @@ function newMeditation() {
   state.voice = 'auto';
 
   document.querySelectorAll('#grp-gender .pill').forEach(p => p.classList.remove('active'));
-  document.querySelector('#grp-gender .pill[data-value="femenino"]').classList.add('active');
-  state.gender = 'femenino';
+  document.querySelector('#grp-gender .pill[data-value="neutro"]').classList.add('active');
+  state.gender = 'neutro';
 
 
   document.getElementById('input-free').value  = '';
