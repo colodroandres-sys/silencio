@@ -1030,6 +1030,33 @@ body {
   -webkit-backdrop-filter: blur(24px);
 }
 .lead-capture-text { font-size: 0.875rem; color: var(--text-70); margin-bottom: 12px; line-height: 1.5; }
+.lead-capture-actions { display: flex; gap: 8px; }
+.btn-lead-yes {
+  flex: 1;
+  padding: 11px;
+  background: var(--sand);
+  border: none;
+  border-radius: var(--r-pill);
+  color: #0a0e08;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btn-lead-yes:hover { opacity: 0.9; }
+.btn-lead-no {
+  padding: 11px 16px;
+  background: none;
+  border: 1px solid var(--glass-brd);
+  border-radius: var(--r-pill);
+  color: var(--text-45);
+  font-size: 0.875rem;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.btn-lead-no:hover { color: var(--text-70); border-color: rgba(242,237,228,0.2); }
 .lead-capture-dismiss {
   position: absolute;
   top: 12px; right: 12px;

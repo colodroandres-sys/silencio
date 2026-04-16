@@ -7,6 +7,7 @@ const state = {
   userName: '',
   duration: '5',
   voice: 'auto',
+  music: 'auto',
   gender: 'femenino',
   userPlan: 'free',
   userCanGenerate: true,
@@ -39,10 +40,22 @@ const AMBIENT_TRACKS = [
   '/sounds/viacheslavstarostin-meditation-spiritual-music-471929.mp3'
 ];
 
+const MUSIC_MAP = {
+  calma:        0,  // 258Hz
+  transformacion: 1, // 417Hz
+  amor:         2,  // 528Hz
+  espiritual:   3
+};
+
 function loadRandomAmbient() {
   const ambient = document.getElementById('audio-ambient');
-  const track   = AMBIENT_TRACKS[Math.floor(Math.random() * AMBIENT_TRACKS.length)];
-  ambient.src   = track;
+  let track;
+  if (state.music === 'auto' || !(state.music in MUSIC_MAP)) {
+    track = AMBIENT_TRACKS[Math.floor(Math.random() * AMBIENT_TRACKS.length)];
+  } else {
+    track = AMBIENT_TRACKS[MUSIC_MAP[state.music]];
+  }
+  ambient.src = track;
   ambient.load();
 }
 
@@ -1057,23 +1070,23 @@ function skipSave() {
 
 // Activa/desactiva el botón de submit según selecciones
 function profilePillSelect(groupId, btn) {
-  document.querySelectorAll(`#${groupId} .profile-pill`).forEach(p => p.classList.remove('selected'));
-  btn.classList.add('selected');
+  document.querySelectorAll(`#${groupId} .profile-pill`).forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
   checkProfileComplete();
 }
 
 function checkProfileComplete() {
-  const goal      = document.querySelector('#profile-goal .profile-pill.selected');
-  const frequency = document.querySelector('#profile-frequency .profile-pill.selected');
-  const timing    = document.querySelector('#profile-timing .profile-pill.selected');
+  const goal      = document.querySelector('#profile-goal .profile-pill.active');
+  const frequency = document.querySelector('#profile-frequency .profile-pill.active');
+  const timing    = document.querySelector('#profile-timing .profile-pill.active');
   const btn       = document.getElementById('btn-profile-submit');
   if (btn) btn.disabled = !(goal && frequency && timing);
 }
 
 async function submitProfile() {
-  const goal      = document.querySelector('#profile-goal .profile-pill.selected')?.dataset.value;
-  const frequency = document.querySelector('#profile-frequency .profile-pill.selected')?.dataset.value;
-  const timing    = document.querySelector('#profile-timing .profile-pill.selected')?.dataset.value;
+  const goal      = document.querySelector('#profile-goal .profile-pill.active')?.dataset.value;
+  const frequency = document.querySelector('#profile-frequency .profile-pill.active')?.dataset.value;
+  const timing    = document.querySelector('#profile-timing .profile-pill.active')?.dataset.value;
 
   if (!goal || !frequency || !timing) return;
 
