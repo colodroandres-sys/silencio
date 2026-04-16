@@ -141,8 +141,8 @@ function setMode(mode) {
   state.mode = mode;
   document.getElementById('mode-free').classList.toggle('hidden', mode !== 'free');
   document.getElementById('mode-guided').classList.toggle('hidden', mode !== 'guided');
-  document.getElementById('btn-free').classList.toggle('active', mode === 'free');
-  document.getElementById('btn-guided').classList.toggle('active', mode === 'guided');
+  document.getElementById('tab-free')?.classList.toggle('active', mode === 'free');
+  document.getElementById('tab-guided')?.classList.toggle('active', mode === 'guided');
 }
 
 function goToPreferences() {
@@ -327,12 +327,13 @@ async function generateMeditation() {
 
     if (err.name === 'AbortError') { abortController = null; enableGenerateBtn(); return; }
 
-    // Paywall (402): mostrar modal de upgrade
+    // Paywall (402): sin créditos — aviso visible + paywall
     if (err.status === 402) {
       abortController = null;
       enableGenerateBtn();
       showScreen('screen-create');
-      showPaywall();
+      showToast(err.message || 'Sin créditos disponibles. Elige un plan para continuar.');
+      setTimeout(() => showPaywall(), 900);
       track('paywall_shown', { duration: state.duration, voice: state.voice });
       return;
     }
@@ -342,9 +343,10 @@ async function generateMeditation() {
       abortController = null;
       enableGenerateBtn();
       if (err.status === 401) {
-        // Sesión expirada: volver al create y reabrir login automáticamente
+        // Sesión expirada: aviso + reabrir login
         showScreen('screen-create');
-        openAuth();
+        showToast('Sesión expirada. Inicia sesión de nuevo.');
+        setTimeout(() => openAuth(), 800);
       } else if (err.status === 429) {
         setLoadingState('error', 'Límite alcanzado', 'Has alcanzado el límite de meditaciones por hora. Vuelve en un momento.');
       } else {
@@ -907,6 +909,19 @@ async function fetchUserStatus() {
       const h = new Date().getHours();
       const greet = h < 12 ? 'Buenos días' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
       greetEl.textContent = `${greet}, ${displayName}`;
+    }
+
+    // Actualizar info de créditos en pantalla de crear (solo planes de pago)
+    const creditsInfoEl = document.getElementById('credits-info');
+    if (creditsInfoEl) {
+      if (plan !== 'free') {
+        const remaining = Math.max(0, limit - usage);
+        const remText = document.getElementById('credits-remaining-text');
+        if (remText) remText.textContent = `${remaining} crédito${remaining !== 1 ? 's' : ''} disponible${remaining !== 1 ? 's' : ''} este mes`;
+        creditsInfoEl.style.display = 'flex';
+      } else {
+        creditsInfoEl.style.display = 'none';
+      }
     }
   } catch (e) {
     console.error('[user status] Error:', e);

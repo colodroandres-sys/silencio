@@ -106,9 +106,11 @@
       <div class="create-card">
         <h2 class="create-headline">¿Cómo te sientes<br>ahora mismo?</h2>
 
-        <!-- Botones ocultos requeridos por setMode() -->
-        <button id="btn-free"   class="mode-btn active" onclick="setMode('free')"></button>
-        <button id="btn-guided" class="mode-btn"        onclick="setMode('guided')"></button>
+        <!-- Mode tabs — visibles arriba del textarea -->
+        <div class="mode-tabs">
+          <button class="mode-tab active" id="tab-free" onclick="setMode('free')">Texto libre</button>
+          <button class="mode-tab" id="tab-guided" onclick="setMode('guided')">Preguntas guiadas</button>
+        </div>
 
         <div id="mode-free" class="input-block">
           <textarea id="input-free" class="textarea-main" placeholder="Cuéntame... ¿qué está pasando? ¿cómo llevas el día?"></textarea>
@@ -137,6 +139,10 @@
               <button class="pill"        data-value="10" onclick="selectPill(this,'grp-duration','duration')">10 min</button>
               <button class="pill"        data-value="15" onclick="selectPill(this,'grp-duration','duration')">15 min</button>
               <button class="pill"        data-value="20" onclick="selectPill(this,'grp-duration','duration')">20 min</button>
+            </div>
+            <div id="credits-info" class="credits-info" style="display:none">
+              <span class="credits-costs">5 min = 1 cr · 10 min = 2 cr · 15 min = 3 cr · 20 min = 4 cr</span>
+              <span id="credits-remaining-text" class="credits-remaining"></span>
             </div>
           </div>
 
@@ -176,7 +182,6 @@
 
         <div class="btn-generate-wrap">
           <button id="btn-generate" class="btn-primary" onclick="goToPreferences()">Crear mi meditación</button>
-          <button class="btn-mode-switch" id="btn-mode-switch" onclick="switchInputMode()">¿Prefieres responder preguntas guiadas?</button>
         </div>
       </div>
 
@@ -309,38 +314,62 @@
   <div id="paywall-modal" class="paywall-overlay">
     <div class="paywall-card">
       <p class="paywall-title">Tu próxima meditación<br>te espera.</p>
-      <p class="paywall-sub">Creada en segundos, solo para ti.</p>
-      <div class="paywall-plans">
-        <div class="plan-option plan-option-featured">
-          <div class="plan-option-badge">Más popular</div>
-          <div class="plan-option-header">
-            <div class="plan-option-name">Premium</div>
-            <div class="plan-option-price">$22.99<span class="plan-price-period">/mes</span></div>
-          </div>
-          <ul class="plan-benefits">
-            <li>25 meditaciones al mes</li>
-            <li>5, 10, 15 y 20 minutos de duración</li>
-            <li>Elige voz femenina, masculina o automática</li>
-            <li>Sonido de fondo a tu gusto</li>
-            <li>Guarda tus favoritas sin límite</li>
-          </ul>
-          <button class="btn-upgrade btn-upgrade-featured" onclick="upgradePlan('premium')">Empezar con Premium</button>
+
+      <div class="plan-compare">
+        <!-- Cabecera de planes -->
+        <div class="pc-head pc-label-head"></div>
+        <div class="pc-head">
+          <div class="pc-name">Gratis</div>
+          <div class="pc-price">$0</div>
         </div>
-        <div class="plan-option">
-          <div class="plan-option-header">
-            <div class="plan-option-name">Essential</div>
-            <div class="plan-option-price">$11.99<span class="plan-price-period">/mes</span></div>
-          </div>
-          <ul class="plan-benefits">
-            <li>10 meditaciones al mes</li>
-            <li>5, 10, 15 y 20 minutos de duración</li>
-            <li>Elige voz femenina, masculina o automática</li>
-            <li>Sonido de fondo a tu gusto</li>
-            <li>Guarda hasta 20 meditaciones</li>
-          </ul>
-          <button class="btn-upgrade" onclick="upgradePlan('essential')">Empezar con Essential</button>
+        <div class="pc-head">
+          <div class="pc-name">Essential</div>
+          <div class="pc-price">$11.99<span class="pc-per-month">/mes</span></div>
         </div>
+        <div class="pc-head pc-head-feat">
+          <div class="pc-badge-inline">★ Popular</div>
+          <div class="pc-name">Premium</div>
+          <div class="pc-price">$22.99<span class="pc-per-month">/mes</span></div>
+        </div>
+
+        <!-- Meditaciones -->
+        <div class="pc-label">Meditaciones</div>
+        <div class="pc-cell">1</div>
+        <div class="pc-cell">Hasta 10 †</div>
+        <div class="pc-cell pc-cell-feat">Hasta 25 †</div>
+
+        <!-- Duración -->
+        <div class="pc-label">Duración</div>
+        <div class="pc-cell pc-dim">5 min</div>
+        <div class="pc-cell">≤ 20 min</div>
+        <div class="pc-cell pc-cell-feat">≤ 20 min</div>
+
+        <!-- Voz -->
+        <div class="pc-label">Voz</div>
+        <div class="pc-cell pc-dim">Auto</div>
+        <div class="pc-cell pc-ok">✓</div>
+        <div class="pc-cell pc-cell-feat pc-ok">✓</div>
+
+        <!-- Sonido de fondo -->
+        <div class="pc-label">Sonido</div>
+        <div class="pc-cell pc-dim">Auto</div>
+        <div class="pc-cell pc-ok">✓</div>
+        <div class="pc-cell pc-cell-feat pc-ok">✓</div>
+
+        <!-- Guardar -->
+        <div class="pc-label">Guardar</div>
+        <div class="pc-cell pc-no">—</div>
+        <div class="pc-cell">Hasta 20</div>
+        <div class="pc-cell pc-cell-feat">Sin límite</div>
+
+        <!-- CTAs -->
+        <div class="pc-label"></div>
+        <div class="pc-cta-cell"><span class="pc-current-label">Tu plan</span></div>
+        <div class="pc-cta-cell"><button class="btn-pc" onclick="upgradePlan('essential')">Elegir</button></div>
+        <div class="pc-cta-cell pc-cell-feat"><button class="btn-pc btn-pc-feat" onclick="upgradePlan('premium')">Elegir</button></div>
       </div>
+
+      <p class="plan-footnote">† 5 min = 1 crédito · 10 min = 2 · 15 min = 3 · 20 min = 4</p>
       <p class="paywall-guarantee">Sin permanencia. Cancela cuando quieras.</p>
       <button class="btn-ghost paywall-close" onclick="closePaywall()">Ahora no</button>
     </div>
@@ -397,17 +426,6 @@
         if (d) d.classList.remove('open');
       }
     });
-
-    // ── Input mode switcher ────────────────────────────────────
-    let _guidedMode = false;
-    function switchInputMode() {
-      _guidedMode = !_guidedMode;
-      setMode(_guidedMode ? 'guided' : 'free');
-      const btn = document.getElementById('btn-mode-switch');
-      if (btn) btn.textContent = _guidedMode
-        ? '← Prefiero escribir libremente'
-        : '¿Prefieres responder preguntas guiadas?';
-    }
 
     // ── Greeting by time of day ────────────────────────────────
     function updateGreeting() {
