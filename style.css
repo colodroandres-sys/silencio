@@ -400,7 +400,7 @@ body {
 
 .btn-generate-wrap {
   position: fixed;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 68px);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 88px);
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -541,7 +541,7 @@ body {
    ============================================= */
 .player-inner {
   padding-top: 0;
-  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 40px);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 70px);
   gap: 0;
 }
 
@@ -1221,7 +1221,7 @@ body {
   .home-body { padding-bottom: 16px; }
   .btn-generate-wrap { margin-top: 14px; }
   .breathing-wrap.player-mode { width: 200px; height: 200px; margin-bottom: 14px; }
-  .player-inner { padding-bottom: 40px; }
+  .player-inner { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 50px); }
   .session-title { margin-bottom: 16px; }
   .progress-area { margin-bottom: 16px; }
 }
@@ -1229,7 +1229,7 @@ body {
 /* Pantallas muy cortas (< 600px altura) — compactar el create para que el botón siempre sea visible */
 @media (max-height: 600px) {
   .breathing-wrap.player-mode { width: 170px; height: 170px; }
-  .player-inner { padding-top: 16px; padding-bottom: 30px; }
+  .player-inner { padding-top: 16px; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 40px); }
 }
 
 /* Fix: cuando el teclado está abierto en móvil (viewport cambia de tamaño) */
@@ -1694,7 +1694,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
-  padding-bottom: 100px;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 100px);
 }
 
 .home-body {
