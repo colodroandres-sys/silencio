@@ -1,0 +1,146 @@
+function quickAccess(emotionTag, prefillText) {
+  state.emotionTag = emotionTag;
+  state.userInput  = prefillText;
+  showCreate(true);
+}
+
+function onInputChange() {
+  const val = document.getElementById('input-free')?.value.trim() || '';
+  const btn = document.getElementById('btn-continue-input');
+  if (btn) btn.disabled = val.length < 3;
+}
+
+function convoRevealIntent() {
+  const el = document.getElementById('input-free');
+  const input = el?.value.trim() || '';
+  if (input.length < 3) { if (el) shake(el); return; }
+  if (input.length > 500) { showCharError(el, `Máximo 500 caracteres (tienes ${input.length})`); return; }
+  state.userInput = input;
+
+  const section = document.getElementById('cs-intent');
+  if (section && section.classList.contains('convo-hidden') && !section.classList.contains('convo-revealed')) {
+    section.classList.add('convo-revealed');
+    setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+  }
+  document.getElementById('cstep-2')?.classList.add('active');
+}
+
+function selectIntent(el) {
+  document.querySelectorAll('.intent-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  state.intent = el.dataset.value;
+
+  const section = document.getElementById('cs-config');
+  if (section && section.classList.contains('convo-hidden') && !section.classList.contains('convo-revealed')) {
+    section.classList.add('convo-revealed');
+    setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+  }
+  document.getElementById('cstep-3')?.classList.add('active');
+}
+
+function goToGenerate() {
+  const input = document.getElementById('input-free')?.value.trim() || '';
+  if (!input) { shake(document.getElementById('input-free')); return; }
+  if (input.length > 500) { showCharError(document.getElementById('input-free'), `Máximo 500 caracteres`); return; }
+  state.userInput = input;
+  state.userName = (clerk?.user?.firstName || '').trim().slice(0, 50);
+  generateMeditation();
+}
+
+function resetCreateScreen() {
+  const inputEl = document.getElementById('input-free');
+  if (inputEl) inputEl.value = '';
+
+  const csIntent  = document.getElementById('cs-intent');
+  const csConfig  = document.getElementById('cs-config');
+  if (csIntent) { csIntent.classList.remove('convo-revealed'); csIntent.classList.add('convo-hidden'); }
+  if (csConfig) { csConfig.classList.remove('convo-revealed'); csConfig.classList.add('convo-hidden'); }
+
+  document.getElementById('cstep-2')?.classList.remove('active');
+  document.getElementById('cstep-3')?.classList.remove('active');
+  document.querySelectorAll('.intent-card').forEach(c => c.classList.remove('active'));
+
+  const btnContinue = document.getElementById('btn-continue-input');
+  if (btnContinue) btnContinue.disabled = true;
+
+  state.intent    = null;
+  state.emotionTag = null;
+  state.userInput  = '';
+}
+
+function setPillLock(pill, locked) {
+  pill.classList.toggle('pill-locked', locked);
+  pill.querySelector('.pill-lock')?.remove();
+  if (locked) {
+    const icon = document.createElement('span');
+    icon.className = 'pill-lock';
+    icon.textContent = ' 🔒';
+    pill.appendChild(icon);
+  }
+}
+
+function applyAllLocks() {
+  const isFree      = !clerk?.user || state.userPlan === 'free';
+  const isPremium   = state.userPlan === 'premium';
+
+  document.querySelectorAll('#grp-duration .pill').forEach(pill => {
+    const val = pill.dataset.value;
+    if (val === '20') {
+      setPillLock(pill, !isPremium);
+    } else {
+      setPillLock(pill, isFree && val !== '5');
+    }
+  });
+
+  if (!isPremium && state.duration === '20') {
+    document.querySelectorAll('#grp-duration .pill').forEach(p => p.classList.remove('active'));
+    document.querySelector('#grp-duration .pill[data-value="15"]')?.classList.add('active');
+    state.duration = '15';
+  }
+  if (isFree && state.duration !== '5') {
+    document.querySelectorAll('#grp-duration .pill').forEach(p => p.classList.remove('active'));
+    document.querySelector('#grp-duration .pill[data-value="5"]')?.classList.add('active');
+    state.duration = '5';
+  }
+
+  document.querySelectorAll('#grp-voice .pill').forEach(pill => {
+    setPillLock(pill, isFree && pill.dataset.value !== 'auto');
+  });
+  document.querySelectorAll('#grp-gender .pill').forEach(pill => {
+    setPillLock(pill, isFree && pill.dataset.value !== 'neutro');
+  });
+  document.querySelectorAll('#grp-music .pill').forEach(pill => {
+    setPillLock(pill, isFree && pill.dataset.value !== 'auto');
+  });
+
+  if (isFree) {
+    if (state.voice !== 'auto') {
+      document.querySelectorAll('#grp-voice .pill').forEach(p => p.classList.remove('active'));
+      document.querySelector('#grp-voice .pill[data-value="auto"]')?.classList.add('active');
+      state.voice = 'auto';
+    }
+    if (state.gender !== 'neutro') {
+      document.querySelectorAll('#grp-gender .pill').forEach(p => p.classList.remove('active'));
+      document.querySelector('#grp-gender .pill[data-value="neutro"]')?.classList.add('active');
+      state.gender = 'neutro';
+    }
+    if (state.music !== 'auto') {
+      document.querySelectorAll('#grp-music .pill').forEach(p => p.classList.remove('active'));
+      document.querySelector('#grp-music .pill[data-value="auto"]')?.classList.add('active');
+      state.music = 'auto';
+    }
+  }
+}
+
+function applyDurationLocks() { applyAllLocks(); }
+
+function selectPill(el, groupId, key) {
+  if (el.classList.contains('pill-locked')) {
+    showPaywall();
+    track('paywall_shown', { trigger: 'pill_lock', value: el.dataset.value });
+    return;
+  }
+  document.querySelectorAll(`#${groupId} .pill`).forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  state[key] = el.dataset.value;
+}
