@@ -2,75 +2,112 @@ const { getSupabase } = require('./_supabase');
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
+const PRICES = { essential: 9.99, premium: 19.99 };
+
 module.exports = async (req, res) => {
   if (req.method !== 'GET') return res.status(405).end();
 
-  // Autenticación simple por header
   const auth = req.headers['x-admin-password'] || req.query.password || '';
   if (!ADMIN_PASSWORD || auth !== ADMIN_PASSWORD) {
     return res.status(401).json({ error: 'No autorizado.' });
   }
 
   const db = getSupabase();
-  const month = (() => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-  })();
+
+  const now = new Date();
+  const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const sevenDaysAgo  = new Date(Date.now() - 7  * 86400000).toISOString();
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString();
+  const todayStart    = new Date(now.toISOString().slice(0, 10)).toISOString();
 
   try {
-    // Usuarios por plan
-    const { data: users } = await db
-      .from('users')
-      .select('plan, created_at');
+    const [usersResult, medsResult, usageResult] = await Promise.all([
+      db.from('users').select('clerk_id, email, plan, free_used, profile_completed, bonus_credit_used, stripe_subscription_id, created_at'),
+      db.from('meditations').select('clerk_id, duration, created_at'),
+      db.from('monthly_usage').select('clerk_id, count').eq('month', month),
+    ]);
 
-    const totalUsers = users?.length || 0;
-    const byPlan = { free: 0, essential: 0, premium: 0 };
-    let recentSignups = 0;
-    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const users = usersResult.data || [];
+    const meds  = medsResult.data  || [];
+    const usage = usageResult.data || [];
 
-    for (const u of (users || [])) {
-      byPlan[u.plan || 'free'] = (byPlan[u.plan || 'free'] || 0) + 1;
-      if (u.created_at && u.created_at >= sevenDaysAgo) recentSignups++;
+    // ── Índices ──────────────────────────────────────────────
+    const medsByUser = {};
+    const lastActivityByUser = {};
+    let medsToday = 0;
+    let medsThisWeek = 0;
+
+    for (const m of meds) {
+      medsByUser[m.clerk_id] = (medsByUser[m.clerk_id] || 0) + 1;
+      if (!lastActivityByUser[m.clerk_id] || m.created_at > lastActivityByUser[m.clerk_id]) {
+        lastActivityByUser[m.clerk_id] = m.created_at;
+      }
+      if (m.created_at >= todayStart)    medsToday++;
+      if (m.created_at >= sevenDaysAgo)  medsThisWeek++;
     }
 
-    // Meditaciones generadas este mes
-    const { data: usageRows } = await db
-      .from('monthly_usage')
-      .select('count')
-      .eq('month', month);
+    const usageByUser = {};
+    for (const u of usage) usageByUser[u.clerk_id] = u.count || 0;
 
-    const meditationsThisMonth = (usageRows || []).reduce((sum, r) => sum + (r.count || 0), 0);
+    // ── Métricas globales ─────────────────────────────────────
+    const totalUsers   = users.length;
+    const byPlan       = { free: 0, essential: 0, premium: 0 };
+    let newThisWeek    = 0;
+    let newThisMonth   = 0;
+    let usedFreeCredit = 0;
+    let activeThisWeek = 0;
+    let activeThisMonth = 0;
 
-    // MRR estimado
-    const PRICES = { essential: 11.99, premium: 22.99 };
-    const mrr = +(
-      (byPlan.essential * PRICES.essential) +
-      (byPlan.premium * PRICES.premium)
-    ).toFixed(2);
+    for (const u of users) {
+      const plan = u.plan || 'free';
+      byPlan[plan] = (byPlan[plan] || 0) + 1;
+      if (u.created_at >= sevenDaysAgo)  newThisWeek++;
+      if (u.created_at >= thirtyDaysAgo) newThisMonth++;
+      if (u.free_used) usedFreeCredit++;
+      const last = lastActivityByUser[u.clerk_id];
+      if (last >= sevenDaysAgo)  activeThisWeek++;
+      if (last >= thirtyDaysAgo) activeThisMonth++;
+    }
 
-    // Conversión free → pago
-    const paying = byPlan.essential + byPlan.premium;
-    const conversionRate = totalUsers > 0
-      ? +((paying / totalUsers) * 100).toFixed(1)
-      : 0;
+    const paying        = byPlan.essential + byPlan.premium;
+    const mrr           = +((byPlan.essential * PRICES.essential) + (byPlan.premium * PRICES.premium)).toFixed(2);
+    const conversionRate = totalUsers > 0 ? +((paying / totalUsers) * 100).toFixed(1) : 0;
+    const activationRate = totalUsers > 0 ? +((usedFreeCredit / totalUsers) * 100).toFixed(1) : 0;
 
-    // Lista de usuarios individuales (máx 200, más recientes primero)
-    const { data: userList } = await db
-      .from('users')
-      .select('clerk_id, email, plan, free_used, stripe_subscription_id, created_at')
-      .order('created_at', { ascending: false })
-      .limit(200);
+    // ── Lista de usuarios enriquecida ─────────────────────────
+    const userList = users
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .slice(0, 300)
+      .map(u => ({
+        clerk_id:       u.clerk_id,
+        email:          u.email || '—',
+        plan:           u.plan  || 'free',
+        total_meds:     medsByUser[u.clerk_id] || 0,
+        credits_used:   u.plan === 'free' ? (u.free_used ? 1 : 0) : (usageByUser[u.clerk_id] || 0),
+        last_activity:  lastActivityByUser[u.clerk_id] || null,
+        profile_done:   !!u.profile_completed,
+        has_sub:        !!u.stripe_subscription_id,
+        created_at:     u.created_at,
+      }));
 
     res.json({
       month,
+      mrr,
       totalUsers,
       byPlan,
-      recentSignups,
-      meditationsThisMonth,
-      mrr,
       paying,
+      newThisWeek,
+      newThisMonth,
       conversionRate,
-      users: userList || []
+      activationRate,
+      usedFreeCredit,
+      activeThisWeek,
+      activeThisMonth,
+      medsTotal:       meds.length,
+      medsThisMonth:   (usageResult.data || []).reduce((s, r) => s + (r.count || 0), 0),
+      medsThisWeek,
+      medsToday,
+      users:           userList,
     });
   } catch (e) {
     console.error('[admin] Error:', e.message);

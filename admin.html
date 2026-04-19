@@ -3,549 +3,463 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stillova — Admin</title>
+  <title>Admin — Stillova</title>
+  <meta name="robots" content="noindex,nofollow">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --bg:     #0a0e08;
+      --surface:#111a0e;
+      --border: rgba(242,237,228,0.08);
+      --sand:   #c9a96e;
+      --text:   #f2ede4;
+      --text-60:rgba(242,237,228,0.6);
+      --text-35:rgba(242,237,228,0.35);
+      --green:  #4caf7d;
+      --red:    #e57373;
+      --yellow: #f0b429;
+    }
+
     body {
+      background: var(--bg);
+      color: var(--text);
       font-family: 'Inter', sans-serif;
-      background: #07081a;
-      color: #e2e8f0;
+      font-size: 14px;
       min-height: 100vh;
-      padding: 24px 16px;
     }
 
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 32px;
-    }
-    .logo-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: #9d62f8;
-    }
-    .header h1 { font-size: 1.1rem; font-weight: 500; color: #cbd5e1; letter-spacing: 0.05em; }
-    .header span { font-size: 0.75rem; color: #64748b; margin-left: 4px; }
-
-    /* Login */
+    /* ── Login ─────────────────────────────── */
     #login-screen {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 60vh;
+      min-height: 100vh;
       gap: 16px;
     }
-    #login-screen h2 { font-size: 1rem; font-weight: 400; color: #94a3b8; }
-    .input-pw {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
+    #login-screen h1 {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: 1.8rem;
+      color: var(--sand);
+    }
+    #pw-input {
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 12px 16px;
-      color: #e2e8f0;
-      font-size: 0.95rem;
-      width: 280px;
+      padding: 12px 18px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      width: 260px;
+      outline: none;
+      text-align: center;
+    }
+    #pw-input:focus { border-color: rgba(201,169,110,0.4); }
+    #pw-btn {
+      background: var(--sand);
+      color: #0a0e08;
+      border: none;
+      border-radius: 24px;
+      padding: 10px 32px;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    #pw-error { color: var(--red); font-size: 12px; display: none; }
+
+    /* ── Dashboard ─────────────────────────── */
+    #dashboard { display: none; padding: 32px 24px 80px; max-width: 1100px; margin: 0 auto; }
+
+    .dash-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+    .dash-header h1 {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: 1.5rem;
+      color: var(--sand);
+    }
+    .dash-meta { color: var(--text-35); font-size: 12px; margin-top: 3px; }
+    .refresh-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-60);
+      padding: 6px 14px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+    }
+    .refresh-btn:hover { border-color: rgba(242,237,228,0.2); color: var(--text); }
+
+    /* ── KPI grid ───────────────────────────── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 16px;
+    }
+    .kpi-label { font-size: 11px; color: var(--text-35); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .kpi-value { font-size: 1.9rem; font-weight: 600; line-height: 1; }
+    .kpi-sub   { font-size: 11px; color: var(--text-35); margin-top: 6px; }
+    .kpi-value.green  { color: var(--green); }
+    .kpi-value.sand   { color: var(--sand); }
+    .kpi-value.yellow { color: var(--yellow); }
+
+    /* ── Section ────────────────────────────── */
+    .section { margin-bottom: 32px; }
+    .section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-35);
+      margin-bottom: 12px;
+    }
+
+    /* ── Plan bars ──────────────────────────── */
+    .plan-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .plan-name { width: 72px; font-size: 12px; color: var(--text-60); }
+    .plan-bar-wrap { flex: 1; background: rgba(242,237,228,0.06); border-radius: 4px; height: 8px; overflow: hidden; }
+    .plan-bar { height: 100%; border-radius: 4px; transition: width 0.6s ease; min-width: 2px; }
+    .plan-bar.free      { background: var(--text-35); }
+    .plan-bar.essential { background: var(--sand); }
+    .plan-bar.premium   { background: var(--green); }
+    .plan-count { width: 36px; text-align: right; font-size: 12px; color: var(--text-60); }
+
+    /* ── Funnel ─────────────────────────────── */
+    .funnel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .funnel-step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+    }
+    .funnel-num   { font-size: 1.7rem; font-weight: 600; color: var(--sand); line-height: 1; }
+    .funnel-label { font-size: 11px; color: var(--text-35); margin-top: 6px; line-height: 1.5; }
+    .funnel-pct   { font-size: 11px; color: var(--text-60); margin-top: 4px; }
+
+    /* ── Table ──────────────────────────────── */
+    .table-controls { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+    #search-input {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 14px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      width: 220px;
       outline: none;
     }
-    .input-pw:focus { border-color: rgba(157,98,248,0.5); }
-    .btn-login {
-      background: #9d62f8;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 12px 32px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      width: 280px;
-    }
-    .btn-login:hover { background: #8b4ef0; }
-    .login-error { color: #f87171; font-size: 0.8rem; }
-
-    /* Dashboard */
-    #dashboard { display: none; }
-
-    .month-label {
-      font-size: 0.75rem;
-      color: #64748b;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 20px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 12px;
-      margin-bottom: 32px;
-    }
-
-    .card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 14px;
-      padding: 20px 16px;
-    }
-    .card-label {
-      font-size: 0.72rem;
-      color: #64748b;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-    .card-value {
-      font-size: 2rem;
-      font-weight: 600;
-      color: #f1f5f9;
-      line-height: 1;
-    }
-    .card-value.green { color: #4ade80; }
-    .card-value.purple { color: #c084fc; }
-    .card-value.blue { color: #60a5fa; }
-    .card-sub {
-      font-size: 0.75rem;
-      color: #475569;
-      margin-top: 6px;
-    }
-
-    /* Breakdown */
-    .section-title {
-      font-size: 0.75rem;
-      color: #64748b;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-    .plan-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
-    .plan-row:last-child { border-bottom: none; }
-    .plan-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .dot-free { background: #475569; }
-    .dot-essential { background: #7dd3fc; }
-    .dot-premium { background: #9d62f8; }
-
-    /* Tabla de usuarios */
-    .users-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.82rem;
-      margin-bottom: 40px;
-    }
-    .users-table th {
-      text-align: left;
-      color: #64748b;
-      font-weight: 500;
-      font-size: 0.72rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 8px 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.07);
-    }
-    .users-table td {
-      padding: 10px 12px;
-      color: #cbd5e1;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      vertical-align: middle;
-    }
-    .users-table tr:last-child td { border-bottom: none; }
-    .users-table tr:hover td { background: rgba(255,255,255,0.02); }
-    .badge {
-      display: inline-block;
-      font-size: 0.68rem;
-      font-weight: 500;
-      padding: 2px 8px;
+    #search-input:focus { border-color: rgba(201,169,110,0.3); }
+    .plan-filter { display: flex; gap: 6px; }
+    .plan-filter button {
+      background: none;
+      border: 1px solid var(--border);
       border-radius: 20px;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-    .badge-free { background: rgba(71,85,105,0.3); color: #94a3b8; }
-    .badge-essential { background: rgba(125,211,252,0.15); color: #7dd3fc; }
-    .badge-premium { background: rgba(157,98,248,0.2); color: #c084fc; }
-    .plan-name { font-size: 0.9rem; color: #94a3b8; flex: 1; }
-    .plan-count { font-size: 1rem; font-weight: 600; color: #f1f5f9; }
-    .plan-pct { font-size: 0.75rem; color: #475569; min-width: 36px; text-align: right; }
-    .plan-bar-wrap { flex: 2; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
-    .plan-bar { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
-
-    /* Costos */
-    .costs-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-    .cost-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      font-size: 0.83rem;
-    }
-    .cost-row:last-child { border-bottom: none; }
-    .cost-label { color: #94a3b8; }
-    .cost-val { color: #f1f5f9; font-variant-numeric: tabular-nums; }
-    .cost-val.free { color: #475569; }
-    .cost-total-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0 0;
-      margin-top: 4px;
-      border-top: 1px solid rgba(255,255,255,0.1);
-      font-size: 0.88rem;
-      font-weight: 500;
-    }
-    .profit-box {
-      background: rgba(255,255,255,0.03);
-      border-radius: 14px;
-      padding: 16px 20px;
-      margin-bottom: 32px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .profit-item { display: flex; flex-direction: column; gap: 4px; }
-    .profit-item-label { font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; }
-    .profit-item-val { font-size: 1.4rem; font-weight: 600; }
-    .profit-item-val.green { color: #4ade80; }
-    .profit-item-val.red { color: #f87171; }
-    .profit-item-val.yellow { color: #fbbf24; }
-
-    /* Health */
-    .health-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 8px;
-      margin-bottom: 32px;
-    }
-    .health-item {
-      background: rgba(255,255,255,0.03);
-      border-radius: 10px;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .health-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .health-dot.ok { background: #4ade80; }
-    .health-dot.fail { background: #f87171; }
-    .health-name { font-size: 0.78rem; color: #94a3b8; }
-
-    /* Refresh */
-    .footer {
-      margin-top: 40px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    .btn-refresh {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 8px;
-      padding: 8px 16px;
-      color: #94a3b8;
-      font-size: 0.8rem;
+      padding: 4px 12px;
+      font-size: 11px;
+      color: var(--text-35);
       cursor: pointer;
+      font-family: 'Inter', sans-serif;
     }
-    .btn-refresh:hover { background: rgba(255,255,255,0.1); }
-    .last-update { font-size: 0.75rem; color: #475569; }
+    .plan-filter button.active { border-color: var(--sand); color: var(--sand); }
 
-    .loading { color: #475569; font-size: 0.85rem; padding: 40px 0; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    thead th {
+      text-align: left;
+      padding: 8px 12px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-35);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+    }
+    thead th:hover { color: var(--text-60); }
+    tbody tr { border-bottom: 1px solid rgba(242,237,228,0.04); }
+    tbody tr:hover { background: rgba(242,237,228,0.03); }
+    tbody td { padding: 9px 12px; color: var(--text-60); white-space: nowrap; }
+    tbody td.email { color: var(--text); max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 500; }
+    .badge-free      { background: rgba(242,237,228,0.07); color: var(--text-35); }
+    .badge-essential { background: rgba(201,169,110,0.15); color: var(--sand); }
+    .badge-premium   { background: rgba(76,175,125,0.15);  color: var(--green); }
+
+    .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+    .dot-green  { background: var(--green); }
+    .dot-yellow { background: var(--yellow); }
+    .dot-grey   { background: var(--text-35); }
+
+    .loading   { text-align: center; padding: 80px; color: var(--text-35); }
+    .error-msg { text-align: center; padding: 60px; color: var(--red); font-size: 13px; }
   </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="logo-dot"></div>
-  <h1>Stillova <span>/ Admin</span></h1>
-</div>
-
-<!-- Login -->
-<div id="login-screen">
-  <h2>Acceso al panel</h2>
-  <input type="password" class="input-pw" id="pw-input" placeholder="Contraseña" onkeydown="if(event.key==='Enter')login()">
-  <button class="btn-login" onclick="login()">Entrar</button>
-  <span class="login-error" id="login-error" style="display:none">Contraseña incorrecta.</span>
-</div>
-
-<!-- Dashboard -->
-<div id="dashboard">
-
-  <div class="month-label" id="month-label">Cargando...</div>
-
-  <!-- KPIs principales -->
-  <div class="grid" id="kpi-grid">
-    <div class="card">
-      <div class="card-label">MRR</div>
-      <div class="card-value green" id="mrr">—</div>
-      <div class="card-sub">ingresos mensuales</div>
-    </div>
-    <div class="card">
-      <div class="card-label">Usuarios pagando</div>
-      <div class="card-value purple" id="paying">—</div>
-      <div class="card-sub" id="conversion-rate">—</div>
-    </div>
-    <div class="card">
-      <div class="card-label">Total usuarios</div>
-      <div class="card-value" id="total-users">—</div>
-      <div class="card-sub" id="recent-signups">—</div>
-    </div>
-    <div class="card">
-      <div class="card-label">Meditaciones este mes</div>
-      <div class="card-value blue" id="meditations">—</div>
-      <div class="card-sub">generadas</div>
-    </div>
+  <div id="login-screen">
+    <h1>Stillova Admin</h1>
+    <input id="pw-input" type="password" placeholder="Contraseña" autocomplete="off"
+           onkeydown="if(event.key==='Enter')login()">
+    <button id="pw-btn" onclick="login()">Entrar</button>
+    <p id="pw-error">Contraseña incorrecta</p>
   </div>
 
-  <!-- Breakdown por plan -->
-  <div class="section-title">Usuarios por plan</div>
-  <div style="background:rgba(255,255,255,0.03);border-radius:14px;padding:4px 16px;margin-bottom:32px;" id="plan-breakdown">
-    <div class="loading">Cargando...</div>
-  </div>
-
-  <!-- Costos y margen -->
-  <div class="section-title">Costos del mes</div>
-  <div style="background:rgba(255,255,255,0.03);border-radius:14px;padding:4px 20px;margin-bottom:12px;" id="costs-breakdown">
-    <div class="loading">Calculando...</div>
-  </div>
-  <div class="profit-box" id="profit-box" style="display:none">
-    <div class="profit-item">
-      <span class="profit-item-label">MRR</span>
-      <span class="profit-item-val green" id="profit-mrr">—</span>
+  <div id="dashboard">
+    <div class="dash-header">
+      <div>
+        <h1>Stillova</h1>
+        <p class="dash-meta" id="dash-meta"></p>
+      </div>
+      <button class="refresh-btn" onclick="loadData()">↺ Actualizar</button>
     </div>
-    <div class="profit-item">
-      <span class="profit-item-label">Costos totales</span>
-      <span class="profit-item-val red" id="profit-costs">—</span>
-    </div>
-    <div class="profit-item">
-      <span class="profit-item-label">Beneficio neto</span>
-      <span class="profit-item-val" id="profit-net">—</span>
-    </div>
-    <div class="profit-item">
-      <span class="profit-item-label">Margen</span>
-      <span class="profit-item-val" id="profit-margin">—</span>
-    </div>
+    <div id="dash-body"><div class="loading">Cargando...</div></div>
   </div>
 
-  <!-- Health check -->
-  <div class="section-title">Estado del sistema</div>
-  <div class="health-grid" id="health-grid">
-    <div class="loading">Comprobando...</div>
-  </div>
+  <script>
+    let pw = '';
+    let allUsers = [];
+    let sortCol = 'created_at';
+    let sortDir = -1;
+    let planFilter = '';
 
-  <!-- Tabla de usuarios -->
-  <div class="section-title" style="margin-top:8px">Usuarios</div>
-  <div style="background:rgba(255,255,255,0.03);border-radius:14px;padding:4px 0;margin-bottom:32px;overflow-x:auto;">
-    <table class="users-table" id="users-table">
-      <thead>
-        <tr>
-          <th>Email</th>
-          <th>Plan</th>
-          <th>Suscripción</th>
-          <th>Registrado</th>
-        </tr>
-      </thead>
-      <tbody id="users-tbody">
-        <tr><td colspan="4" class="loading" style="padding:20px">Cargando...</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="footer">
-    <button class="btn-refresh" onclick="loadDashboard()">Actualizar</button>
-    <span class="last-update" id="last-update"></span>
-  </div>
-
-</div>
-
-<script>
-  let adminPassword = '';
-
-  function login() {
-    const pw = document.getElementById('pw-input').value;
-    if (!pw) return;
-    adminPassword = pw;
-    loadDashboard();
-  }
-
-  async function loadDashboard() {
-    try {
-      const [metricsRes, healthRes] = await Promise.all([
-        fetch('/api/admin', { headers: { 'x-admin-password': adminPassword } }),
-        fetch('/api/health')
-      ]);
-
-      if (metricsRes.status === 401) {
-        document.getElementById('login-error').style.display = 'block';
-        return;
-      }
-
-      document.getElementById('login-error').style.display = 'none';
+    function login() {
+      pw = document.getElementById('pw-input').value.trim();
+      if (!pw) return;
+      document.getElementById('pw-error').style.display = 'none';
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
-
-      if (metricsRes.ok) {
-        const data = await metricsRes.json();
-        renderMetrics(data);
-      }
-
-      if (healthRes.ok || healthRes.status === 503) {
-        const health = await healthRes.json();
-        renderHealth(health);
-      }
-
-      document.getElementById('last-update').textContent =
-        'Actualizado: ' + new Date().toLocaleTimeString('es-ES');
-
-    } catch (e) {
-      console.error('Error cargando dashboard:', e);
+      loadData();
     }
-  }
 
-  function renderMetrics(data) {
-    const monthNames = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-    const [year, mon] = data.month.split('-');
-    document.getElementById('month-label').textContent =
-      `${monthNames[parseInt(mon) - 1]} ${year}`;
+    async function loadData() {
+      document.getElementById('dash-body').innerHTML = '<div class="loading">Cargando...</div>';
+      try {
+        const res = await fetch(`/api/admin?password=${encodeURIComponent(pw)}`);
+        if (res.status === 401) {
+          document.getElementById('dashboard').style.display = 'none';
+          document.getElementById('login-screen').style.display = 'flex';
+          document.getElementById('pw-error').style.display = 'block';
+          return;
+        }
+        if (!res.ok) throw new Error('Error del servidor');
+        const data = await res.json();
+        allUsers = data.users || [];
+        render(data);
+      } catch(e) {
+        document.getElementById('dash-body').innerHTML = `<div class="error-msg">Error: ${e.message}</div>`;
+      }
+    }
 
-    document.getElementById('mrr').textContent = `$${data.mrr.toFixed(2)}`;
-    document.getElementById('paying').textContent = data.paying;
-    document.getElementById('conversion-rate').textContent =
-      `${data.conversionRate}% conversión`;
-    document.getElementById('total-users').textContent = data.totalUsers;
-    document.getElementById('recent-signups').textContent =
-      `+${data.recentSignups} últimos 7 días`;
-    document.getElementById('meditations').textContent = data.meditationsThisMonth;
+    function render(d) {
+      const now = new Date();
+      document.getElementById('dash-meta').textContent =
+        `Actualizado ${now.toLocaleTimeString('es', {hour:'2-digit', minute:'2-digit'})} · ${d.month}`;
 
-    // Plan breakdown
-    const total = data.totalUsers || 1;
-    const plans = [
-      { key: 'free',      label: 'Gratis',    dotClass: 'dot-free',      color: '#475569' },
-      { key: 'essential', label: 'Essential',  dotClass: 'dot-essential', color: '#7dd3fc' },
-      { key: 'premium',   label: 'Premium',    dotClass: 'dot-premium',   color: '#9d62f8' }
-    ];
+      document.getElementById('dash-body').innerHTML = `
 
-    const html = plans.map(p => {
-      const count = data.byPlan[p.key] || 0;
-      const pct = Math.round((count / total) * 100);
-      return `
-        <div class="plan-row">
-          <div class="plan-dot ${p.dotClass}"></div>
-          <span class="plan-name">${p.label}</span>
-          <div class="plan-bar-wrap">
-            <div class="plan-bar" style="width:${pct}%;background:${p.color}"></div>
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">MRR</div>
+            <div class="kpi-value sand">€${d.mrr.toFixed(2)}</div>
+            <div class="kpi-sub">${d.paying} cliente${d.paying !== 1 ? 's' : ''} de pago</div>
           </div>
-          <span class="plan-count">${count}</span>
-          <span class="plan-pct">${pct}%</span>
-        </div>`;
-    }).join('');
+          <div class="kpi-card">
+            <div class="kpi-label">Conversión</div>
+            <div class="kpi-value ${d.conversionRate >= 5 ? 'green' : 'yellow'}">${d.conversionRate}%</div>
+            <div class="kpi-sub">Free → pago</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Activación</div>
+            <div class="kpi-value ${d.activationRate >= 50 ? 'green' : 'yellow'}">${d.activationRate}%</div>
+            <div class="kpi-sub">Usaron la app</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Usuarios</div>
+            <div class="kpi-value">${d.totalUsers}</div>
+            <div class="kpi-sub">+${d.newThisWeek} esta semana</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Activos 7 días</div>
+            <div class="kpi-value">${d.activeThisWeek}</div>
+            <div class="kpi-sub">de ${d.totalUsers} totales</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Meditaciones hoy</div>
+            <div class="kpi-value">${d.medsToday}</div>
+            <div class="kpi-sub">${d.medsThisWeek} esta semana</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Meditaciones mes</div>
+            <div class="kpi-value">${d.medsThisMonth}</div>
+            <div class="kpi-sub">${d.medsTotal} totales histórico</div>
+          </div>
+        </div>
 
-    document.getElementById('plan-breakdown').innerHTML = html;
+        <div class="section">
+          <p class="section-title">Distribución de planes</p>
+          ${renderPlanBars(d)}
+        </div>
 
-    // Costos del mes
-    renderCosts(data.meditationsThisMonth, data.mrr);
+        <div class="section">
+          <p class="section-title">Embudo de conversión</p>
+          <div class="funnel-grid">
+            <div class="funnel-step">
+              <div class="funnel-num">${d.totalUsers}</div>
+              <div class="funnel-label">Se registraron</div>
+            </div>
+            <div class="funnel-step">
+              <div class="funnel-num">${d.usedFreeCredit}</div>
+              <div class="funnel-label">Generaron al menos 1 meditación</div>
+              <div class="funnel-pct">${d.totalUsers > 0 ? ((d.usedFreeCredit/d.totalUsers)*100).toFixed(0) : 0}% del total</div>
+            </div>
+            <div class="funnel-step">
+              <div class="funnel-num">${d.paying}</div>
+              <div class="funnel-label">Compraron un plan</div>
+              <div class="funnel-pct">${d.usedFreeCredit > 0 ? ((d.paying/d.usedFreeCredit)*100).toFixed(0) : 0}% de los activados</div>
+            </div>
+          </div>
+        </div>
 
-    // Tabla de usuarios
-    if (data.users && data.users.length > 0) {
-      const rows = data.users.map(u => {
-        const date = u.created_at ? new Date(u.created_at).toLocaleDateString('es-ES') : '—';
-        const plan = u.plan || 'free';
-        const hasSub = u.stripe_subscription_id ? '✓ Activa' : '—';
-        return `<tr>
-          <td>${u.email || '—'}</td>
-          <td><span class="badge badge-${plan}">${plan}</span></td>
-          <td style="color:${u.stripe_subscription_id ? '#4ade80' : '#475569'};font-size:0.78rem">${hasSub}</td>
-          <td style="color:#64748b">${date}</td>
-        </tr>`;
-      }).join('');
-      document.getElementById('users-tbody').innerHTML = rows;
-    } else {
-      document.getElementById('users-tbody').innerHTML = '<tr><td colspan="4" style="color:#475569;padding:20px;text-align:center">Sin usuarios aún</td></tr>';
+        <div class="section">
+          <p class="section-title">Usuarios (${allUsers.length})</p>
+          <div class="table-controls">
+            <input id="search-input" type="text" placeholder="Buscar por email..." oninput="renderTable()">
+            <div class="plan-filter">
+              <button onclick="setPlanFilter('')"           id="filter-all"       class="active">Todos</button>
+              <button onclick="setPlanFilter('premium')"    id="filter-premium"             >Premium</button>
+              <button onclick="setPlanFilter('essential')"  id="filter-essential"           >Essential</button>
+              <button onclick="setPlanFilter('free')"       id="filter-free"                >Free</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th onclick="sortBy('email')">Email</th>
+                  <th onclick="sortBy('plan')">Plan</th>
+                  <th onclick="sortBy('total_meds')">Meditaciones</th>
+                  <th onclick="sortBy('credits_used')">Créditos usados</th>
+                  <th onclick="sortBy('last_activity')">Última actividad</th>
+                  <th onclick="sortBy('created_at')">Registro</th>
+                </tr>
+              </thead>
+              <tbody id="users-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      `;
+
+      renderTable();
     }
-  }
 
-  function renderCosts(meditationsCount, mrr) {
-    // Costos fijos mensuales (actualizar si cambia el plan de algún servicio)
-    const fixed = [
-      { label: 'Vercel (hosting)',        monthly: 0,     note: 'Free tier' },
-      { label: 'Clerk (auth)',            monthly: 0,     note: 'Free tier' },
-      { label: 'Supabase (DB + storage)', monthly: 0,     note: 'Free tier' },
-      { label: 'Upstash Redis',           monthly: 0,     note: 'Free tier' },
-      { label: 'PostHog (analytics)',     monthly: 0,     note: 'Free tier' },
-      { label: 'Dominio',                 monthly: 1.25,  note: '~$15/año' },
-    ];
+    function renderPlanBars(d) {
+      const total = d.totalUsers || 1;
+      return ['premium','essential','free'].map(plan => {
+        const n = d.byPlan[plan] || 0;
+        const pct = Math.round((n / total) * 100);
+        return `<div class="plan-row">
+          <span class="plan-name">${plan.charAt(0).toUpperCase() + plan.slice(1)}</span>
+          <div class="plan-bar-wrap"><div class="plan-bar ${plan}" style="width:${pct}%"></div></div>
+          <span class="plan-count">${n}</span>
+        </div>`;
+      }).join('');
+    }
 
-    // Costos variables
-    const COST_PER_CREDIT = 0.43; // Claude + ElevenLabs por meditación
-    const variableCost = +(meditationsCount * COST_PER_CREDIT).toFixed(2);
-    const fixedTotal = +fixed.reduce((s, f) => s + f.monthly, 0).toFixed(2);
-    const totalCost = +(fixedTotal + variableCost).toFixed(2);
-    const netProfit = +(mrr - totalCost).toFixed(2);
-    const margin = mrr > 0 ? Math.round((netProfit / mrr) * 100) : 0;
+    function renderTable() {
+      const q = (document.getElementById('search-input')?.value || '').toLowerCase();
+      let users = allUsers.filter(u => {
+        if (planFilter && u.plan !== planFilter) return false;
+        if (q && !u.email.toLowerCase().includes(q)) return false;
+        return true;
+      });
 
-    const fixedRows = fixed.map(f => `
-      <div class="cost-row">
-        <span class="cost-label">${f.label}</span>
-        <span class="cost-val ${f.monthly === 0 ? 'free' : ''}">${f.monthly === 0 ? f.note : '$' + f.monthly.toFixed(2)}</span>
-      </div>`).join('');
+      users.sort((a, b) => {
+        let va = a[sortCol] ?? '', vb = b[sortCol] ?? '';
+        if (typeof va === 'string') va = va.toLowerCase();
+        if (typeof vb === 'string') vb = vb.toLowerCase();
+        return va < vb ? -sortDir : va > vb ? sortDir : 0;
+      });
 
-    const html = `
-      ${fixedRows}
-      <div class="cost-row">
-        <span class="cost-label">Claude + ElevenLabs (${meditationsCount} meditaciones × $${COST_PER_CREDIT})</span>
-        <span class="cost-val">$${variableCost.toFixed(2)}</span>
-      </div>
-      <div class="cost-total-row">
-        <span style="color:#94a3b8">Total estimado</span>
-        <span style="color:#f87171">$${totalCost.toFixed(2)}</span>
-      </div>`;
+      const tbody = document.getElementById('users-tbody');
+      if (!tbody) return;
 
-    document.getElementById('costs-breakdown').innerHTML = html;
+      tbody.innerHTML = users.slice(0, 200).map(u => {
+        const lastAct = u.last_activity ? relativeDate(u.last_activity) : '—';
+        const regDate = u.created_at ? formatDate(u.created_at) : '—';
+        const dot = !u.last_activity ? 'grey'
+          : new Date(u.last_activity) >= new Date(Date.now() - 7*86400000) ? 'green' : 'yellow';
+        return `<tr>
+          <td class="email">${esc(u.email)}</td>
+          <td><span class="badge badge-${u.plan}">${u.plan}</span></td>
+          <td>${u.total_meds}</td>
+          <td>${u.credits_used}</td>
+          <td><span class="dot dot-${dot}"></span>${lastAct}</td>
+          <td>${regDate}</td>
+        </tr>`;
+      }).join('') || '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-35)">Sin resultados</td></tr>';
+    }
 
-    // Profit box
-    const profitBox = document.getElementById('profit-box');
-    profitBox.style.display = 'flex';
-    document.getElementById('profit-mrr').textContent = `$${mrr.toFixed(2)}`;
-    document.getElementById('profit-costs').textContent = `-$${totalCost.toFixed(2)}`;
+    function sortBy(col) {
+      if (sortCol === col) sortDir *= -1;
+      else { sortCol = col; sortDir = -1; }
+      renderTable();
+    }
 
-    const netEl = document.getElementById('profit-net');
-    netEl.textContent = (netProfit >= 0 ? '+' : '') + `$${netProfit.toFixed(2)}`;
-    netEl.className = 'profit-item-val ' + (netProfit >= 0 ? 'green' : 'red');
+    function setPlanFilter(plan) {
+      planFilter = plan;
+      ['all','premium','essential','free'].forEach(p => {
+        document.getElementById(`filter-${p}`)?.classList.toggle('active', (!plan && p === 'all') || p === plan);
+      });
+      renderTable();
+    }
 
-    const marginEl = document.getElementById('profit-margin');
-    marginEl.textContent = `${margin}%`;
-    marginEl.className = 'profit-item-val ' + (margin >= 60 ? 'green' : margin >= 30 ? 'yellow' : 'red');
-  }
+    function relativeDate(iso) {
+      const h = Math.floor((Date.now() - new Date(iso)) / 3600000);
+      if (h < 1)  return 'Hace menos de 1h';
+      if (h < 24) return `Hace ${h}h`;
+      const d = Math.floor(h / 24);
+      if (d === 1) return 'Ayer';
+      if (d < 7)  return `Hace ${d} días`;
+      if (d < 30) return `Hace ${Math.floor(d/7)} sem`;
+      return `Hace ${Math.floor(d/30)} meses`;
+    }
 
-  function renderHealth(data) {
-    const items = [
-      { key: 'supabase', label: 'Supabase (DB)' },
-      { key: 'clerk_key', label: 'Clerk (Auth)' },
-      { key: 'stripe_key', label: 'Stripe (Pagos)' },
-      { key: 'elevenlabs_key', label: 'ElevenLabs' },
-      { key: 'upstash_key', label: 'Upstash (Rate)' }
-    ];
+    function formatDate(iso) {
+      const d = new Date(iso);
+      const m = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+      return `${d.getDate()} ${m[d.getMonth()]}${d.getFullYear() !== new Date().getFullYear() ? ' '+d.getFullYear() : ''}`;
+    }
 
-    const html = items.map(item => `
-      <div class="health-item">
-        <div class="health-dot ${data[item.key] ? 'ok' : 'fail'}"></div>
-        <span class="health-name">${item.label}</span>
-      </div>`).join('');
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
 
-    document.getElementById('health-grid').innerHTML = html;
-  }
-</script>
+    setInterval(loadData, 5 * 60 * 1000);
+    document.getElementById('pw-input').focus();
+  </script>
 
 </body>
 </html>
