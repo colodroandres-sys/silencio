@@ -22,6 +22,8 @@ const state = {
   ambientFadeInterval: null,
   inSilence:           false,
   profileCompleted:    false,
+  creditsRemaining:    0,
+  creditsLimit:        0,
   streak:          0,
   minutesThisWeek: 0,
   totalSessions:   0,

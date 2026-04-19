@@ -24,6 +24,22 @@ async function generateMeditation() {
   } else {
     pendingGeneration = false;
     if (!state.userName) state.userName = (clerk.user.firstName || '').trim().slice(0, 50);
+
+    // Verificar sesión activa antes de continuar
+    if (!clerk.session) {
+      showToast('Tu sesión ha expirado. Inicia sesión de nuevo.');
+      setTimeout(() => openAuth(), 600);
+      return;
+    }
+
+    // Verificar créditos localmente antes de llamar a la API.
+    // Evita que un token expirado devuelva 401 cuando el problema real es falta de créditos.
+    if (!state.userCanGenerate) {
+      showToast('Sin créditos disponibles. Elige un plan para continuar.');
+      setTimeout(() => showPaywall(), 600);
+      track('paywall_shown', { trigger: 'no_credits_preflight', plan: state.userPlan });
+      return;
+    }
   }
 
   const btn = document.getElementById('btn-generate');

@@ -63,6 +63,12 @@ function obSelectGoal(el) {
 }
 
 function obSelectDur(el) {
+  if (el.classList.contains('ob-dur-locked')) {
+    const badge = el.querySelector('.ob-dur-plan-badge');
+    const plan = badge ? badge.textContent : 'Essential';
+    showToast(`Disponible con el plan ${plan}`);
+    return;
+  }
   document.querySelectorAll('.ob-dur-card').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
   obPrefs.duration = el.dataset.value;
@@ -143,6 +149,7 @@ function obSkipToFree() {
   }
   showHome();
   updateUserStatus();
+  loadHomeData();
 }
 
 function applyObPrefsToState() {

@@ -28,6 +28,7 @@ async function saveMeditation() {
     const { signedUrl, path, already_saved } = await presignRes.json();
     if (already_saved) { showToast('Ya estaba guardada en tu biblioteca'); skipSave(); return; }
 
+    if (!state.audioBlobUrl) throw new Error('Audio no disponible para guardar');
     const audioBlob = await fetch(state.audioBlobUrl).then(r => r.blob());
     const uploadRes = await fetch(signedUrl, {
       method: 'PUT',

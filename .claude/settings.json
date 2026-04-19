@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "WebSearch",
+      "Bash(stripe --version)",
+      "Bash(vercel --version)",
+      "Bash(npm --version)",
+      "Bash(curl -s https://api.github.com/repos/stripe/stripe-cli/releases/latest)",
+      "Bash(vercel domains *)",
+      "Bash(stripe prices *)",
+      "Bash(stripe config *)",
+      "Bash(stripe coupons *)",
+      "Bash(vercel env *)",
+      "Bash(vercel link *)",
+      "Bash(vercel --prod)",
+      "Bash(stripe webhook-endpoints *)",
+      "Bash(stripe webhook_endpoints list --api-key=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)",
+      "Bash(stripe webhook_endpoints create --url=https://stillova.com/api/webhook --enabled-events=checkout.session.completed,customer.subscription.deleted,customer.subscription.updated --api-key=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)",
+      "Bash(stripe webhook_endpoints create --url=https://stillova.com/api/webhook --enabled-events=checkout.session.completed --enabled-events=customer.subscription.deleted --enabled-events=customer.subscription.updated --api-key=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)",
+      "Bash(npx playwright *)",
+      "Bash(node stillova-audit.js)",
+      "Bash(npm install *)",
+      "Bash(node stillova-audit2.js)",
+      "Bash(node stillova-audit3.js)",
+      "Bash(node audit.js)"
+    ],
+    "additionalDirectories": [
+      "/Users/andrescolodro/Desktop/stillova",
+      "/tmp"
+    ]
+  }
+}

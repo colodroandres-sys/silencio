@@ -1,5 +1,6 @@
 let clerk = null;
 let pendingGeneration = false;
+let pwBillingMode = 'monthly';
 
 async function openAuth() {
   if (clerk) {
@@ -97,9 +98,12 @@ async function updateUserStatus() {
   const guest = document.getElementById('guest-actions');
   if (!el) return;
 
+  const guestIntro = document.getElementById('home-guest-intro');
+
   if (!clerk || !clerk.user) {
     el.style.display    = 'none';
     if (guest) guest.style.display = 'flex';
+    if (guestIntro) guestIntro.style.display = 'block';
     const guestBlock = document.getElementById('guest-name-block');
     if (guestBlock) guestBlock.style.display = 'block';
     applyDurationLocks();
@@ -108,6 +112,7 @@ async function updateUserStatus() {
 
   el.style.display    = 'flex';
   if (guest) guest.style.display = 'none';
+  if (guestIntro) guestIntro.style.display = 'none';
 
   const cachedPlan = localStorage.getItem('stillova_plan');
   if (cachedPlan && cachedPlan !== 'free') {
@@ -119,7 +124,12 @@ async function updateUserStatus() {
 }
 
 async function fetchUserStatus() {
-  if (!clerk || !clerk.user || !clerk.session) return;
+  if (!clerk || !clerk.user) return;
+  if (!clerk.session) {
+    state.userCanGenerate = false;
+    applyDurationLocks();
+    return;
+  }
   try {
     const token = await clerk.session.getToken();
     const email = clerk.user.primaryEmailAddress?.emailAddress || '';
@@ -127,7 +137,14 @@ async function fetchUserStatus() {
     const res = await fetch('/api/user', {
       headers: { 'Authorization': `Bearer ${token}`, 'x-user-email': email }
     });
-    if (!res.ok) return;
+    if (!res.ok) {
+      if (res.status === 401) {
+        state.userCanGenerate = false;
+        state.userPlan = localStorage.getItem('stillova_plan') || 'free';
+        applyDurationLocks();
+      }
+      return;
+    }
 
     const { plan, usage, limit, canGenerate, profileCompleted,
             streak, minutesThisWeek, totalSessions, level } = await res.json();
@@ -135,9 +152,11 @@ async function fetchUserStatus() {
     const planEl  = document.getElementById('plan-badge');
     const usageEl = document.getElementById('usage-info');
 
-    state.userPlan       = plan;
-    state.userCanGenerate = canGenerate;
-    state.profileCompleted = !!profileCompleted;
+    state.userPlan           = plan;
+    state.userCanGenerate    = canGenerate;
+    state.profileCompleted   = !!profileCompleted;
+    state.creditsRemaining   = Math.max(0, limit - usage);
+    state.creditsLimit       = limit;
     localStorage.setItem('stillova_plan', plan);
 
     if (planEl) {
@@ -173,10 +192,8 @@ async function fetchUserStatus() {
     const creditsInfoEl = document.getElementById('credits-info');
     if (creditsInfoEl) {
       if (plan !== 'free') {
-        const remaining = Math.max(0, limit - usage);
-        const remText = document.getElementById('credits-remaining-text');
-        if (remText) remText.textContent = `${remaining} crédito${remaining !== 1 ? 's' : ''} disponible${remaining !== 1 ? 's' : ''} este mes`;
         creditsInfoEl.style.display = 'flex';
+        updateCreditsCostDisplay();
       } else {
         creditsInfoEl.style.display = 'none';
       }
@@ -211,8 +228,46 @@ function checkUrlParams() {
 }
 
 function showPaywall() {
+  pwBillingMode = 'monthly';
+  pwSetBilling('monthly');
   const modal = document.getElementById('paywall-modal');
   if (modal) modal.classList.add('active');
+}
+
+function pwSetBilling(mode) {
+  pwBillingMode = mode;
+
+  const btnM = document.getElementById('pw-btn-monthly');
+  const btnA = document.getElementById('pw-btn-annual');
+  if (btnM) btnM.classList.toggle('pw-billing-active', mode === 'monthly');
+  if (btnA) btnA.classList.toggle('pw-billing-active', mode === 'annual');
+
+  const essPrice  = document.getElementById('pw-ess-price');
+  const essPeriod = document.getElementById('pw-ess-period');
+  const essExtra  = document.getElementById('pw-ess-extra');
+  const premPrice  = document.getElementById('pw-prem-price');
+  const premPeriod = document.getElementById('pw-prem-period');
+  const premExtra  = document.getElementById('pw-prem-extra');
+
+  if (mode === 'monthly') {
+    if (essPrice)  essPrice.textContent  = '€9.99';
+    if (essPeriod) essPeriod.textContent = '/mes';
+    if (essExtra)  { essExtra.textContent = 'Primer mes €6.99 · descuento de bienvenida'; essExtra.style.display = 'block'; }
+    if (premPrice)  premPrice.textContent  = '€19.99';
+    if (premPeriod) premPeriod.textContent = '/mes';
+    if (premExtra)  { premExtra.textContent = 'Primer mes €13.99 · descuento de bienvenida'; premExtra.style.display = 'block'; }
+  } else {
+    if (essPrice)  essPrice.textContent  = '€6.67';
+    if (essPeriod) essPeriod.textContent = '/mes';
+    if (essExtra)  { essExtra.textContent = '€80 facturado al año · ahorras €40'; essExtra.style.display = 'block'; }
+    if (premPrice)  premPrice.textContent  = '€13.33';
+    if (premPeriod) premPeriod.textContent = '/mes';
+    if (premExtra)  { premExtra.textContent = '€160 facturado al año · ahorras €80'; premExtra.style.display = 'block'; }
+  }
+}
+
+function pwGetPlan(base) {
+  return pwBillingMode === 'annual' ? `${base}-annual` : base;
 }
 
 function closeEndUpsell() {
@@ -292,9 +347,14 @@ async function upgradePlan(plan) {
 function signOut() {
   if (clerk) {
     localStorage.removeItem('stillova_plan');
+    state.userPlan         = 'free';
+    state.userCanGenerate  = true;
+    state.profileCompleted = false;
     clerk.signOut().then(() => {
       const el = document.getElementById('user-status');
       if (el) el.style.display = 'none';
+      applyDurationLocks();
+      updateUserStatus();
     });
   }
 }

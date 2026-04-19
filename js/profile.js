@@ -31,14 +31,12 @@ async function submitProfile() {
     });
     const data = await res.json();
     if (res.ok && (data.success || data.already_completed)) {
-      state.profileCompleted = true;
-      state.userCanGenerate  = true;
       document.getElementById('end-profile').style.display = 'none';
       document.getElementById('screen-player').classList.remove('end-active');
       showToast('¡Tienes 1 meditación extra gratis! Úsala cuando quieras.');
       document.getElementById('btn-new-meditation').style.display = 'block';
-      const usageEl = document.getElementById('usage-info');
-      if (usageEl) usageEl.textContent = 'Meditación gratis disponible';
+      // Sincronizar estado desde servidor (fuente de verdad)
+      await fetchUserStatus();
     } else {
       showToast('Error al guardar el perfil. Inténtalo de nuevo.');
       btn.disabled = false;

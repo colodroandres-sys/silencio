@@ -58,8 +58,11 @@ module.exports = async function checkRateLimit(req, res, endpoint, requests, win
     if (!success) {
       const retryAfterSec = Math.ceil((reset - Date.now()) / 1000);
       res.setHeader('Retry-After', retryAfterSec);
+      const waitMsg = retryAfterSec < 60
+        ? `${retryAfterSec} segundos`
+        : `${Math.ceil(retryAfterSec / 60)} minutos`;
       res.status(429).json({
-        error: `Límite alcanzado. Puedes volver a intentarlo en ${Math.ceil(retryAfterSec / 60)} minutos.`
+        error: `Límite alcanzado. Puedes volver a intentarlo en ${waitMsg}.`
       });
       return false;
     }

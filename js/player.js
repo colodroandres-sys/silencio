@@ -115,6 +115,7 @@ function handleEnd() {
       }
     } else if (state.userPlan !== 'free' && state.currentMeditationId) {
       document.getElementById('end-save').style.display = 'flex';
+      document.getElementById('screen-player').classList.add('end-active');
     } else {
       document.getElementById('btn-new-meditation').style.display = 'block';
     }

@@ -20,10 +20,10 @@ Persona de 25-45 años que alguna vez meditó con Calm o Headspace pero lo dejó
 Siempre debe seguir un arco: relajación física → respiración → trabajo específico según objetivo del usuario (dormir, calmarse, decidir, meditar, etc.) → cierre. La IA debe conocer técnicas reales de meditación y aplicarlas según el contexto.
 
 ## Diseño visual
-- Colores: oscuro con azul noche y púrpura suave
-- Estilo: minimalista, premium, que invite al silencio
-- Referente: Calm pero más personal y menos corporativo
+- Estilo: suave y premium, que invite al silencio y genere confianza
+- Referentes directos: Calm, Insight Timer, Headspace — estudiar sus decisiones de UX/UI
 - Mientras suena el audio: solo una animación muy suave, nada que distraiga
+- El diseño actual es el punto de partida; está en evolución continua basada en research de competidores
 
 ## Stack tecnológico
 - Frontend: HTML, CSS, JavaScript puro

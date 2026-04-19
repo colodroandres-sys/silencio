@@ -9,7 +9,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/player.css">
+  <link rel="stylesheet" href="css/paywall.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/onboarding.css">
   <script data-clerk-publishable-key="pk_live_Y2xlcmsuc3RpbGxvdmEuY29tJA" src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@5/dist/clerk.browser.js" type="text/javascript"></script>
   <script>
     !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+" (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey identify alias group resetGroups setPersonProperties groupIdentify createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug reset".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
@@ -135,22 +141,26 @@
               <div class="ob-dur-label">min</div>
               <div class="ob-dur-desc">Una pausa rápida</div>
             </button>
-            <button class="ob-dur-card" data-value="10" onclick="obSelectDur(this)">
+            <button class="ob-dur-card ob-dur-locked" data-value="10" onclick="obSelectDur(this)">
+              <div class="ob-dur-plan-badge">Essential</div>
               <div class="ob-dur-num">10</div>
               <div class="ob-dur-label">min</div>
               <div class="ob-dur-desc">Presencia real</div>
             </button>
-            <button class="ob-dur-card" data-value="15" onclick="obSelectDur(this)">
+            <button class="ob-dur-card ob-dur-locked" data-value="15" onclick="obSelectDur(this)">
+              <div class="ob-dur-plan-badge">Essential</div>
               <div class="ob-dur-num">15</div>
               <div class="ob-dur-label">min</div>
               <div class="ob-dur-desc">Transformación</div>
             </button>
-            <button class="ob-dur-card" data-value="20" onclick="obSelectDur(this)">
+            <button class="ob-dur-card ob-dur-locked" data-value="20" onclick="obSelectDur(this)">
+              <div class="ob-dur-plan-badge ob-dur-plan-badge-premium">Premium</div>
               <div class="ob-dur-num">20</div>
               <div class="ob-dur-label">min</div>
               <div class="ob-dur-desc">Inmersión total</div>
             </button>
           </div>
+          <p class="ob-dur-note">Descubrir más duraciones con tu plan</p>
           <button class="ob-btn-primary" onclick="obNext(5)">Continuar</button>
         </div>
       </div>
@@ -279,6 +289,16 @@
           <button class="quick-btn" onclick="quickAccess('enfoque','Quiero concentrarme y ser más productivo')">Enfoque</button>
         </div>
 
+        <!-- Guest intro — solo visible sin sesión -->
+        <div id="home-guest-intro" class="home-guest-intro" style="display:none">
+          <p class="home-guest-tagline">Generada en el momento, solo para ti.</p>
+          <div class="home-guest-pills">
+            <span class="home-guest-pill">IA que te escucha</span>
+            <span class="home-guest-pill">Audio real · ElevenLabs</span>
+            <span class="home-guest-pill">Primera meditación gratis</span>
+          </div>
+        </div>
+
         <!-- Gamificación -->
         <div class="home-gam" id="home-gam" style="display:none">
           <div class="gam-stat">
@@ -328,11 +348,11 @@
 
       <!-- Sección 1: Input -->
       <div class="convo-section" id="cs-input">
-        <h2 class="convo-headline">¿Qué quieres trabajar<br>ahora mismo?</h2>
+        <h2 class="convo-headline">¿Qué tienes<br>en la cabeza ahora?</h2>
         <textarea
           id="input-free"
           class="convo-textarea"
-          placeholder="Escribe lo que sientes o lo que tienes en la cabeza..."
+          placeholder="Cuéntame cómo te sientes. Sin filtros."
           oninput="onInputChange()"
         ></textarea>
         <button class="convo-continue-btn" id="btn-continue-input" onclick="convoRevealIntent()" disabled>
@@ -345,29 +365,35 @@
 
       <!-- Sección 2: Intent (oculta hasta que hay texto) -->
       <div class="convo-section convo-hidden" id="cs-intent">
-        <p class="convo-question">¿Qué quieres hacer con esto?</p>
+        <p class="convo-question">¿Qué necesitas ahora?</p>
         <div class="intent-grid">
           <button class="intent-card" data-value="soltar" onclick="selectIntent(this)">
             <div class="intent-icon">◯</div>
-            <div class="intent-name">Soltarlo</div>
-            <div class="intent-desc">Dejar ir lo que me pesa</div>
+            <div class="intent-body">
+              <div class="intent-name">Soltarlo</div>
+              <div class="intent-desc">Dejar ir lo que me está pesando</div>
+            </div>
           </button>
           <button class="intent-card" data-value="entender" onclick="selectIntent(this)">
             <div class="intent-icon">✦</div>
-            <div class="intent-name">Entenderlo</div>
-            <div class="intent-desc">Ver con más claridad</div>
+            <div class="intent-body">
+              <div class="intent-name">Entenderlo</div>
+              <div class="intent-desc">Ver la situación con más claridad</div>
+            </div>
           </button>
           <button class="intent-card" data-value="calmar" onclick="selectIntent(this)">
             <div class="intent-icon">∿</div>
-            <div class="intent-name">Calmarme</div>
-            <div class="intent-desc">Bajar la intensidad</div>
+            <div class="intent-body">
+              <div class="intent-name">Calmarme</div>
+              <div class="intent-desc">Bajar la intensidad y encontrar calma</div>
+            </div>
           </button>
         </div>
       </div>
 
       <!-- Sección 3: Config (oculta hasta que hay intent) -->
       <div class="convo-section convo-hidden" id="cs-config">
-        <p class="convo-question">Configura tu sesión</p>
+        <p class="convo-question">Personaliza tu sesión</p>
 
         <div class="convo-pref-group">
           <span class="pref-label">Duración</span>
@@ -393,7 +419,7 @@
             </div>
           </div>
           <div class="convo-pref-group">
-            <span class="pref-label">Me diriges en</span>
+            <span class="pref-label">Género</span>
             <div id="grp-gender" class="pill-row">
               <button class="pill"        data-value="femenino"  onclick="selectPill(this,'grp-gender','gender')">Fem.</button>
               <button class="pill"        data-value="masculino" onclick="selectPill(this,'grp-gender','gender')">Masc.</button>
@@ -549,12 +575,12 @@
         <p class="end-upsell-eyebrow">Tu primera meditación</p>
         <p class="end-upsell-title">Guárdala.<br>Vuelve cuando la necesites.</p>
         <ul class="end-upsell-benefits">
-          <li>Crea tu cuenta gratis para guardarla</li>
-          <li>1 meditación gratuita incluida con tu cuenta</li>
+          <li>Crea tu cuenta para guardar esta meditación</li>
           <li>Accede desde cualquier dispositivo</li>
+          <li>1 meditación gratuita incluida con tu cuenta</li>
         </ul>
         <button class="btn-upsell-cta" onclick="openAuth()">Crear cuenta gratis</button>
-        <button class="btn-upsell-skip" onclick="closeEndGuest()">Otra meditación</button>
+        <button class="btn-upsell-secondary" onclick="openAuth()">¿Quieres otra meditación?</button>
       </div>
 
     </div>
@@ -572,55 +598,75 @@
     <div class="paywall-card">
       <p class="paywall-title">Tu próxima meditación<br>te espera.</p>
 
-      <div class="plan-compare">
-        <div class="pc-head pc-label-head"></div>
-        <div class="pc-head">
-          <div class="pc-name">Gratis</div>
-          <div class="pc-price">€0</div>
-        </div>
-        <div class="pc-head">
-          <div class="pc-name">Essential</div>
-          <div class="pc-price">€9.99<span class="pc-per-month">/mes</span></div>
-        </div>
-        <div class="pc-head pc-head-feat">
-          <div class="pc-badge-inline">★ Popular</div>
-          <div class="pc-name">Premium</div>
-          <div class="pc-price">€19.99<span class="pc-per-month">/mes</span></div>
-        </div>
-
-        <div class="pc-label">Meditaciones</div>
-        <div class="pc-cell">1</div>
-        <div class="pc-cell">10/mes †</div>
-        <div class="pc-cell pc-cell-feat">25/mes †</div>
-
-        <div class="pc-label">Duración</div>
-        <div class="pc-cell pc-dim">5 min</div>
-        <div class="pc-cell">≤ 15 min</div>
-        <div class="pc-cell pc-cell-feat">≤ 20 min</div>
-
-        <div class="pc-label">Voz</div>
-        <div class="pc-cell pc-dim">Auto</div>
-        <div class="pc-cell pc-personalizable">Personalizable</div>
-        <div class="pc-cell pc-cell-feat pc-personalizable">Personalizable</div>
-
-        <div class="pc-label">Sonido</div>
-        <div class="pc-cell pc-dim">Auto</div>
-        <div class="pc-cell pc-personalizable">Personalizable</div>
-        <div class="pc-cell pc-cell-feat pc-personalizable">Personalizable</div>
-
-        <div class="pc-label">Guardar</div>
-        <div class="pc-cell pc-no">—</div>
-        <div class="pc-cell">Hasta 20</div>
-        <div class="pc-cell pc-cell-feat">Sin límite</div>
-
-        <div class="pc-label"></div>
-        <div class="pc-cta-cell"><span class="pc-current-label">Tu plan</span></div>
-        <div class="pc-cta-cell"><button class="btn-pc" onclick="upgradePlan('essential')">Elegir</button></div>
-        <div class="pc-cta-cell pc-cell-feat"><button class="btn-pc btn-pc-feat" onclick="upgradePlan('premium')">Elegir</button></div>
+      <!-- Toggle mensual / anual -->
+      <div class="pw-billing-toggle">
+        <button class="pw-billing-btn pw-billing-active" id="pw-btn-monthly" onclick="pwSetBilling('monthly')">Mensual</button>
+        <button class="pw-billing-btn" id="pw-btn-annual" onclick="pwSetBilling('annual')">
+          Anual
+          <span class="pw-save-badge">−33%</span>
+        </button>
       </div>
 
-      <p class="plan-footnote">† Créditos se renuevan cada mes · 5 min = 1 cr · 10 min = 2 · 15 min = 3 · 20 min = 4</p>
-      <p class="paywall-guarantee">Sin permanencia. Cancela cuando quieras.</p>
+      <!-- 3 planes verticales -->
+      <div class="pw-plans-list">
+
+        <!-- Gratis -->
+        <div class="pw-plan-row pw-plan-free-row">
+          <div class="pw-plan-info">
+            <span class="pw-plan-label">Gratis</span>
+            <ul class="pw-feat-list">
+              <li>1 meditación · 5 min · Voz auto</li>
+            </ul>
+          </div>
+          <div class="pw-plan-right">
+            <span class="pw-price-main">€0</span>
+            <span class="pw-current-tag">Tu plan actual</span>
+          </div>
+        </div>
+
+        <!-- Essential -->
+        <div class="pw-plan-row">
+          <div class="pw-plan-info">
+            <span class="pw-plan-label">Essential</span>
+            <ul class="pw-feat-list">
+              <li>10 meditaciones al mes †</li>
+              <li>Hasta 15 min · Guardar hasta 20</li>
+              <li>Voz y sonido personalizables</li>
+            </ul>
+            <span class="pw-first-month" id="pw-ess-extra">Primer mes €6.99</span>
+          </div>
+          <div class="pw-plan-right">
+            <div class="pw-price-wrap">
+              <span class="pw-price-main" id="pw-ess-price">€9.99</span><span class="pw-price-period" id="pw-ess-period">/mes</span>
+            </div>
+            <button class="pw-cta-btn" onclick="upgradePlan(pwGetPlan('essential'))">Elegir</button>
+          </div>
+        </div>
+
+        <!-- Premium -->
+        <div class="pw-plan-row pw-plan-featured-row">
+          <div class="pw-plan-feat-badge">★ Recomendado</div>
+          <div class="pw-plan-info">
+            <span class="pw-plan-label">Premium</span>
+            <ul class="pw-feat-list">
+              <li>25 meditaciones al mes †</li>
+              <li>Hasta 20 min · Guardar sin límite</li>
+              <li>Voz y sonido personalizables</li>
+            </ul>
+            <span class="pw-first-month" id="pw-prem-extra">Primer mes €13.99</span>
+          </div>
+          <div class="pw-plan-right">
+            <div class="pw-price-wrap">
+              <span class="pw-price-main" id="pw-prem-price">€19.99</span><span class="pw-price-period" id="pw-prem-period">/mes</span>
+            </div>
+            <button class="pw-cta-btn pw-cta-featured-btn" onclick="upgradePlan(pwGetPlan('premium'))">Elegir</button>
+          </div>
+        </div>
+
+      </div>
+
+      <p class="plan-footnote">† Créditos mensuales · 5 min = 1 cr · 10 min = 2 · 15 min = 3 · 20 min = 4</p>
+      <p class="paywall-guarantee">Sin permanencia · Cancela cuando quieras</p>
       <button class="btn-ghost paywall-close" onclick="closePaywall()">Ahora no</button>
     </div>
   </div>

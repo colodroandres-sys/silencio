@@ -4,8 +4,18 @@ const { getOrCreateUser } = require('./_limits');
 const { getSupabase } = require('./_supabase');
 
 const PRICE_IDS = {
-  essential: process.env.STRIPE_ESSENTIAL_PRICE_ID,
-  premium: process.env.STRIPE_PREMIUM_PRICE_ID
+  essential:         process.env.STRIPE_ESSENTIAL_PRICE_ID,
+  'essential-annual': process.env.STRIPE_ESSENTIAL_ANNUAL_PRICE_ID,
+  premium:           process.env.STRIPE_PREMIUM_PRICE_ID,
+  'premium-annual':  process.env.STRIPE_PREMIUM_ANNUAL_PRICE_ID,
+};
+
+// Coupons de descuento primer mes (creados en Stripe dashboard, duration: once)
+// Essential: €3.00 off → primer mes €6.99 en vez de €9.99
+// Premium:   €6.00 off → primer mes €13.99 en vez de €19.99
+const WELCOME_COUPONS = {
+  essential: process.env.STRIPE_COUPON_WELCOME_ESSENTIAL,
+  premium:   process.env.STRIPE_COUPON_WELCOME_PREMIUM,
 };
 
 const APP_URL = 'https://stillova.com';
@@ -19,7 +29,7 @@ module.exports = async (req, res) => {
   const { plan, email } = req.body || {};
 
   if (!plan || !PRICE_IDS[plan]) {
-    return res.status(400).json({ error: 'Plan inválido. Debe ser essential o premium.' });
+    return res.status(400).json({ error: 'Plan inválido.' });
   }
 
   try {
@@ -40,17 +50,26 @@ module.exports = async (req, res) => {
         .eq('clerk_id', clerkId);
     }
 
-    const session = await stripe.checkout.sessions.create({
+    const isAnnual   = plan.includes('annual');
+    const basePlan   = plan.replace('-annual', '');
+    const successPlan = basePlan; // 'essential' o 'premium' siempre
+
+    const sessionParams = {
       customer: customerId,
       mode: 'subscription',
       line_items: [{ price: PRICE_IDS[plan], quantity: 1 }],
-      success_url: `${APP_URL}?upgraded=${plan}`,
+      success_url: `${APP_URL}?upgraded=${successPlan}`,
       cancel_url: `${APP_URL}?canceled=true`,
       client_reference_id: clerkId,
-      subscription_data: {
-        metadata: { clerk_id: clerkId }
-      }
-    });
+      subscription_data: { metadata: { clerk_id: clerkId } }
+    };
+
+    // Descuento bienvenida solo en planes mensuales
+    if (!isAnnual && WELCOME_COUPONS[basePlan]) {
+      sessionParams.discounts = [{ coupon: WELCOME_COUPONS[basePlan] }];
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     res.json({ url: session.url });
   } catch (e) {

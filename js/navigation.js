@@ -63,5 +63,6 @@ function showCreate(skipToConfig = false) {
   }
 
   applyAllLocks();
+  updateCreditsCostDisplay();
   showScreen('screen-create');
 }
