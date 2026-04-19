@@ -178,6 +178,7 @@ async function attemptGeneration(signal) {
   state.silenceOffset       = 0;
 
   document.getElementById('time-end').textContent = formatTime(state.totalSec);
+  document.getElementById('time-now').textContent = formatTime(state.totalSec);
 
   track('meditation_generated', { duration: state.duration, voice: state.voice, intent: state.intent });
 

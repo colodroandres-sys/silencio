@@ -115,6 +115,12 @@
   font-variant-numeric: tabular-nums;
   min-width: 30px;
 }
+#time-now {
+  font-size: 1.05rem;
+  color: var(--text-70);
+  min-width: 40px;
+  letter-spacing: -0.01em;
+}
 .progress-track {
   flex: 1;
   height: 3px;

@@ -23,9 +23,15 @@ function togglePlay() {
         wrap.classList.remove('paused');
         document.getElementById('icon-play').style.display  = 'none';
         document.getElementById('icon-pause').style.display = 'block';
+        // iOS Safari requiere que audio.play() se llame sincrónicamente dentro del
+        // handler del gesto del usuario. Llamamos play()+pause() para registrar el
+        // permiso de autoplay, y luego reproducimos la voz después del intro de ambient.
+        const unlockPromise = audio.play();
+        if (unlockPromise) unlockPromise.then(() => { audio.pause(); audio.currentTime = 0; }).catch(() => {});
         state.introTimeoutId = setTimeout(() => {
           state.introTimeoutId = null;
           if (!state.isPlaying) return;
+          audio.currentTime = 0;
           audio.play().then(() => { scheduleNextSilence(audio); }).catch(console.error);
         }, 3000);
       } else {
@@ -46,7 +52,8 @@ function togglePlay() {
 function updateProgress() {
   const pct = state.totalSec > 0 ? Math.min(100, (state.currentSec / state.totalSec) * 100) : 0;
   document.getElementById('progress-fill').style.width    = `${pct}%`;
-  document.getElementById('time-now').textContent         = formatTime(Math.min(state.currentSec, state.totalSec));
+  const remaining = Math.max(0, state.totalSec - state.currentSec);
+  document.getElementById('time-now').textContent         = formatTime(remaining);
 }
 
 function seekTo(event) {
