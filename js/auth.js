@@ -325,7 +325,7 @@ function dismissLead() {
 }
 
 async function upgradePlan(plan) {
-  if (!clerk || !clerk.session) return;
+  if (!clerk || !clerk.session) { openAuth(); return; }
   try {
     const token = await clerk.session.getToken();
     const email = await getUserEmail();

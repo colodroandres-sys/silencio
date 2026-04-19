@@ -1,9 +1,8 @@
-// Stripe webhook handler
-// Nota: verificamos autenticidad re-fetching la sesión desde Stripe en lugar de signature verification,
-// ya que Vercel parsea el body automáticamente (no hay acceso al raw body).
-
 const Stripe = require('stripe');
 const { getSupabase } = require('./_supabase');
+
+// Disable Vercel's automatic body parsing so we can access raw body for Stripe signature verification
+module.exports.config = { api: { bodyParser: false } };
 
 function getPlanByPrice(priceId) {
   if (!priceId) return null;
@@ -15,23 +14,51 @@ function getPlanByPrice(priceId) {
   return null;
 }
 
+async function getRawBody(req) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    req.on('data', chunk => chunks.push(chunk));
+    req.on('end', () => resolve(Buffer.concat(chunks)));
+    req.on('error', reject);
+  });
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const event = req.body;
+  const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-  if (!event || !event.type || !event.data) {
-    return res.status(400).json({ error: 'Evento inválido' });
+  let event;
+
+  if (webhookSecret) {
+    const sig = req.headers['stripe-signature'];
+    const rawBody = await getRawBody(req);
+    try {
+      event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
+    } catch (e) {
+      console.error('[webhook] Firma inválida:', e.message);
+      return res.status(400).json({ error: 'Firma inválida' });
+    }
+  } else {
+    // Fallback si aún no está configurado STRIPE_WEBHOOK_SECRET
+    try {
+      const chunks = [];
+      for await (const chunk of req) chunks.push(chunk);
+      event = JSON.parse(Buffer.concat(chunks).toString());
+    } catch (e) {
+      return res.status(400).json({ error: 'Evento inválido' });
+    }
+    if (!event || !event.type || !event.data) {
+      return res.status(400).json({ error: 'Evento inválido' });
+    }
   }
 
-  const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
   const db = getSupabase();
 
   try {
     if (event.type === 'checkout.session.completed') {
       const sessionId = event.data.object.id;
-
-      // Verificar con Stripe (previene webhooks falsificados)
       const session = await stripe.checkout.sessions.retrieve(sessionId, {
         expand: ['line_items']
       });
@@ -54,8 +81,6 @@ module.exports = async (req, res) => {
       const sub = await stripe.subscriptions.retrieve(subId);
       const clerkId = sub.metadata?.clerk_id;
 
-      // Solo bajar a free si la suscripción está efectivamente cancelada
-      // Previene que un evento falso baje el plan de un usuario activo
       if (clerkId && (sub.status === 'canceled' || sub.status === 'unpaid' || sub.status === 'incomplete_expired')) {
         await db.from('users').update({
           plan: 'free',

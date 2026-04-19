@@ -113,8 +113,10 @@
 .ob-chip {
   padding: 9px 18px;
   border-radius: var(--r-pill);
-  background: rgba(242,237,228,0.06);
-  border: 1px solid var(--glass-brd);
+  background: rgba(8,12,7,0.52);
+  border: 1px solid rgba(242,237,228,0.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   color: var(--text-70);
   font-size: 0.875rem;
   font-family: 'Inter', sans-serif;
@@ -127,7 +129,7 @@
   color: #0a0e08;
   font-weight: 500;
 }
-.ob-chip:hover:not(.active) { background: rgba(242,237,228,0.10); color: var(--text); }
+.ob-chip:hover:not(.active) { background: rgba(8,12,7,0.68); color: var(--text); }
 
 /* Voz cards (paso 2) */
 .ob-voice-cards {
@@ -223,9 +225,11 @@
   align-items: center;
   gap: 14px;
   padding: 16px 18px;
-  background: rgba(242,237,228,0.05);
-  border: 1px solid var(--glass-brd);
+  background: rgba(8,12,7,0.50);
+  border: 1px solid rgba(242,237,228,0.15);
   border-radius: 18px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   cursor: pointer;
   transition: all 0.2s;
   text-align: left;
@@ -267,9 +271,11 @@
   flex-direction: column;
   align-items: center;
   padding: 22px 12px 18px;
-  background: rgba(242,237,228,0.05);
-  border: 1px solid var(--glass-brd);
+  background: rgba(8,12,7,0.50);
+  border: 1px solid rgba(242,237,228,0.15);
   border-radius: 18px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   cursor: pointer;
   transition: all 0.2s;
   gap: 2px;
@@ -755,17 +761,19 @@
   align-items: center;
   gap: 14px;
   padding: 16px 18px;
-  background: rgba(242,237,228,0.05);
-  border: 1px solid var(--glass-brd);
+  background: rgba(8,12,7,0.50);
+  border: 1px solid rgba(242,237,228,0.15);
   border-radius: 18px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   cursor: pointer;
   text-align: left;
   transition: all 0.2s;
   width: 100%;
 }
 .intent-card:hover:not(.active) {
-  background: rgba(242,237,228,0.08);
-  border-color: rgba(242,237,228,0.20);
+  background: rgba(8,12,7,0.65);
+  border-color: rgba(242,237,228,0.22);
 }
 .intent-card.active {
   background: rgba(201,169,110,0.12);
@@ -780,7 +788,7 @@
   align-items: center;
   justify-content: center;
   font-size: 1.2rem;
-  color: var(--text-45);
+  color: rgba(242,237,228,0.72);
   flex-shrink: 0;
 }
 .intent-card.active .intent-icon {
