@@ -101,6 +101,17 @@
   line-height: 1.3;
 }
 
+.time-countdown {
+  font-family: 'Inter', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 300;
+  color: var(--text);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 20px;
+  opacity: 0.85;
+}
+
 .progress-area {
   display: flex;
   align-items: center;

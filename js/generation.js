@@ -179,6 +179,8 @@ async function attemptGeneration(signal) {
 
   document.getElementById('time-end').textContent = formatTime(state.totalSec);
   document.getElementById('time-now').textContent = formatTime(state.totalSec);
+  const cd = document.getElementById('time-countdown');
+  if (cd) cd.textContent = formatTime(state.totalSec);
 
   track('meditation_generated', { duration: state.duration, voice: state.voice, intent: state.intent });
 

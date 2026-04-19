@@ -51,9 +51,12 @@ function togglePlay() {
 
 function updateProgress() {
   const pct = state.totalSec > 0 ? Math.min(100, (state.currentSec / state.totalSec) * 100) : 0;
-  document.getElementById('progress-fill').style.width    = `${pct}%`;
+  document.getElementById('progress-fill').style.width = `${pct}%`;
   const remaining = Math.max(0, state.totalSec - state.currentSec);
-  document.getElementById('time-now').textContent         = formatTime(remaining);
+  const timeStr = formatTime(remaining);
+  document.getElementById('time-now').textContent       = timeStr;
+  const countdown = document.getElementById('time-countdown');
+  if (countdown) countdown.textContent = timeStr;
 }
 
 function seekTo(event) {

@@ -1,5 +1,5 @@
 let obCurrentStep = 1;
-const OB_TOTAL_STEPS = 5;
+const OB_TOTAL_STEPS = 4;
 
 function checkOnboarding() {
   if (!localStorage.getItem('stillova_ob_done')) {
@@ -142,14 +142,11 @@ function obSkipToFree() {
   obStopPreview();
   localStorage.setItem('stillova_ob_done', '1');
   applyObPrefsToState();
-
-  if (!clerk || !clerk.user) {
-    showScreen('screen-home');
-    return;
+  showCreate();
+  if (clerk?.user) {
+    updateUserStatus();
+    loadHomeData();
   }
-  showHome();
-  updateUserStatus();
-  loadHomeData();
 }
 
 function applyObPrefsToState() {

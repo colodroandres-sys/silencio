@@ -161,36 +161,7 @@
             </button>
           </div>
           <p class="ob-dur-note">Descubrir más duraciones con tu plan</p>
-          <button class="ob-btn-primary" onclick="obNext(5)">Continuar</button>
-        </div>
-      </div>
-
-      <!-- ── Paso 5 — Preview ── -->
-      <div class="ob-step" id="ob-5">
-        <div class="ob-inner ob-inner-center">
-          <p class="ob-eyebrow">Paso 5 de 5</p>
-          <h2 class="ob-headline" style="text-align:center">Así suena<br>tu meditación.</h2>
-          <p class="ob-sub" style="text-align:center">Cada sesión es única, generada<br>solo para ti en ese momento.</p>
-
-          <div class="breathing-wrap loading-mode" id="ob-orb" style="margin:32px auto">
-            <div class="b-ring r1"></div>
-            <div class="b-ring r2"></div>
-            <div class="b-ring r3"></div>
-            <div class="b-core">
-              <button class="play-pause-btn" onclick="obTogglePreview()" id="ob-play-btn">
-                <svg id="ob-icon-play" width="22" height="22" viewBox="0 0 28 28" fill="none">
-                  <path d="M10 7l12 7-12 7V7z" fill="currentColor"/>
-                </svg>
-                <svg id="ob-icon-pause" width="22" height="22" viewBox="0 0 28 28" fill="none" style="display:none">
-                  <rect x="8" y="6" width="4" height="16" rx="1.5" fill="currentColor"/>
-                  <rect x="16" y="6" width="4" height="16" rx="1.5" fill="currentColor"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-          <p class="ob-preview-hint" id="ob-preview-hint">Toca para escuchar una muestra</p>
-
-          <button class="ob-btn-primary" onclick="obNext(6)">Ver planes</button>
+          <button class="ob-btn-primary" onclick="obNext(6)">Continuar</button>
         </div>
       </div>
 
@@ -505,6 +476,8 @@
       </div>
 
       <p id="session-title" class="session-title"></p>
+
+      <p id="time-countdown" class="time-countdown">0:00</p>
 
       <div class="progress-area">
         <span id="time-now" class="time">0:00</span>
