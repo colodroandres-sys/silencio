@@ -101,8 +101,37 @@ module.exports = async (req, res) => {
         const priceId = sub.items?.data?.[0]?.price?.id;
         const plan = getPlanByPrice(priceId);
         if (plan) {
-          await db.from('users').update({ plan }).eq('clerk_id', clerkId);
+          await db.from('users').update({ plan, subscription_status: 'active' }).eq('clerk_id', clerkId);
           console.log(`[webhook] Plan actualizado → ${clerkId}: ${plan}`);
+        }
+      } else if (clerkId && (sub.status === 'past_due' || sub.status === 'unpaid')) {
+        await db.from('users').update({ subscription_status: sub.status }).eq('clerk_id', clerkId);
+        console.log(`[webhook] Suscripción ${sub.status} → ${clerkId}`);
+      }
+    }
+
+    if (event.type === 'invoice.payment_failed') {
+      const invoice = event.data.object;
+      const subId = invoice.subscription;
+      if (subId) {
+        const sub = await stripe.subscriptions.retrieve(subId);
+        const clerkId = sub.metadata?.clerk_id;
+        if (clerkId) {
+          await db.from('users').update({ subscription_status: 'past_due' }).eq('clerk_id', clerkId);
+          console.log(`[webhook] Pago fallido → ${clerkId} marcado past_due`);
+        }
+      }
+    }
+
+    if (event.type === 'invoice.payment_succeeded') {
+      const invoice = event.data.object;
+      const subId = invoice.subscription;
+      if (subId) {
+        const sub = await stripe.subscriptions.retrieve(subId);
+        const clerkId = sub.metadata?.clerk_id;
+        if (clerkId) {
+          await db.from('users').update({ subscription_status: 'active' }).eq('clerk_id', clerkId);
+          console.log(`[webhook] Pago exitoso → ${clerkId} activo`);
         }
       }
     }

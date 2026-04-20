@@ -8,6 +8,11 @@
   <meta name="theme-color" content="#0a0e08">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Stillova">
   <meta property="og:title" content="Stillova — Meditaciones creadas solo para ti">
   <meta property="og:description" content="No hay meditaciones genéricas. Cada sesión se genera en el momento, solo para ti.">
   <meta property="og:type" content="website">
@@ -328,6 +333,10 @@
 
       <!-- Sección 1: Input -->
       <div class="convo-section" id="cs-input">
+        <div id="no-credits-banner" class="no-credits-banner" style="display:none">
+          <span>Ya usaste tu meditación gratuita.</span>
+          <button onclick="showPaywall(); track('paywall_shown',{trigger:'no_credits_banner'})" class="no-credits-cta">Ver planes</button>
+        </div>
         <h2 class="convo-headline">¿Qué tienes<br>en la cabeza ahora?</h2>
         <textarea
           id="input-free"
@@ -424,9 +433,9 @@
         </div>
       </div>
 
-      <!-- Botón generar: sticky -->
+      <!-- Botón generar: sticky — visible solo tras seleccionar intent -->
       <div class="btn-generate-wrap">
-        <button id="btn-generate" class="btn-primary" onclick="goToGenerate()">Crear mi meditación</button>
+        <button id="btn-generate" class="btn-primary" onclick="goToGenerate()" style="opacity:0;pointer-events:none;transition:opacity 0.3s ease">Crear mi meditación</button>
       </div>
 
     </div>
@@ -718,6 +727,11 @@
         if (d) d.classList.remove('open');
       }
     });
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js');
+    }
   </script>
 </body>
 </html>

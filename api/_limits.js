@@ -62,13 +62,17 @@ async function checkUsageLimit(clerkId) {
 
   const { data: user } = await db
     .from('users')
-    .select('plan, free_used')
+    .select('plan, free_used, subscription_status')
     .eq('clerk_id', clerkId)
     .single();
 
   if (!user) return { allowed: false, reason: 'not_found' };
 
   const plan = user.plan || 'free';
+
+  if (plan !== 'free' && user.subscription_status === 'past_due') {
+    return { allowed: false, reason: 'past_due', plan };
+  }
 
   if (plan === 'free') {
     if (!user.free_used) {

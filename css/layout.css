@@ -218,6 +218,33 @@
 }
 .create-back:hover { color: var(--text-70); }
 
+.no-credits-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(124, 106, 247, 0.1);
+  border: 1px solid rgba(124, 106, 247, 0.25);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  font-size: 0.85rem;
+  color: var(--text-70);
+}
+.no-credits-cta {
+  background: none;
+  border: 1px solid rgba(124, 106, 247, 0.5);
+  border-radius: 6px;
+  padding: 5px 12px;
+  color: #b5aaff;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'Inter', sans-serif;
+  transition: background 0.2s;
+}
+.no-credits-cta:hover { background: rgba(124, 106, 247, 0.15); }
+
 .pref-label {
   font-size: 0.68rem;
   color: var(--text-45);

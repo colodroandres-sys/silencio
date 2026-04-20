@@ -1,3 +1,30 @@
+const LOADING_MESSAGES = [
+  { title: 'Escuchándote',         sub: 'Leyendo lo que sientes en este momento exacto.' },
+  { title: 'Encontrando palabras', sub: 'Cada frase elegida solo para este instante tuyo.' },
+  { title: 'Construyendo el ritmo',sub: 'Los silencios y la respiración tomando forma.' },
+  { title: 'Casi lista',           sub: 'Unos segundos más y comenzamos.' }
+];
+let loadingMsgIndex = 0;
+let loadingInterval = null;
+
+function startLoadingMessages() {
+  loadingMsgIndex = 0;
+  if (loadingInterval) clearInterval(loadingInterval);
+  const m = LOADING_MESSAGES[0];
+  document.getElementById('loading-title').textContent = m.title;
+  document.getElementById('loading-sub').textContent   = m.sub;
+  loadingInterval = setInterval(() => {
+    loadingMsgIndex = (loadingMsgIndex + 1) % LOADING_MESSAGES.length;
+    const msg = LOADING_MESSAGES[loadingMsgIndex];
+    document.getElementById('loading-title').textContent = msg.title;
+    document.getElementById('loading-sub').textContent   = msg.sub;
+  }, 4500);
+}
+
+function stopLoadingMessages() {
+  if (loadingInterval) { clearInterval(loadingInterval); loadingInterval = null; }
+}
+
 function enableGenerateBtn() {
   const btn = document.getElementById('btn-generate');
   if (btn) btn.disabled = false;
@@ -6,6 +33,7 @@ function enableGenerateBtn() {
 function cancelGeneration() {
   if (abortController) { abortController.abort(); abortController = null; }
   if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
+  stopLoadingMessages();
   enableGenerateBtn();
   showScreen('screen-create');
 }
@@ -48,19 +76,15 @@ async function generateMeditation() {
   state.currentSec = 0;
   track('meditation_started', { duration: state.duration, voice: state.voice, intent: state.intent, emotionTag: state.emotionTag });
 
-  setLoadingState('normal', 'Escuchándote...', 'Leyendo lo que sientes y creando algo que solo existe para este momento.');
   showScreen('screen-loading');
-
-  slowTimer = setTimeout(() => {
-    document.getElementById('loading-sub').textContent = 'Cada palabra está siendo elegida para ti. Un momento más...';
-    slowTimer = null;
-  }, 10000);
+  startLoadingMessages();
 
   abortController = new AbortController();
   try {
     await attemptGeneration(abortController.signal);
   } catch (err) {
     if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
+    stopLoadingMessages();
     if (err.name === 'AbortError') { abortController = null; enableGenerateBtn(); return; }
 
     if (err.status === 402) {
@@ -88,7 +112,7 @@ async function generateMeditation() {
     }
 
     console.warn('Primer intento fallido, reintentando...', err);
-    setLoadingState('normal', 'Casi lista...', 'Refinando los últimos detalles de tu sesión.');
+    setLoadingState('normal', 'Refinando tu sesión', 'Un segundo más, ya casi está lista.');
     abortController = new AbortController();
     try {
       await attemptGeneration(abortController.signal);
@@ -135,7 +159,8 @@ async function attemptGeneration(signal) {
   if (resolvedVoice) state.voice = resolvedVoice;
   document.getElementById('session-title').textContent = title;
 
-  setLoadingState('normal', 'Preparando tu voz...', 'Tu guía está tomando vida. Ya casi.');
+  stopLoadingMessages();
+  setLoadingState('normal', 'Dando voz a tu meditación', 'Tu guía está tomando vida. Ya casi.');
 
   const audioRes = await fetch('/api/audio', {
     method: 'POST',
@@ -195,6 +220,7 @@ async function attemptGeneration(signal) {
 }
 
 function setLoadingState(type, title, sub) {
+  if (type === 'error') stopLoadingMessages();
   document.getElementById('loading-title').textContent = title;
   document.getElementById('loading-sub').textContent   = sub;
   const isError = type === 'error';

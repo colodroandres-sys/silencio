@@ -62,7 +62,22 @@ function showCreate(skipToConfig = false) {
     convoRevealIntent();
   }
 
+  const banner = document.getElementById('no-credits-banner');
+  if (banner) banner.style.display = (clerk?.user && !state.userCanGenerate) ? 'flex' : 'none';
+
+  const GOAL_TO_INTENT = { calma: 'calmar', claridad: 'entender', liberacion: 'soltar' };
+  const suggestedIntent = GOAL_TO_INTENT[obPrefs.goal] || null;
+  if (suggestedIntent && !state.intent) {
+    state.intent = suggestedIntent;
+    document.querySelectorAll('.intent-card').forEach(c => {
+      c.classList.toggle('active', c.dataset.value === suggestedIntent);
+    });
+  }
+
   applyAllLocks();
   updateCreditsCostDisplay();
   showScreen('screen-create');
+  if (!skipToConfig) {
+    setTimeout(() => document.getElementById('input-free')?.focus(), 300);
+  }
 }

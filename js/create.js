@@ -23,6 +23,16 @@ function convoRevealIntent() {
     setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
   }
   document.getElementById('cstep-2')?.classList.add('active');
+
+  if (state.intent) {
+    const configSection = document.getElementById('cs-config');
+    if (configSection && configSection.classList.contains('convo-hidden') && !configSection.classList.contains('convo-revealed')) {
+      configSection.classList.add('convo-revealed');
+    }
+    const btn = document.getElementById('btn-generate');
+    if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
+    document.getElementById('cstep-3')?.classList.add('active');
+  }
 }
 
 function selectIntent(el) {
@@ -36,6 +46,9 @@ function selectIntent(el) {
     setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
   }
   document.getElementById('cstep-3')?.classList.add('active');
+
+  const btn = document.getElementById('btn-generate');
+  if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
 }
 
 function goToGenerate() {
@@ -62,6 +75,9 @@ function resetCreateScreen() {
 
   const btnContinue = document.getElementById('btn-continue-input');
   if (btnContinue) btnContinue.disabled = true;
+
+  const btnGen = document.getElementById('btn-generate');
+  if (btnGen) { btnGen.style.opacity = '0'; btnGen.style.pointerEvents = 'none'; }
 
   state.intent    = null;
   state.emotionTag = null;
