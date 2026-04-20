@@ -242,27 +242,33 @@ function pwSetBilling(mode) {
   if (btnM) btnM.classList.toggle('pw-billing-active', mode === 'monthly');
   if (btnA) btnA.classList.toggle('pw-billing-active', mode === 'annual');
 
+  const essWas    = document.getElementById('pw-ess-was');
   const essPrice  = document.getElementById('pw-ess-price');
   const essPeriod = document.getElementById('pw-ess-period');
   const essExtra  = document.getElementById('pw-ess-extra');
+  const premWas   = document.getElementById('pw-prem-was');
   const premPrice  = document.getElementById('pw-prem-price');
   const premPeriod = document.getElementById('pw-prem-period');
   const premExtra  = document.getElementById('pw-prem-extra');
 
   if (mode === 'monthly') {
-    if (essPrice)  essPrice.textContent  = '€9.99';
+    if (essWas)    essWas.textContent    = '€9.99';
+    if (essPrice)  essPrice.textContent  = '€6.99';
     if (essPeriod) essPeriod.textContent = '/mes';
-    if (essExtra)  { essExtra.textContent = 'Primer mes €6.99 · descuento de bienvenida'; essExtra.style.display = 'block'; }
-    if (premPrice)  premPrice.textContent  = '€19.99';
+    if (essExtra)  essExtra.textContent  = 'primer mes · luego €9.99';
+    if (premWas)   premWas.textContent   = '€19.99';
+    if (premPrice)  premPrice.textContent  = '€13.99';
     if (premPeriod) premPeriod.textContent = '/mes';
-    if (premExtra)  { premExtra.textContent = 'Primer mes €13.99 · descuento de bienvenida'; premExtra.style.display = 'block'; }
+    if (premExtra)  premExtra.textContent  = 'primer mes · luego €19.99';
   } else {
+    if (essWas)    essWas.textContent    = '€9.99';
     if (essPrice)  essPrice.textContent  = '€6.67';
     if (essPeriod) essPeriod.textContent = '/mes';
-    if (essExtra)  { essExtra.textContent = '€80 facturado al año · ahorras €40'; essExtra.style.display = 'block'; }
+    if (essExtra)  essExtra.textContent  = '€80/año · ahorras €40';
+    if (premWas)   premWas.textContent   = '€19.99';
     if (premPrice)  premPrice.textContent  = '€13.33';
     if (premPeriod) premPeriod.textContent = '/mes';
-    if (premExtra)  { premExtra.textContent = '€160 facturado al año · ahorras €80'; premExtra.style.display = 'block'; }
+    if (premExtra)  premExtra.textContent  = '€160/año · ahorras €80';
   }
 }
 

@@ -26,7 +26,7 @@ async function getRawBody(req) {
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   let event;

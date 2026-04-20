@@ -692,32 +692,35 @@
 
         <!-- Gratis -->
         <div class="pw-plan-row pw-plan-free-row">
-          <div class="pw-plan-info">
+          <div class="pw-plan-header-row">
             <span class="pw-plan-label">Gratis</span>
-            <ul class="pw-feat-list">
-              <li>1 sesión de 5 min para probar</li>
-            </ul>
+            <div class="pw-plan-right">
+              <span class="pw-price-main">€0</span>
+              <span class="pw-current-tag">Tu plan actual</span>
+            </div>
           </div>
-          <div class="pw-plan-right">
-            <span class="pw-price-main">€0</span>
-            <span class="pw-current-tag">Tu plan actual</span>
-          </div>
+          <ul class="pw-feat-list pw-feat-list-free">
+            <li>1 meditación de 5 min para probar</li>
+          </ul>
         </div>
 
         <!-- Essential -->
         <div class="pw-plan-row">
-          <div class="pw-plan-info">
-            <span class="pw-plan-label">Essential</span>
-            <ul class="pw-feat-list">
-              <li>10 sesiones únicas al mes</li>
-              <li>Hasta 15 min · Guarda hasta 20</li>
-              <li>Elige voz y sonido de fondo</li>
-            </ul>
-            <span class="pw-first-month" id="pw-ess-extra">Primer mes €6.99</span>
-          </div>
-          <div class="pw-plan-right">
-            <div class="pw-price-wrap">
-              <span class="pw-price-main" id="pw-ess-price">€9.99</span><span class="pw-price-period" id="pw-ess-period">/mes</span>
+          <span class="pw-plan-label">Essential</span>
+          <ul class="pw-feat-list">
+            <li>10 meditaciones únicas al mes</li>
+            <li>Sesiones de 5, 10 y 15 minutos</li>
+            <li>Guarda hasta 20 sesiones</li>
+            <li>Voz y fondo musical a elegir</li>
+          </ul>
+          <div class="pw-bottom-row">
+            <div class="pw-price-col">
+              <div class="pw-price-wrap">
+                <span class="pw-price-was" id="pw-ess-was">€9.99</span>
+                <span class="pw-price-main" id="pw-ess-price">€6.99</span>
+                <span class="pw-price-period" id="pw-ess-period">/mes</span>
+              </div>
+              <span class="pw-first-month" id="pw-ess-extra">primer mes · luego €9.99</span>
             </div>
             <button class="pw-cta-btn" onclick="upgradePlan(pwGetPlan('essential'))">Elegir</button>
           </div>
@@ -726,18 +729,22 @@
         <!-- Premium -->
         <div class="pw-plan-row pw-plan-featured-row">
           <div class="pw-plan-feat-badge">★ Más popular</div>
-          <div class="pw-plan-info">
-            <span class="pw-plan-label">Premium</span>
-            <ul class="pw-feat-list">
-              <li>25 sesiones únicas al mes</li>
-              <li>Hasta 20 min · Biblioteca ilimitada</li>
-              <li>Elige voz y sonido de fondo</li>
-            </ul>
-            <span class="pw-first-month" id="pw-prem-extra">Primer mes €13.99</span>
-          </div>
-          <div class="pw-plan-right">
-            <div class="pw-price-wrap">
-              <span class="pw-price-main" id="pw-prem-price">€19.99</span><span class="pw-price-period" id="pw-prem-period">/mes</span>
+          <span class="pw-plan-label">Premium</span>
+          <ul class="pw-feat-list">
+            <li>25 meditaciones únicas al mes</li>
+            <li>Sesiones de hasta 20 minutos</li>
+            <li>Biblioteca ilimitada</li>
+            <li>Voz y fondo musical a elegir</li>
+            <li class="pw-feat-gold">Acceso prioritario a novedades</li>
+          </ul>
+          <div class="pw-bottom-row">
+            <div class="pw-price-col">
+              <div class="pw-price-wrap">
+                <span class="pw-price-was" id="pw-prem-was">€19.99</span>
+                <span class="pw-price-main" id="pw-prem-price">€13.99</span>
+                <span class="pw-price-period" id="pw-prem-period">/mes</span>
+              </div>
+              <span class="pw-first-month" id="pw-prem-extra">primer mes · luego €19.99</span>
             </div>
             <button class="pw-cta-btn pw-cta-featured-btn" onclick="upgradePlan(pwGetPlan('premium'))">Elegir</button>
           </div>
@@ -745,7 +752,7 @@
 
       </div>
 
-      <p class="plan-footnote">† Sesiones largas consumen más — 5 min = 1 · 10 min = 2 · 15 min = 3 · 20 min = 4</p>
+      <p class="plan-footnote">† Sesiones largas consumen más créditos — 5 min = 1 · 10 min = 2 · 15 min = 3 · 20 min = 4</p>
       <p class="paywall-guarantee">Sin permanencia · Cancela cuando quieras</p>
       <button class="btn-ghost paywall-close" onclick="closePaywall()">Ahora no</button>
     </div>

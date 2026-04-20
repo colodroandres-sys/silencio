@@ -93,19 +93,24 @@
 }
 .pw-plan-row {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   padding: 14px 16px;
   background: rgba(242,237,228,0.04);
   border: 1px solid var(--glass-brd);
   border-radius: 18px;
-  gap: 14px;
+  gap: 10px;
   position: relative;
 }
-.pw-plan-free-row { opacity: 0.55; }
+.pw-plan-free-row { opacity: 0.52; }
+.pw-plan-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 .pw-plan-featured-row {
   background: rgba(201,169,110,0.07);
   border-color: rgba(201,169,110,0.28);
-  padding-top: 20px;
+  padding-top: 22px;
 }
 .pw-plan-feat-badge {
   position: absolute;
@@ -120,43 +125,75 @@
   text-transform: uppercase;
   color: #0a0e08;
 }
-.pw-plan-info { flex: 1; min-width: 0; }
 .pw-plan-label {
   display: block;
-  font-size: 0.88rem;
-  font-weight: 500;
+  font-size: 0.92rem;
+  font-weight: 600;
   color: var(--text);
-  margin-bottom: 5px;
 }
-.pw-feat-list { list-style: none; }
-.pw-feat-list li {
-  font-size: 0.70rem;
-  color: var(--text-45);
-  line-height: 1.65;
-}
-.pw-first-month {
-  display: block;
-  font-size: 0.66rem;
-  color: var(--sand-dim);
-  margin-top: 5px;
-  letter-spacing: 0.01em;
-}
-.pw-plan-right {
+/* Feature list with checkmarks */
+.pw-feat-list {
+  list-style: none;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 7px;
-  flex-shrink: 0;
+  gap: 4px;
+}
+.pw-feat-list li {
+  font-size: 0.74rem;
+  color: var(--text-70);
+  line-height: 1.45;
+  padding-left: 17px;
+  position: relative;
+}
+.pw-feat-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--sand);
+  font-weight: 700;
+  font-size: 0.72rem;
+}
+.pw-feat-list-free li {
+  color: var(--text-45);
+}
+.pw-feat-list-free li::before {
+  content: '—';
+  color: var(--text-20);
+}
+.pw-feat-gold {
+  color: var(--sand) !important;
+  opacity: 0.85;
+}
+.pw-feat-gold::before {
+  color: var(--sand) !important;
+}
+/* Bottom row: price left, CTA right */
+.pw-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+.pw-price-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
 .pw-price-wrap {
   display: flex;
   align-items: baseline;
-  gap: 1px;
+  gap: 3px;
+}
+.pw-price-was {
+  font-size: 0.8rem;
+  color: rgba(242,237,228,0.30);
+  text-decoration: line-through;
+  font-family: 'Inter', sans-serif;
 }
 .pw-price-main {
   font-family: 'Fraunces', serif;
   font-style: italic;
-  font-size: 1.55rem;
+  font-size: 1.65rem;
   color: var(--text);
   line-height: 1;
 }
@@ -166,7 +203,19 @@
   font-style: normal;
   font-family: 'Inter', sans-serif;
   align-self: flex-end;
-  padding-bottom: 2px;
+  padding-bottom: 3px;
+}
+.pw-first-month {
+  font-size: 0.63rem;
+  color: var(--sand-dim);
+  letter-spacing: 0.01em;
+}
+.pw-plan-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
 }
 .pw-current-tag {
   font-size: 0.66rem;
@@ -177,12 +226,12 @@
   white-space: nowrap;
 }
 .pw-cta-btn {
-  padding: 8px 16px;
+  padding: 10px 20px;
   border-radius: 100px;
   border: 1px solid rgba(242,237,228,0.22);
   background: rgba(242,237,228,0.09);
   color: var(--text-70);
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 500;
   font-family: 'Inter', sans-serif;
   cursor: pointer;

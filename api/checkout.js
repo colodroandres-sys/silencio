@@ -33,7 +33,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     const user = await getOrCreateUser(clerkId, email);
 
     // Crear o recuperar customer de Stripe
