@@ -25,7 +25,17 @@
       "Bash(npm install *)",
       "Bash(node stillova-audit2.js)",
       "Bash(node stillova-audit3.js)",
-      "Bash(node audit.js)"
+      "Bash(node audit.js)",
+      "Bash(convert --version)",
+      "Bash(node -e ' *)",
+      "Bash(vercel logs *)",
+      "Bash(node -e \"const { chromium } = require\\('playwright'\\); chromium.launch\\(\\).then\\(b => { console.log\\('ok'\\); b.close\\(\\); }\\).catch\\(e => console.log\\('err:', e.message\\)\\);\")",
+      "Bash(node navigate.js)",
+      "Bash(node check-hint.js)",
+      "Bash(sudo npm *)",
+      "Bash(npm cache *)",
+      "Bash(node scripts/screenshot.js)",
+      "Bash(node scripts/screenshot.js https://stillova.com)"
     ],
     "additionalDirectories": [
       "/Users/andrescolodro/Desktop/stillova",
