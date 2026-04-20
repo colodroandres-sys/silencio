@@ -164,21 +164,30 @@ async function injectEndState(page, endId) {
       await page.waitForTimeout(600);
       await shot(page, `${vp.name}-09-create-intent`);
 
-      // Seleccionar intent "Calmarme"
-      const intentCards = await page.$$('.intent-card');
-      if (intentCards.length >= 3) await intentCards[2].click();
+      // Seleccionar intent "Calmarme" (via JS para evitar overlay del bottom nav)
+      await page.evaluate(() => {
+        const cards = document.querySelectorAll('.intent-card');
+        if (cards.length >= 3) cards[2].click();
+        else if (cards.length > 0) cards[0].click();
+      });
       await page.waitForTimeout(600);
       await shot(page, `${vp.name}-10-create-config`);
 
       // ── 4. Paywall modal ─────────────────────────────────────
-      const lockedPill = await page.$('#grp-duration .pill-locked');
-      if (lockedPill) {
-        await lockedPill.click();
+      const paywallTriggered = await page.evaluate(() => {
+        const pill = document.querySelector('#grp-duration .pill-locked');
+        if (pill) { pill.click(); return true; }
+        return false;
+      });
+      if (paywallTriggered) {
         await page.waitForTimeout(600);
         const paywallVisible = await page.$('#paywall-modal.active');
         if (paywallVisible) {
           await shot(page, `${vp.name}-11-paywall-modal`);
-          await clickIfVisible(page, '.paywall-close', 2000);
+          await page.evaluate(() => {
+            const btn = document.querySelector('.paywall-close');
+            if (btn) btn.click();
+          });
           await page.waitForTimeout(400);
         }
       }
@@ -208,30 +217,29 @@ async function injectEndState(page, endId) {
       await page.waitForTimeout(300);
       await clickIfVisible(page, '#btn-continue-input', 2000);
       await page.waitForTimeout(500);
-      await clickIfVisible(page, '.intent-card', 2000);
+      await page.evaluate(() => {
+        const card = document.querySelector('.intent-card');
+        if (card) card.click();
+      });
       await page.waitForTimeout(500);
 
       // Click en generar → loading screen
-      const generateBtn = await page.$('#btn-generate');
-      if (generateBtn) {
-        await generateBtn.click({ force: true });
-        const loadingVisible = await waitFor(page, '#screen-loading.active', 4000);
-        if (loadingVisible) {
-          await page.waitForTimeout(800);
-          await shot(page, `${vp.name}-12-loading`);
-        }
-        // Esperar player (API mockeada responde rápido)
-        const playerVisible = await waitFor(page, '#screen-player.active', 8000);
-        if (playerVisible) {
-          await page.waitForTimeout(600);
-          await shot(page, `${vp.name}-13-player-inicio`);
-        } else {
-          // Fallback: inyectar player directamente
-          await injectPlayerState(page);
-          await page.waitForTimeout(600);
-          await shot(page, `${vp.name}-13-player-inicio`);
-        }
+      await page.evaluate(() => {
+        const btn = document.getElementById('btn-generate');
+        if (btn) btn.click();
+      });
+      const loadingVisible = await waitFor(page, '#screen-loading.active', 4000);
+      if (loadingVisible) {
+        await page.waitForTimeout(800);
+        await shot(page, `${vp.name}-12-loading`);
+      }
+      // Esperar player (API mockeada responde rápido)
+      const playerVisible = await waitFor(page, '#screen-player.active', 8000);
+      if (playerVisible) {
+        await page.waitForTimeout(600);
+        await shot(page, `${vp.name}-13-player-inicio`);
       } else {
+        // Fallback: inyectar player directamente
         await injectPlayerState(page);
         await page.waitForTimeout(600);
         await shot(page, `${vp.name}-13-player-inicio`);
