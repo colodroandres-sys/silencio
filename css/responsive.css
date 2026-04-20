@@ -79,9 +79,9 @@
       );
   }
 
-  /* Create screen: más espacio en escritorio */
+  /* Create screen: espacio suficiente para el botón fijo (88px nav + 74px btn + 20px margen) */
   #screen-create .screen-inner {
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 120px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 180px);
   }
 
   /* Onboarding centrado con más espacio */

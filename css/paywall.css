@@ -40,6 +40,7 @@
   margin-bottom: 8px;
 }
 .paywall-sub { font-size: 0.875rem; color: var(--text-70); text-align: center; margin-bottom: 20px; }
+.paywall-subtitle { font-size: 0.875rem; color: var(--text-70); text-align: center; margin-bottom: 16px; margin-top: -2px; }
 
 /* ── Paywall billing toggle ── */
 .pw-billing-toggle {

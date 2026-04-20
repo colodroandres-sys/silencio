@@ -169,18 +169,18 @@
       <div class="ob-step" id="ob-6">
         <div class="ob-inner">
           <p class="ob-eyebrow">Elige tu plan</p>
-          <h2 class="ob-headline">Tu práctica,<br>sin límites.</h2>
+          <h2 class="ob-headline">Una meditación distinta<br>cada vez que la necesites.</h2>
 
           <div class="ob-plan-cards">
             <button class="ob-plan-card ob-plan-featured" onclick="obStartPlan('premium')">
-              <div class="ob-plan-badge">★ Recomendado</div>
+              <div class="ob-plan-badge">★ Más popular</div>
               <div class="ob-plan-name">Premium</div>
               <div class="ob-plan-price">€19.99<span class="ob-plan-period">/mes</span></div>
               <ul class="ob-plan-features">
-                <li>25 meditaciones al mes</li>
-                <li>Guardado ilimitado</li>
-                <li>Todas las duraciones</li>
-                <li>Voz personalizable</li>
+                <li>25 sesiones únicas al mes</li>
+                <li>Hasta 20 min por sesión</li>
+                <li>Biblioteca personal ilimitada</li>
+                <li>Voz y sonido a tu elección</li>
               </ul>
               <div class="ob-plan-cta-btn">Empezar</div>
             </button>
@@ -188,16 +188,16 @@
               <div class="ob-plan-name">Essential</div>
               <div class="ob-plan-price">€9.99<span class="ob-plan-period">/mes</span></div>
               <ul class="ob-plan-features">
-                <li>10 meditaciones al mes</li>
-                <li>Guardar hasta 20</li>
-                <li>Duraciones hasta 15 min</li>
+                <li>10 sesiones únicas al mes</li>
+                <li>Hasta 15 min por sesión</li>
+                <li>Guarda hasta 20 sesiones</li>
               </ul>
               <div class="ob-plan-cta-btn ob-plan-cta-ghost">Elegir</div>
             </button>
           </div>
 
           <p class="ob-plan-guarantee">Sin permanencia · Cancela cuando quieras</p>
-          <button class="ob-free-link" onclick="obSkipToFree()">Empezar gratis con 1 meditación</button>
+          <button class="ob-free-link" onclick="obSkipToFree()">Probar gratis primero — 1 sesión sin cuenta</button>
         </div>
       </div>
 
@@ -569,7 +569,8 @@
        ══════════════════════════════════════════ -->
   <div id="paywall-modal" class="paywall-overlay">
     <div class="paywall-card">
-      <p class="paywall-title">Tu próxima meditación<br>te espera.</p>
+      <p class="paywall-title">Cada sesión, creada<br>solo para ti.</p>
+      <p class="paywall-subtitle">Elige cuántas quieres al mes.</p>
 
       <!-- Toggle mensual / anual -->
       <div class="pw-billing-toggle">
@@ -588,7 +589,7 @@
           <div class="pw-plan-info">
             <span class="pw-plan-label">Gratis</span>
             <ul class="pw-feat-list">
-              <li>1 meditación · 5 min · Voz auto</li>
+              <li>1 sesión de 5 min para probar</li>
             </ul>
           </div>
           <div class="pw-plan-right">
@@ -602,9 +603,9 @@
           <div class="pw-plan-info">
             <span class="pw-plan-label">Essential</span>
             <ul class="pw-feat-list">
-              <li>10 meditaciones al mes †</li>
-              <li>Hasta 15 min · Guardar hasta 20</li>
-              <li>Voz y sonido personalizables</li>
+              <li>10 sesiones únicas al mes</li>
+              <li>Hasta 15 min · Guarda hasta 20</li>
+              <li>Elige voz y sonido de fondo</li>
             </ul>
             <span class="pw-first-month" id="pw-ess-extra">Primer mes €6.99</span>
           </div>
@@ -618,13 +619,13 @@
 
         <!-- Premium -->
         <div class="pw-plan-row pw-plan-featured-row">
-          <div class="pw-plan-feat-badge">★ Recomendado</div>
+          <div class="pw-plan-feat-badge">★ Más popular</div>
           <div class="pw-plan-info">
             <span class="pw-plan-label">Premium</span>
             <ul class="pw-feat-list">
-              <li>25 meditaciones al mes †</li>
-              <li>Hasta 20 min · Guardar sin límite</li>
-              <li>Voz y sonido personalizables</li>
+              <li>25 sesiones únicas al mes</li>
+              <li>Hasta 20 min · Biblioteca ilimitada</li>
+              <li>Elige voz y sonido de fondo</li>
             </ul>
             <span class="pw-first-month" id="pw-prem-extra">Primer mes €13.99</span>
           </div>
@@ -638,7 +639,7 @@
 
       </div>
 
-      <p class="plan-footnote">† Créditos mensuales · 5 min = 1 cr · 10 min = 2 · 15 min = 3 · 20 min = 4</p>
+      <p class="plan-footnote">† Sesiones largas consumen más — 5 min = 1 · 10 min = 2 · 15 min = 3 · 20 min = 4</p>
       <p class="paywall-guarantee">Sin permanencia · Cancela cuando quieras</p>
       <button class="btn-ghost paywall-close" onclick="closePaywall()">Ahora no</button>
     </div>
