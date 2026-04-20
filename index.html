@@ -240,7 +240,7 @@
               <span id="usage-info" class="usage-info">Primera meditación gratis</span>
             </div>
             <div class="user-dropdown-sep"></div>
-            <a href="/dashboard.html" class="user-dropdown-link">Mi biblioteca</a>
+            <a href="#" onclick="openLibrary(); return false;" class="user-dropdown-link">Mi biblioteca</a>
             <button class="user-dropdown-btn" onclick="signOut()">Cerrar sesión</button>
           </div>
         </div>
@@ -577,10 +577,91 @@
     </div>
   </div>
 
+  <!-- ══════════════════════════════════════════
+       BIBLIOTECA
+       ══════════════════════════════════════════ -->
+  <div id="screen-library" class="screen">
+    <div class="dash-wrap">
+
+      <header class="dash-header">
+        <button onclick="showHome()" style="display:flex;align-items:center;background:none;border:none;color:var(--text-45);gap:6px;font-size:0.83rem;cursor:pointer;padding:0;font-family:'Inter',sans-serif;transition:color 0.2s;" onmouseover="this.style.color='var(--text-70)'" onmouseout="this.style.color='var(--text-45)'">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Inicio
+        </button>
+        <div class="logo"><span>Stillova</span></div>
+        <div style="width:60px"></div>
+      </header>
+
+      <div id="lib-loading" class="dash-loading">Cargando tu biblioteca...</div>
+
+      <div id="lib-error" class="dash-error" style="display:none">
+        <p>Inicia sesión para ver<br>tus meditaciones guardadas.</p>
+        <button onclick="clerk?.openSignIn()" style="margin-top:20px;padding:12px 28px;background:var(--sand);color:#0a0e08;border:none;border-radius:24px;font-family:'Inter',sans-serif;font-size:0.875rem;font-weight:500;cursor:pointer;letter-spacing:0.01em;">Iniciar sesión</button>
+      </div>
+
+      <div id="lib-content" style="display:none">
+
+        <h1 class="dash-headline">Mi biblioteca</h1>
+
+        <div class="dash-plan-row">
+          <span id="lib-plan-badge" class="plan-badge"></span>
+          <span id="lib-credits" class="dash-credits"></span>
+        </div>
+
+        <div class="dash-stats">
+          <div class="stat-card">
+            <div class="stat-value" id="lib-stat-streak">0</div>
+            <div class="stat-label">Racha</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="lib-stat-minutes">0</div>
+            <div class="stat-label">Min totales</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="lib-stat-sessions">0</div>
+            <div class="stat-label">Sesiones</div>
+          </div>
+        </div>
+
+        <p class="dash-section-title">Guardadas</p>
+
+        <div class="dash-filters">
+          <div class="filter-row">
+            <span class="filter-label">Emoción</span>
+            <div class="filter-pills" id="lib-filter-emotion">
+              <button class="filter-pill active" data-val="">Todas</button>
+              <button class="filter-pill" data-val="ansiedad">Ansiedad</button>
+              <button class="filter-pill" data-val="sueno">Sueño</button>
+              <button class="filter-pill" data-val="claridad">Claridad</button>
+              <button class="filter-pill" data-val="liberacion">Liberación</button>
+              <button class="filter-pill" data-val="enfoque">Enfoque</button>
+            </div>
+          </div>
+          <div class="filter-row">
+            <span class="filter-label">Duración</span>
+            <div class="filter-pills" id="lib-filter-duration">
+              <button class="filter-pill active" data-val="">Todas</button>
+              <button class="filter-pill" data-val="5">5 min</button>
+              <button class="filter-pill" data-val="10">10 min</button>
+              <button class="filter-pill" data-val="15">15 min</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="lib-list" class="med-list"></div>
+
+      </div>
+
+    </div>
+  </div>
+
   <!-- Audio -->
   <audio id="audio" onended="handleEnd()"></audio>
   <audio id="audio-ambient" loop preload="none"></audio>
   <audio id="audio-preview" preload="none"></audio>
+  <audio id="lib-audio" preload="none"></audio>
 
   <!-- ══════════════════════════════════════════
        MODAL — Paywall
@@ -699,6 +780,7 @@
     <a href="/terms.html">Términos</a>
   </footer>
 
+  <script src="js/library.js"></script>
   <script src="js/state.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/analytics.js"></script>

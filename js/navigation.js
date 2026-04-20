@@ -1,4 +1,12 @@
 function showScreen(id) {
+  if (id !== 'screen-library' && typeof libActiveId !== 'undefined' && libActiveId) {
+    const la = document.getElementById('lib-audio');
+    if (la) la.pause();
+    if (typeof libSetPlayingState === 'function') libSetPlayingState(libActiveId, false);
+    libActiveId = null;
+    clearInterval(libProgressInterval);
+  }
+
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const next = document.getElementById(id);
   if (next) { next.classList.add('active'); next.scrollTop = 0; }
@@ -19,6 +27,8 @@ function showScreen(id) {
     document.getElementById('nav-home')?.classList.add('active');
   } else if (id === 'screen-create') {
     if (createBtn) createBtn.classList.add('active');
+  } else if (id === 'screen-library') {
+    document.getElementById('nav-library')?.classList.add('active');
   }
 }
 
@@ -29,10 +39,11 @@ function showHome() {
 
 function openLibrary() {
   if (!clerk?.user) {
-    clerk?.openSignIn({ afterSignInUrl: '/dashboard.html', afterSignUpUrl: '/dashboard.html' });
+    clerk?.openSignIn();
     return;
   }
-  window.location.href = '/dashboard.html';
+  loadLibrary();
+  showScreen('screen-library');
 }
 
 function showCreate(skipToConfig = false) {

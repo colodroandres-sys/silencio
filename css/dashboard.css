@@ -144,3 +144,28 @@
   transition: opacity 0.2s;
 }
 .dash-create-btn:hover { opacity: 0.9; }
+
+/* Player inline de la biblioteca */
+.med-player { margin-top: 10px; display: none; }
+.med-player.visible { display: block; }
+.med-progress-row { display: flex; align-items: center; gap: 8px; }
+.med-time { font-size: 0.65rem; color: var(--text-45); font-variant-numeric: tabular-nums; width: 30px; flex-shrink: 0; }
+.med-time-end { text-align: left; }
+.med-progress-track { flex: 1; height: 3px; background: rgba(242,237,228,0.12); border-radius: 2px; cursor: pointer; }
+.med-progress-fill { height: 100%; width: 0%; background: var(--sand); border-radius: 2px; transition: width 0.4s linear; pointer-events: none; }
+.med-play-btn { background: rgba(201,169,110,0.12); border: 1px solid rgba(201,169,110,0.28); }
+.med-play-btn.playing { background: var(--sand); border-color: var(--sand); color: #0a0e08; }
+.dash-loading { text-align: center; padding: 80px 20px; color: var(--text-45); font-size: 0.875rem; }
+.dash-error { text-align: center; padding: 64px 20px; color: var(--text-45); font-size: 0.875rem; line-height: 1.6; }
+.dash-error a { color: var(--sand); text-decoration: none; display: inline-block; margin-top: 12px; }
+.dash-filters { margin-bottom: 8px; }
+.filter-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.filter-label { font-size: 0.7rem; color: var(--text-45); text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0; width: 58px; }
+.filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-pill { font-size: 0.75rem; font-family: 'Inter', sans-serif; padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(242,237,228,0.15); background: rgba(242,237,228,0.05); color: var(--text-70); cursor: pointer; transition: all 0.18s; white-space: nowrap; }
+.filter-pill:hover { border-color: rgba(242,237,228,0.3); color: var(--text-85); }
+.filter-pill.active { background: rgba(201,169,110,0.18); border-color: rgba(201,169,110,0.5); color: var(--sand); }
+.med-tags { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+.med-tag { font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; background: rgba(201,169,110,0.12); color: rgba(201,169,110,0.75); border: 1px solid rgba(201,169,110,0.2); text-transform: capitalize; }
+.med-tag.intent { background: rgba(180,160,220,0.1); color: rgba(180,160,220,0.75); border-color: rgba(180,160,220,0.2); }
+.dash-empty-filter { text-align: center; padding: 48px 20px; color: var(--text-45); font-size: 0.875rem; line-height: 1.6; }
