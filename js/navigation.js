@@ -76,6 +76,9 @@ function showCreate(skipToConfig = false) {
   const banner = document.getElementById('no-credits-banner');
   if (banner) banner.style.display = (clerk?.user && !state.userCanGenerate) ? 'flex' : 'none';
 
+  const guestHint = document.getElementById('create-guest-hint');
+  if (guestHint) guestHint.style.display = !clerk?.user ? 'block' : 'none';
+
   const GOAL_TO_INTENT = { calma: 'calmar', claridad: 'entender', liberacion: 'soltar' };
   const suggestedIntent = GOAL_TO_INTENT[obPrefs.goal] || null;
   if (suggestedIntent && !state.intent) {

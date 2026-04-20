@@ -388,6 +388,32 @@
   white-space: nowrap;
 }
 
+/* Create screen — guest context hint */
+.create-guest-hint {
+  margin-bottom: 20px;
+}
+.create-guest-hint-text {
+  font-size: 0.82rem;
+  color: var(--text-45);
+  line-height: 1.55;
+  margin-bottom: 10px;
+}
+.create-guest-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.create-guest-tag {
+  font-size: 0.70rem;
+  color: var(--sand-dim);
+  background: rgba(201,169,110,0.08);
+  border: 1px solid rgba(201,169,110,0.18);
+  border-radius: 100px;
+  padding: 4px 10px;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
 /* =============================================
    LOADING SCREEN
    ============================================= */
