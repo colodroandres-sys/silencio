@@ -326,6 +326,10 @@ function dismissLead() {
 
 async function upgradePlan(plan) {
   if (!clerk || !clerk.session) { openAuth(); return; }
+
+  const btns = document.querySelectorAll('.pw-cta-btn, .ob-plan-cta-btn, .ob-plan-card');
+  btns.forEach(b => { b.disabled = true; b.style.opacity = '0.6'; b.style.pointerEvents = 'none'; });
+
   try {
     const token = await clerk.session.getToken();
     const email = await getUserEmail();
@@ -340,6 +344,7 @@ async function upgradePlan(plan) {
     window.location.href = url;
   } catch (e) {
     console.error('[checkout] Error:', e);
+    btns.forEach(b => { b.disabled = false; b.style.opacity = ''; b.style.pointerEvents = ''; });
     showToast('Error al procesar el pago. Inténtalo de nuevo.');
   }
 }

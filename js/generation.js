@@ -178,7 +178,7 @@ async function attemptGeneration(signal) {
   state.silenceOffset       = 0;
 
   document.getElementById('time-end').textContent = formatTime(state.totalSec);
-  document.getElementById('time-now').textContent = formatTime(state.totalSec);
+  document.getElementById('time-now').textContent = '0:00';
   const cd = document.getElementById('time-countdown');
   if (cd) cd.textContent = formatTime(state.totalSec);
 

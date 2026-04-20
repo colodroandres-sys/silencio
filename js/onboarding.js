@@ -31,12 +31,13 @@ function obNext(nextStep) {
     localStorage.setItem('ob_topics', JSON.stringify(selected));
   }
   obGoToStep(nextStep);
-  if (obCurrentStep !== 5) obStopPreview();
 }
 
 function obBack() {
   if (obCurrentStep > 1) {
-    obGoToStep(obCurrentStep - 1);
+    // Paso 5 fue eliminado — desde paso 6 volver directamente al 4
+    const prev = obCurrentStep === 6 ? 4 : obCurrentStep - 1;
+    obGoToStep(prev);
     obStopPreview();
   }
 }
@@ -73,45 +74,6 @@ function obSelectDur(el) {
   el.classList.add('active');
   obPrefs.duration = el.dataset.value;
   localStorage.setItem('ob_duration', el.dataset.value);
-}
-
-function obTogglePreview() {
-  const audio = document.getElementById('audio-preview');
-  if (!audio) return;
-
-  if (obPreviewPlaying) {
-    audio.pause();
-    obPreviewPlaying = false;
-    document.getElementById('ob-icon-play').style.display  = 'block';
-    document.getElementById('ob-icon-pause').style.display = 'none';
-    document.getElementById('ob-preview-hint').textContent = 'Toca para escuchar una muestra';
-  } else {
-    const src = '/sounds/preview.mp3';
-    if (audio.src !== window.location.origin + src) {
-      audio.src = src;
-      audio.load();
-    }
-    audio.play().then(() => {
-      obPreviewPlaying = true;
-      document.getElementById('ob-icon-play').style.display  = 'none';
-      document.getElementById('ob-icon-pause').style.display = 'block';
-      document.getElementById('ob-preview-hint').textContent = 'Reproduciendo muestra...';
-    }).catch(() => {
-      audio.src = AMBIENT_TRACKS[0];
-      audio.load();
-      audio.play().catch(() => {});
-      obPreviewPlaying = true;
-      document.getElementById('ob-icon-play').style.display  = 'none';
-      document.getElementById('ob-icon-pause').style.display = 'block';
-      document.getElementById('ob-preview-hint').textContent = 'Reproduciendo muestra...';
-    });
-    audio.onended = () => {
-      obPreviewPlaying = false;
-      document.getElementById('ob-icon-play').style.display  = 'block';
-      document.getElementById('ob-icon-pause').style.display = 'none';
-      document.getElementById('ob-preview-hint').textContent = 'Toca para escuchar de nuevo';
-    };
-  }
 }
 
 function obStopPreview() {
