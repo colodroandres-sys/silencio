@@ -796,6 +796,33 @@ function seekTo(event) {
   }
 }
 
+// =============================================
+//  END-STATE MANAGER
+// =============================================
+const END_STATE_IDS = ['message', 'save', 'profile', 'upsell', 'guest'];
+
+function hideAllEndStates() {
+  END_STATE_IDS.forEach(s => {
+    const el = document.getElementById(`end-${s}`);
+    if (el) el.style.display = 'none';
+  });
+  document.getElementById('btn-new-meditation').style.display = 'none';
+  document.getElementById('screen-player').classList.remove('end-active');
+}
+
+function showEndState(name) {
+  hideAllEndStates();
+  if (!name) return;
+  if (name === 'new-meditation') {
+    document.getElementById('btn-new-meditation').style.display = 'block';
+    return;
+  }
+  const el = document.getElementById(`end-${name}`);
+  if (!el) return;
+  el.style.display = name === 'message' ? 'block' : 'flex';
+  if (name !== 'message') document.getElementById('screen-player').classList.add('end-active');
+}
+
 function handleEnd() {
   track('meditation_completed', { duration: state.duration, voice: state.voice, intent: state.intent });
   state.isPlaying  = false;
@@ -807,37 +834,20 @@ function handleEnd() {
   document.getElementById('breathing-player').classList.add('paused');
   ambientFadeOut();
 
-  document.getElementById('end-message').style.display        = 'block';
-  document.getElementById('btn-new-meditation').style.display = 'none';
-  document.getElementById('end-upsell').style.display         = 'none';
-  document.getElementById('end-profile').style.display        = 'none';
-  document.getElementById('end-guest')?.setAttribute('style', 'display:none');
+  showEndState('message');
 
   const statusPromise = fetchUserStatus();
   const delayPromise  = new Promise(resolve => setTimeout(resolve, 5000));
 
   Promise.all([statusPromise, delayPromise]).then(() => {
-    document.getElementById('end-message').style.display = 'none';
-
-    // Guest (sin cuenta): mostrar CTA para crear cuenta o hacer otra
     if (!clerk?.user) {
-      document.getElementById('end-guest').style.display = 'flex';
-      document.getElementById('screen-player').classList.add('end-active');
-      return;
-    }
-
-    if (state.userPlan === 'free' && !state.userCanGenerate) {
-      if (!state.profileCompleted) {
-        document.getElementById('end-profile').style.display = 'flex';
-        document.getElementById('screen-player').classList.add('end-active');
-      } else {
-        document.getElementById('end-upsell').style.display = 'flex';
-        document.getElementById('screen-player').classList.add('end-active');
-      }
+      showEndState('guest');
+    } else if (state.userPlan === 'free' && !state.userCanGenerate) {
+      showEndState(state.profileCompleted ? 'upsell' : 'profile');
     } else if (state.userPlan !== 'free' && state.currentMeditationId) {
-      document.getElementById('end-save').style.display = 'flex';
+      showEndState('save');
     } else {
-      document.getElementById('btn-new-meditation').style.display = 'block';
+      showEndState('new-meditation');
     }
   });
 }
@@ -871,14 +881,7 @@ function newMeditation() {
   document.getElementById('icon-pause').style.display     = 'none';
   document.getElementById('breathing-player').classList.add('paused');
 
-  document.getElementById('end-message').style.display        = 'none';
-  document.getElementById('btn-new-meditation').style.display = 'none';
-  document.getElementById('end-upsell').style.display         = 'none';
-  document.getElementById('end-profile').style.display        = 'none';
-  document.getElementById('end-save').style.display           = 'none';
-  document.getElementById('end-guest').style.display          = 'none';
-  document.getElementById('screen-player').classList.remove('end-active');
-
+  hideAllEndStates();
   resetCreateScreen();
   showScreen('screen-home');
   if (clerk?.user) loadHomeData();
@@ -1304,13 +1307,10 @@ function showPaywall() {
 }
 
 function closeEndUpsell() {
-  document.getElementById('end-upsell').style.display = 'none';
-  document.getElementById('screen-player').classList.remove('end-active');
+  hideAllEndStates();
 }
 
 function closeEndGuest() {
-  document.getElementById('end-guest').style.display = 'none';
-  document.getElementById('screen-player').classList.remove('end-active');
   newMeditation();
 }
 
@@ -1447,8 +1447,7 @@ async function saveMeditation() {
 }
 
 function skipSave() {
-  document.getElementById('end-save').style.display           = 'none';
-  document.getElementById('btn-new-meditation').style.display = 'block';
+  showEndState('new-meditation');
 }
 
 // =============================================
@@ -1489,10 +1488,8 @@ async function submitProfile() {
     if (res.ok && (data.success || data.already_completed)) {
       state.profileCompleted = true;
       state.userCanGenerate  = true;
-      document.getElementById('end-profile').style.display = 'none';
-      document.getElementById('screen-player').classList.remove('end-active');
+      showEndState('new-meditation');
       showToast('¡Tienes 1 meditación extra gratis! Úsala cuando quieras.');
-      document.getElementById('btn-new-meditation').style.display = 'block';
       const usageEl = document.getElementById('usage-info');
       if (usageEl) usageEl.textContent = 'Meditación gratis disponible';
     } else {
@@ -1509,9 +1506,7 @@ async function submitProfile() {
 }
 
 function skipProfile() {
-  document.getElementById('end-profile').style.display = 'none';
-  document.getElementById('end-upsell').style.display  = 'flex';
-  document.getElementById('screen-player').classList.add('end-active');
+  showEndState('upsell');
 }
 
 // =============================================
