@@ -98,9 +98,11 @@ function handleEnd() {
 
   document.getElementById('end-message').style.display        = 'block';
   document.getElementById('btn-new-meditation').style.display = 'none';
+  document.getElementById('end-save').style.display           = 'none';
   document.getElementById('end-upsell').style.display         = 'none';
   document.getElementById('end-profile').style.display        = 'none';
-  document.getElementById('end-guest')?.setAttribute('style', 'display:none');
+  document.getElementById('end-guest').style.display          = 'none';
+  document.getElementById('screen-player').classList.remove('end-active');
 
   const statusPromise = fetchUserStatus();
   const delayPromise  = new Promise(resolve => setTimeout(resolve, 5000));
