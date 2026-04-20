@@ -362,6 +362,22 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
+.home-guest-social {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+.home-guest-stars {
+  font-size: 0.72rem;
+  color: var(--sand);
+  letter-spacing: 1px;
+}
+.home-guest-social-text {
+  font-size: 0.70rem;
+  color: var(--text-45);
+  letter-spacing: 0.01em;
+}
 .home-guest-tagline {
   font-family: 'Fraunces', serif;
   font-style: italic;
