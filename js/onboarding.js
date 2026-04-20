@@ -104,7 +104,26 @@ function obSkipToFree() {
   obStopPreview();
   localStorage.setItem('stillova_ob_done', '1');
   applyObPrefsToState();
-  showCreate();
+
+  const topics = obPrefs.topics || [];
+  if (topics.length > 0) {
+    const topicPhrases = {
+      ansiedad:   'ansiedad',
+      trabajo:    'estrés en el trabajo',
+      relaciones: 'mis relaciones',
+      familia:    'mi familia',
+      sueno:      'dificultades para dormir',
+      enfoque:    'falta de enfoque',
+      decisiones: 'una decisión que no puedo resolver',
+      soltar:     'algo que necesito soltar'
+    };
+    const parts = topics.slice(0, 2).map(t => topicPhrases[t] || t).join(' y ');
+    state.userInput = `Últimamente he tenido en mente ${parts}.`;
+    showCreate(true);
+  } else {
+    showCreate();
+  }
+
   if (clerk?.user) {
     updateUserStatus();
     loadHomeData();

@@ -104,6 +104,8 @@ async function updateUserStatus() {
     el.style.display    = 'none';
     if (guest) guest.style.display = 'flex';
     if (guestIntro) guestIntro.style.display = 'block';
+    const quickLabel = document.getElementById('home-quick-label');
+    if (quickLabel) quickLabel.style.display = 'block';
     const guestBlock = document.getElementById('guest-name-block');
     if (guestBlock) guestBlock.style.display = 'block';
     applyDurationLocks();
@@ -261,14 +263,15 @@ function pwSetBilling(mode) {
     if (premPeriod) premPeriod.textContent = '/mes';
     if (premExtra)  premExtra.textContent  = 'primer mes · luego €19.99';
   } else {
-    if (essWas)    essWas.textContent    = '€9.99';
-    if (essPrice)  essPrice.textContent  = '€6.67';
-    if (essPeriod) essPeriod.textContent = '/mes';
-    if (essExtra)  essExtra.textContent  = '€80/año · ahorras €40';
-    if (premWas)   premWas.textContent   = '€19.99';
-    if (premPrice)  premPrice.textContent  = '€13.33';
-    if (premPeriod) premPeriod.textContent = '/mes';
-    if (premExtra)  premExtra.textContent  = '€160/año · ahorras €80';
+    // Anual: mostrar precio total anual para que el ahorro sea obvio
+    if (essWas)    essWas.textContent    = '€119';
+    if (essPrice)  essPrice.textContent  = '€80';
+    if (essPeriod) essPeriod.textContent = '/año';
+    if (essExtra)  essExtra.textContent  = 'ahorras €40 · equivale a €6.67/mes';
+    if (premWas)   premWas.textContent   = '€240';
+    if (premPrice)  premPrice.textContent  = '€160';
+    if (premPeriod) premPeriod.textContent = '/año';
+    if (premExtra)  premExtra.textContent  = 'ahorras €80 · equivale a €13.33/mes';
   }
 }
 
@@ -291,6 +294,14 @@ function closePaywall() {
   const modal = document.getElementById('paywall-modal');
   if (modal) modal.classList.remove('active');
   enableGenerateBtn();
+
+  // Si el player está en estado final, volver a inicio en vez de dejar dead end
+  const playerScreen = document.getElementById('screen-player');
+  if (playerScreen?.classList.contains('active') &&
+      playerScreen?.classList.contains('end-active')) {
+    newMeditation();
+    return;
+  }
 
   if (state.userPlan === 'free' && !state.userCanGenerate && clerk?.user) {
     const email = clerk.user.primaryEmailAddress?.emailAddress || '';
@@ -333,8 +344,10 @@ function dismissLead() {
 async function upgradePlan(plan) {
   if (!clerk || !clerk.session) { openAuth(); return; }
 
-  const btns = document.querySelectorAll('.pw-cta-btn, .ob-plan-cta-btn, .ob-plan-card');
-  btns.forEach(b => { b.disabled = true; b.style.opacity = '0.6'; b.style.pointerEvents = 'none'; });
+  const allBtns = document.querySelectorAll('.pw-cta-btn, .ob-plan-cta-btn, .ob-plan-card');
+  const ctaBtns = document.querySelectorAll('.pw-cta-btn, .ob-plan-cta-btn');
+  allBtns.forEach(b => { b.disabled = true; b.style.opacity = '0.6'; b.style.pointerEvents = 'none'; });
+  ctaBtns.forEach(b => { b._origText = b.textContent; b.textContent = 'Procesando…'; });
 
   try {
     const token = await clerk.session.getToken();
@@ -350,7 +363,8 @@ async function upgradePlan(plan) {
     window.location.href = url;
   } catch (e) {
     console.error('[checkout] Error:', e);
-    btns.forEach(b => { b.disabled = false; b.style.opacity = ''; b.style.pointerEvents = ''; });
+    allBtns.forEach(b => { b.disabled = false; b.style.opacity = ''; b.style.pointerEvents = ''; });
+    ctaBtns.forEach(b => { if (b._origText) b.textContent = b._origText; });
     showToast('Error al procesar el pago. Inténtalo de nuevo.');
   }
 }

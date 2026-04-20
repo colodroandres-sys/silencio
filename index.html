@@ -187,7 +187,8 @@
             <button class="ob-plan-card ob-plan-featured" onclick="obStartPlan('premium')">
               <div class="ob-plan-badge">★ Más popular</div>
               <div class="ob-plan-name">Premium</div>
-              <div class="ob-plan-price">€19.99<span class="ob-plan-period">/mes</span></div>
+              <div class="ob-plan-price"><span class="ob-plan-price-was">€19.99</span>€13.99<span class="ob-plan-period">/mes</span></div>
+              <div class="ob-plan-price-note">primer mes · luego €19.99</div>
               <ul class="ob-plan-features">
                 <li>25 sesiones únicas al mes</li>
                 <li>Hasta 20 min por sesión</li>
@@ -198,7 +199,8 @@
             </button>
             <button class="ob-plan-card" onclick="obStartPlan('essential')">
               <div class="ob-plan-name">Essential</div>
-              <div class="ob-plan-price">€9.99<span class="ob-plan-period">/mes</span></div>
+              <div class="ob-plan-price"><span class="ob-plan-price-was">€9.99</span>€6.99<span class="ob-plan-period">/mes</span></div>
+              <div class="ob-plan-price-note">primer mes · luego €9.99</div>
               <ul class="ob-plan-features">
                 <li>10 sesiones únicas al mes</li>
                 <li>Hasta 15 min por sesión</li>
@@ -264,6 +266,7 @@
         </div>
 
         <!-- Accesos rápidos -->
+        <p id="home-quick-label" class="home-quick-label" style="display:none">O empieza directamente:</p>
         <div class="quick-access">
           <button class="quick-btn" onclick="quickAccess('ansiedad','Me siento ansioso y necesito calmarme')">Ansiedad</button>
           <button class="quick-btn" onclick="quickAccess('sueno','Necesito prepararme para dormir')">Dormir</button>
@@ -578,12 +581,12 @@
         <p class="end-upsell-eyebrow">Tu primera meditación</p>
         <p class="end-upsell-title">Guárdala.<br>Vuelve cuando la necesites.</p>
         <ul class="end-upsell-benefits">
-          <li>Crea tu cuenta para guardar esta meditación</li>
+          <li>Guarda esta meditación en tu biblioteca</li>
+          <li>Genera más — 1 gratis incluida con tu cuenta</li>
           <li>Accede desde cualquier dispositivo</li>
-          <li>1 meditación gratuita incluida con tu cuenta</li>
         </ul>
         <button class="btn-upsell-cta" onclick="openAuth()">Crear cuenta gratis</button>
-        <button class="btn-upsell-secondary" onclick="openAuth()">¿Quieres otra meditación?</button>
+        <button class="btn-upsell-secondary" onclick="newMeditation()">Ahora no</button>
       </div>
 
     </div>
