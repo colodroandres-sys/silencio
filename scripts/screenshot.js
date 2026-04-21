@@ -118,11 +118,11 @@ async function injectEndState(page, endId) {
       await page.waitForTimeout(1200);
       await shot(page, `${vp.name}-01-onboarding-step1`);
 
-      await clickIfVisible(page, '.ob-btn-primary', 3000);
+      await clickIfVisible(page, '.ob-step.active .ob-btn-primary', 3000);
       await page.waitForTimeout(600);
       await shot(page, `${vp.name}-02-onboarding-step2-voz`);
 
-      await clickIfVisible(page, '.ob-btn-primary', 3000);
+      await clickIfVisible(page, '.ob-step.active .ob-btn-primary', 3000);
       await page.waitForTimeout(600);
       await shot(page, `${vp.name}-03-onboarding-step3-objetivo`);
 
@@ -132,7 +132,7 @@ async function injectEndState(page, endId) {
       await page.waitForTimeout(600);
       await shot(page, `${vp.name}-04-onboarding-step4-duracion`);
 
-      await clickIfVisible(page, '.ob-btn-primary', 3000);
+      await clickIfVisible(page, '.ob-step.active .ob-btn-primary', 3000);
       await page.waitForTimeout(700);
       await shot(page, `${vp.name}-05-onboarding-paywall`);
 

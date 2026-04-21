@@ -61,6 +61,8 @@ function obSelectGoal(el) {
   localStorage.setItem('ob_goal', el.dataset.value);
   const btn = document.getElementById('ob-3-next');
   if (btn) btn.disabled = false;
+  const hint = document.getElementById('ob-3-hint');
+  if (hint) hint.classList.add('hidden');
 }
 
 function obSelectDur(el) {

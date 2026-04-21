@@ -1581,6 +1581,7 @@ body {
   align-items: center;
   gap: 4px;
   padding: 16px 8px;
+  min-height: 90px;
   background: rgba(242,237,228,0.05);
   border: 1px solid var(--glass-brd);
   border-radius: 16px;
@@ -2268,3 +2269,12 @@ body {
   .ob-plan-cards { flex-direction: row; }
   .ob-plan-card { flex: 1; }
 }
+
+.ob-select-hint {
+  font-size: 13px;
+  color: var(--text-40);
+  text-align: center;
+  margin: 0 0 12px;
+  transition: opacity 0.3s ease;
+}
+.ob-select-hint.hidden { opacity: 0; pointer-events: none; }
