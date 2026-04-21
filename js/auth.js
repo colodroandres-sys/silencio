@@ -66,11 +66,14 @@ async function initClerk() {
     updateUserStatus();
     checkUrlParams();
 
-    if (!localStorage.getItem('stillova_ob_done')) {
+    if (clerk.user) {
+      localStorage.setItem('stillova_ob_done', '1');
+      showHome();
+      loadHomeData();
+    } else if (!localStorage.getItem('stillova_ob_done')) {
       showOnboarding();
     } else {
       showHome();
-      if (clerk.user) loadHomeData();
     }
   } catch (e) {
     console.error('[clerk] Error de inicialización:', e);
