@@ -4,3 +4,5 @@
 node_modules/
 .DS_Store
 .vercel
+.claude/settings.json
+.claude/settings.local.json
