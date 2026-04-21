@@ -20,6 +20,15 @@ function getCurrentMonth() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
+function normalizeEmail(email) {
+  if (!email) return null;
+  const at = email.toLowerCase().lastIndexOf('@');
+  if (at === -1) return email.toLowerCase();
+  const local = email.slice(0, at).replace(/\+.*$/, '');
+  const domain = email.slice(at + 1).toLowerCase();
+  return `${local}@${domain}`;
+}
+
 /**
  * Obtiene o crea el usuario en Supabase.
  */
@@ -34,9 +43,24 @@ async function getOrCreateUser(clerkId, email) {
 
   if (user) return user;
 
+  const normalizedEmail = normalizeEmail(email);
+
+  // Anti-alias: si el email normalizado ya existe, no dar crédito gratis
+  let alreadyUsedFree = false;
+  if (normalizedEmail) {
+    const { data: existing } = await db
+      .from('users')
+      .select('clerk_id')
+      .eq('email', normalizedEmail)
+      .neq('clerk_id', clerkId)
+      .limit(1)
+      .maybeSingle();
+    if (existing) alreadyUsedFree = true;
+  }
+
   const { data: newUser, error } = await db
     .from('users')
-    .insert({ clerk_id: clerkId, email: email || null })
+    .insert({ clerk_id: clerkId, email: normalizedEmail || null, free_used: alreadyUsedFree })
     .select()
     .single();
 
