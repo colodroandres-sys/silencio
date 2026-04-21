@@ -371,36 +371,45 @@
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
-.home-guest-social {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin-bottom: 10px;
+.home-guest-narrative {
+  font-size: 0.82rem;
+  color: var(--text-70);
+  line-height: 1.55;
+  margin-bottom: 14px;
+}
+.home-guest-testimonial {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  background: rgba(242,237,228,0.04);
+  border-radius: 12px;
+  border-left: 2px solid rgba(201,169,110,0.4);
 }
 .home-guest-stars {
-  font-size: 0.72rem;
+  font-size: 0.70rem;
   color: var(--sand);
   letter-spacing: 1px;
+  display: block;
+  margin-bottom: 6px;
 }
-.home-guest-social-text {
-  font-size: 0.70rem;
-  color: var(--text-45);
-  letter-spacing: 0.01em;
-}
-.home-guest-tagline {
+.home-guest-quote {
   font-family: 'Fraunces', serif;
   font-style: italic;
   font-weight: 300;
-  font-size: 1.05rem;
+  font-size: 0.92rem;
   color: var(--text);
-  line-height: 1.4;
-  margin-bottom: 12px;
-  letter-spacing: -0.01em;
+  line-height: 1.45;
+  margin-bottom: 6px;
+}
+.home-guest-author {
+  font-size: 0.68rem;
+  color: var(--text-40);
+  letter-spacing: 0.01em;
 }
 .home-guest-pills {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  margin-bottom: 12px;
 }
 .home-guest-pill {
   font-size: 0.70rem;
@@ -411,6 +420,12 @@
   padding: 4px 10px;
   letter-spacing: 0.01em;
   white-space: nowrap;
+}
+.home-guest-anti-pressure {
+  font-size: 0.72rem;
+  color: var(--text-40);
+  text-align: center;
+  letter-spacing: 0.02em;
 }
 
 /* Create screen — guest context hint */
