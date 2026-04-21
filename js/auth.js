@@ -42,31 +42,14 @@ async function initClerk() {
       sessionStorage.removeItem('pending_generation');
     }
 
-    let initialRouteDone = false;
-
     clerk.addListener(({ user }) => {
       updateUserStatus();
 
-      if (!initialRouteDone) {
-        initialRouteDone = true;
-        checkUrlParams();
-
-        const pendingPlan = sessionStorage.getItem('ob_pending_plan');
-        if (user && pendingPlan) {
-          sessionStorage.removeItem('ob_pending_plan');
-          if (pendingPlan !== 'free') { upgradePlan(pendingPlan); } else { showHome(); fetchUserStatus(); }
-          return;
-        }
-
-        if (user) {
-          localStorage.setItem('stillova_ob_done', '1');
-          showHome();
-          loadHomeData();
-        } else if (!localStorage.getItem('stillova_ob_done')) {
-          showOnboarding();
-        } else {
-          showHome();
-        }
+      // Si el usuario está logueado pero localStorage fue limpiado → saltar onboarding
+      if (user && !localStorage.getItem('stillova_ob_done')) {
+        localStorage.setItem('stillova_ob_done', '1');
+        showHome();
+        loadHomeData();
         return;
       }
 
@@ -84,6 +67,15 @@ async function initClerk() {
     });
 
     updateUserStatus();
+    checkUrlParams();
+
+    // Routing inmediato — siempre muestra algo sin esperar al listener
+    if (!localStorage.getItem('stillova_ob_done')) {
+      showOnboarding();
+    } else {
+      showHome();
+      if (clerk.user) loadHomeData();
+    }
   } catch (e) {
     console.error('[clerk] Error de inicialización:', e);
   }
