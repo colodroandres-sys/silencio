@@ -20,7 +20,13 @@ function convoRevealConfig() {
   const section = document.getElementById('cs-config');
   if (section && section.classList.contains('convo-hidden') && !section.classList.contains('convo-revealed')) {
     section.classList.add('convo-revealed');
-    setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+    setTimeout(() => {
+      const screen = document.getElementById('screen-create');
+      const sectionTop = section.offsetTop;
+      const btnHeight = 130; // fixed generate button + gradient
+      const screenHeight = screen.clientHeight;
+      screen.scrollTo({ top: sectionTop - (screenHeight - btnHeight) / 2, behavior: 'smooth' });
+    }, 150);
   }
   document.getElementById('cstep-2')?.classList.add('active');
 
