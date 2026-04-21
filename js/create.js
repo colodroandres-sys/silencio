@@ -10,42 +10,19 @@ function onInputChange() {
   if (btn) btn.disabled = val.length < 3;
 }
 
-function convoRevealIntent() {
+function convoRevealConfig() {
   const el = document.getElementById('input-free');
   const input = el?.value.trim() || '';
   if (input.length < 3) { if (el) shake(el); return; }
   if (input.length > 500) { showCharError(el, `Máximo 500 caracteres (tienes ${input.length})`); return; }
   state.userInput = input;
 
-  const section = document.getElementById('cs-intent');
-  if (section && section.classList.contains('convo-hidden') && !section.classList.contains('convo-revealed')) {
-    section.classList.add('convo-revealed');
-    setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
-  }
-  document.getElementById('cstep-2')?.classList.add('active');
-
-  if (state.intent) {
-    const configSection = document.getElementById('cs-config');
-    if (configSection && configSection.classList.contains('convo-hidden') && !configSection.classList.contains('convo-revealed')) {
-      configSection.classList.add('convo-revealed');
-    }
-    const btn = document.getElementById('btn-generate');
-    if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
-    document.getElementById('cstep-3')?.classList.add('active');
-  }
-}
-
-function selectIntent(el) {
-  document.querySelectorAll('.intent-card').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  state.intent = el.dataset.value;
-
   const section = document.getElementById('cs-config');
   if (section && section.classList.contains('convo-hidden') && !section.classList.contains('convo-revealed')) {
     section.classList.add('convo-revealed');
     setTimeout(() => section.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
   }
-  document.getElementById('cstep-3')?.classList.add('active');
+  document.getElementById('cstep-2')?.classList.add('active');
 
   const btn = document.getElementById('btn-generate');
   if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
@@ -64,14 +41,10 @@ function resetCreateScreen() {
   const inputEl = document.getElementById('input-free');
   if (inputEl) inputEl.value = '';
 
-  const csIntent  = document.getElementById('cs-intent');
-  const csConfig  = document.getElementById('cs-config');
-  if (csIntent) { csIntent.classList.remove('convo-revealed'); csIntent.classList.add('convo-hidden'); }
+  const csConfig = document.getElementById('cs-config');
   if (csConfig) { csConfig.classList.remove('convo-revealed'); csConfig.classList.add('convo-hidden'); }
 
   document.getElementById('cstep-2')?.classList.remove('active');
-  document.getElementById('cstep-3')?.classList.remove('active');
-  document.querySelectorAll('.intent-card').forEach(c => c.classList.remove('active'));
 
   const btnContinue = document.getElementById('btn-continue-input');
   if (btnContinue) btnContinue.disabled = true;
@@ -79,7 +52,7 @@ function resetCreateScreen() {
   const btnGen = document.getElementById('btn-generate');
   if (btnGen) { btnGen.style.opacity = '0'; btnGen.style.pointerEvents = 'none'; }
 
-  state.intent    = null;
+  state.intent     = null;
   state.emotionTag = null;
   state.userInput  = '';
 }

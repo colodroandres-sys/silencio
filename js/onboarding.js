@@ -1,5 +1,5 @@
 let obCurrentStep = 1;
-const OB_TOTAL_STEPS = 4;
+const OB_TOTAL_STEPS = 2;
 
 function checkOnboarding() {
   if (!localStorage.getItem('stillova_ob_done')) {
@@ -22,6 +22,8 @@ function obGoToStep(n) {
   if (fill) fill.style.width = `${pct}%`;
   const back = document.getElementById('ob-back');
   if (back) back.style.display = n > 1 ? 'flex' : 'none';
+  const screen = document.getElementById('screen-onboarding');
+  if (screen) screen.scrollTop = 0;
 }
 
 function obNext(nextStep) {
@@ -35,8 +37,8 @@ function obNext(nextStep) {
 
 function obBack() {
   if (obCurrentStep > 1) {
-    // Paso 5 fue eliminado — desde paso 6 volver directamente al 4
-    const prev = obCurrentStep === 6 ? 4 : obCurrentStep - 1;
+    // Desde paywall (6) volver al objetivo (3), desde objetivo (3) volver a temas (1)
+    const prev = obCurrentStep === 6 ? 3 : 1;
     obGoToStep(prev);
     obStopPreview();
   }
@@ -133,7 +135,6 @@ function obSkipToFree() {
 }
 
 function applyObPrefsToState() {
-  state.voice    = obPrefs.voice;
-  state.gender   = obPrefs.gender;
-  state.duration = obPrefs.duration;
+  // Voice y gender se configuran en la pantalla create, no en onboarding
+  // Duration queda en default '5' hasta que el usuario elija en create
 }

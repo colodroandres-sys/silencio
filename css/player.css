@@ -370,3 +370,63 @@
 }
 .nav-create-btn:hover { opacity: 0.88; transform: scale(1.06); }
 .nav-create-btn.active { box-shadow: 0 0 0 3px rgba(201,169,110,0.45); transform: scale(1.05); }
+
+/* =============================================
+   CIRCULAR TIMER (player)
+   ============================================= */
+.player-timer-wrap {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+.player-ring-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.player-ring-bg {
+  fill: none;
+  stroke: rgba(242, 237, 228, 0.06);
+  stroke-width: 2.5;
+}
+
+.player-ring-fill {
+  fill: none;
+  stroke: var(--sand);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 753.98;
+  stroke-dashoffset: 753.98;
+  transition: stroke-dashoffset 0.8s linear;
+}
+
+/* countdown centered below breathing wrap inside timer-wrap */
+.player-timer-wrap .time-countdown {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--text-70);
+  margin: 0;
+  opacity: 0.7;
+}
+
+/* override breathing-wrap inside timer-wrap to remove its margin */
+.player-timer-wrap .breathing-wrap.player-mode {
+  margin-bottom: 0;
+  position: relative;
+  z-index: 1;
+}

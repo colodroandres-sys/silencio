@@ -1,4 +1,4 @@
-// Toma screenshots del flujo completo de stillova.com
+// Toma screenshots del flujo completo de Stillova + competidores
 // Uso: node scripts/screenshot.js [url]
 
 const { chromium } = require('@playwright/test');
@@ -15,10 +15,8 @@ async function shot(page, name) {
 }
 
 async function waitFor(page, selector, timeout = 5000) {
-  try {
-    await page.waitForSelector(selector, { state: 'visible', timeout });
-    return true;
-  } catch { return false; }
+  try { await page.waitForSelector(selector, { state: 'visible', timeout }); return true; }
+  catch { return false; }
 }
 
 async function clickIfVisible(page, selector, timeout = 3000) {
@@ -29,7 +27,6 @@ async function clickIfVisible(page, selector, timeout = 3000) {
   } catch { return false; }
 }
 
-// Mocks de API para simular generación sin costos reales
 async function setupApiMocks(page) {
   await page.route('/api/meditation', async route => {
     await route.fulfill({
@@ -45,7 +42,6 @@ async function setupApiMocks(page) {
     });
   });
 
-  // MP3 silencioso mínimo (1 segundo, 8kHz)
   const silentMp3 = 'SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
 
   await page.route('/api/audio', async route => {
@@ -62,27 +58,29 @@ async function setupApiMocks(page) {
   });
 }
 
-// Simula el estado del player directamente (sin llamar APIs reales)
 async function injectPlayerState(page, title = 'Un momento solo para ti') {
   await page.evaluate((t) => {
     if (typeof state !== 'undefined') {
       state.totalSec = 300;
       state.duration = '5';
-      state.currentSec = 0;
+      state.currentSec = 90;
     }
-    const titleEl = document.getElementById('session-title');
-    const timeEnd  = document.getElementById('time-end');
-    const timeNow  = document.getElementById('time-now');
+    const titleEl   = document.getElementById('session-title');
+    const timeEnd   = document.getElementById('time-end');
+    const timeNow   = document.getElementById('time-now');
     const countdown = document.getElementById('time-countdown');
-    if (titleEl) titleEl.textContent = t;
-    if (timeEnd) timeEnd.textContent = '5:00';
-    if (timeNow) timeNow.textContent = '0:00';
-    if (countdown) countdown.textContent = '5:00';
+    const fill      = document.getElementById('progress-fill');
+    const ring      = document.getElementById('player-ring-fill');
+    if (titleEl)   titleEl.textContent = t;
+    if (timeEnd)   timeEnd.textContent = '5:00';
+    if (timeNow)   timeNow.textContent = '1:30';
+    if (countdown) countdown.textContent = '3:30';
+    if (fill)      fill.style.width = '30%';
+    if (ring)      ring.style.strokeDashoffset = String(753.98 * 0.70);
     if (typeof showScreen === 'function') showScreen('screen-player');
   }, title);
 }
 
-// Simula el estado de fin de sesión (upsell guest)
 async function injectEndState(page, endId) {
   await page.evaluate((id) => {
     ['end-save','end-profile','end-upsell','end-guest'].forEach(el => {
@@ -90,175 +88,180 @@ async function injectEndState(page, endId) {
       if (node) node.style.display = 'none';
     });
     const target = document.getElementById(id);
-    if (target) target.style.display = 'block';
+    if (target) { target.style.display = 'flex'; }
     const endMsg = document.getElementById('end-message');
-    const btnNew  = document.getElementById('btn-new-meditation');
-    if (endMsg) endMsg.style.display = 'block';
-    if (btnNew) btnNew.style.display = 'block';
+    const btnNew = document.getElementById('btn-new-meditation');
+    if (endMsg) endMsg.style.display = 'none';
+    if (btnNew) btnNew.style.display = 'none';
+    document.getElementById('screen-player')?.classList.add('end-active');
   }, endId);
 }
 
-(async () => {
-  const browser = await chromium.launch();
-  console.log(`\nStillova screenshots → ${OUT_DIR}\nURL: ${BASE_URL}\n`);
+async function screenshotStillova(browser, vp) {
+  console.log(`\n[Stillova — ${vp.name}]`);
 
-  const viewports = [
-    { name: 'mobile',  width: 390,  height: 844 },
-    { name: 'desktop', width: 1280, height: 800 },
-  ];
+  // ── 1. ONBOARDING: flujo nuevo (paso 1 → objetivo → paywall) ──
+  {
+    const ctx  = await browser.newContext({ viewport: { width: vp.width, height: vp.height } });
+    const page = await ctx.newPage();
+    await page.goto(BASE_URL, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(1200);
+    await shot(page, `${vp.name}-01-onboarding-temas`);
 
-  for (const vp of viewports) {
-    console.log(`[${vp.name}]`);
+    // Seleccionar algunos chips
+    await page.evaluate(() => {
+      document.querySelector('#ob-topics .ob-chip')?.click();
+      document.querySelectorAll('#ob-topics .ob-chip')[2]?.click();
+    });
+    await page.waitForTimeout(300);
+    await shot(page, `${vp.name}-02-onboarding-temas-seleccionados`);
 
-    // ── 1. Onboarding (estado limpio) ────────────────────────────
-    {
-      const ctx  = await browser.newContext({ viewport: { width: vp.width, height: vp.height } });
-      const page = await ctx.newPage();
-      await page.goto(BASE_URL, { waitUntil: 'networkidle' });
-      await page.waitForTimeout(1200);
-      await shot(page, `${vp.name}-01-onboarding-step1`);
+    // Continuar → paso objetivo (antes era paso 2 voz, ahora es directo a paso 3)
+    await clickIfVisible(page, '.ob-step.active .ob-btn-primary', 3000);
+    await page.waitForTimeout(600);
+    await shot(page, `${vp.name}-03-onboarding-objetivo`);
 
-      await clickIfVisible(page, '.ob-step.active .ob-btn-primary', 3000);
-      await page.waitForTimeout(600);
-      await shot(page, `${vp.name}-02-onboarding-step2-voz`);
+    // Seleccionar objetivo
+    await clickIfVisible(page, '.ob-goal-card', 2000);
+    await page.waitForTimeout(300);
 
-      await clickIfVisible(page, '.ob-step.active .ob-btn-primary', 3000);
-      await page.waitForTimeout(600);
-      await shot(page, `${vp.name}-03-onboarding-step3-objetivo`);
+    // Continuar → paywall
+    await clickIfVisible(page, '#ob-3-next', 2000);
+    await page.waitForTimeout(600);
+    await shot(page, `${vp.name}-04-onboarding-paywall`);
 
-      await clickIfVisible(page, '.ob-goal-card', 2000);
-      await page.waitForTimeout(300);
-      await clickIfVisible(page, '#ob-3-next', 2000);
-      await page.waitForTimeout(600);
-      await shot(page, `${vp.name}-04-onboarding-step4-duracion`);
-
-      await clickIfVisible(page, '.ob-step.active .ob-btn-primary', 3000);
-      await page.waitForTimeout(700);
-      await shot(page, `${vp.name}-05-onboarding-paywall`);
-
-      await ctx.close();
-    }
-
-    // ── 2. Home guest (sin onboarding) ───────────────────────────
-    {
-      const ctx  = await browser.newContext({ viewport: { width: vp.width, height: vp.height } });
-      const page = await ctx.newPage();
-      await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' });
-      await page.evaluate(() => localStorage.setItem('stillova_ob_done', '1'));
-      await page.goto(BASE_URL, { waitUntil: 'networkidle' });
-      await page.waitForTimeout(1500);
-      await shot(page, `${vp.name}-06-home-guest`);
-
-      // ── 3. Pantalla crear — paso 1 ──────────────────────────
-      await clickIfVisible(page, '.nav-create-btn', 3000);
-      await page.waitForTimeout(800);
-      await shot(page, `${vp.name}-07-create-input`);
-
-      // Escribir texto con typing realista
-      await page.focus('#input-free');
-      await page.type('#input-free', 'Tengo mucha ansiedad hoy, me cuesta respirar y no puedo parar de pensar en todo lo que tengo pendiente', { delay: 18 });
-      await page.waitForTimeout(400);
-      await shot(page, `${vp.name}-08-create-texto-escrito`);
-
-      await clickIfVisible(page, '#btn-continue-input', 2000);
-      await page.waitForTimeout(600);
-      await shot(page, `${vp.name}-09-create-intent`);
-
-      // Seleccionar intent "Calmarme" (via JS para evitar overlay del bottom nav)
-      await page.evaluate(() => {
-        const cards = document.querySelectorAll('.intent-card');
-        if (cards.length >= 3) cards[2].click();
-        else if (cards.length > 0) cards[0].click();
-      });
-      await page.waitForTimeout(600);
-      await shot(page, `${vp.name}-10-create-config`);
-
-      // ── 4. Paywall modal ─────────────────────────────────────
-      const paywallTriggered = await page.evaluate(() => {
-        const pill = document.querySelector('#grp-duration .pill-locked');
-        if (pill) { pill.click(); return true; }
-        return false;
-      });
-      if (paywallTriggered) {
-        await page.waitForTimeout(600);
-        const paywallVisible = await page.$('#paywall-modal.active');
-        if (paywallVisible) {
-          await shot(page, `${vp.name}-11-paywall-modal`);
-          await page.evaluate(() => {
-            const btn = document.querySelector('.paywall-close');
-            if (btn) btn.click();
-          });
-          await page.waitForTimeout(400);
-        }
-      }
-
-      await ctx.close();
-    }
-
-    // ── 5. Flujo generación simulada → player → end states ───────
-    {
-      const ctx  = await browser.newContext({ viewport: { width: vp.width, height: vp.height } });
-      const page = await ctx.newPage();
-      await setupApiMocks(page);
-
-      await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' });
-      await page.evaluate(() => {
-        localStorage.setItem('stillova_ob_done', '1');
-        // Simular usuario sin créditos gastados (puede generar)
-        localStorage.removeItem('stillova_guest_used');
-      });
-      await page.goto(BASE_URL, { waitUntil: 'networkidle' });
-      await page.waitForTimeout(1200);
-
-      // Ir a crear
-      await clickIfVisible(page, '.nav-create-btn', 3000);
-      await page.waitForTimeout(600);
-      await page.type('#input-free', 'Necesito calmarme antes de una reunión importante', { delay: 15 });
-      await page.waitForTimeout(300);
-      await clickIfVisible(page, '#btn-continue-input', 2000);
-      await page.waitForTimeout(500);
-      await page.evaluate(() => {
-        const card = document.querySelector('.intent-card');
-        if (card) card.click();
-      });
-      await page.waitForTimeout(500);
-
-      // Click en generar → loading screen
-      await page.evaluate(() => {
-        const btn = document.getElementById('btn-generate');
-        if (btn) btn.click();
-      });
-      const loadingVisible = await waitFor(page, '#screen-loading.active', 4000);
-      if (loadingVisible) {
-        await page.waitForTimeout(800);
-        await shot(page, `${vp.name}-12-loading`);
-      }
-      // Esperar player (API mockeada responde rápido)
-      const playerVisible = await waitFor(page, '#screen-player.active', 8000);
-      if (playerVisible) {
-        await page.waitForTimeout(600);
-        await shot(page, `${vp.name}-13-player-inicio`);
-      } else {
-        // Fallback: inyectar player directamente
-        await injectPlayerState(page);
-        await page.waitForTimeout(600);
-        await shot(page, `${vp.name}-13-player-inicio`);
-      }
-
-      // End state — guest (sin cuenta)
-      await injectEndState(page, 'end-guest');
-      await page.waitForTimeout(500);
-      await shot(page, `${vp.name}-14-end-guest`);
-
-      // End state — upsell (usuario con cuenta, sin plan)
-      await injectEndState(page, 'end-upsell');
-      await page.waitForTimeout(500);
-      await shot(page, `${vp.name}-15-end-upsell`);
-
-      await ctx.close();
-    }
+    await ctx.close();
   }
 
+  // ── 2. HOME guest (sin onboarding) ──
+  {
+    const ctx  = await browser.newContext({ viewport: { width: vp.width, height: vp.height } });
+    const page = await ctx.newPage();
+    await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => localStorage.setItem('stillova_ob_done', '1'));
+    await page.goto(BASE_URL, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(1500);
+    await shot(page, `${vp.name}-05-home-guest`);
+
+    // ── 3. PANTALLA CREAR: nuevo flujo (texto → config, sin intent) ──
+    await clickIfVisible(page, '.nav-create-btn', 3000);
+    await page.waitForTimeout(800);
+    await shot(page, `${vp.name}-06-create-vacio`);
+
+    await page.focus('#input-free');
+    await page.type('#input-free', 'Tengo mucha ansiedad hoy, me cuesta respirar y no puedo parar de pensar en todo', { delay: 12 });
+    await page.waitForTimeout(400);
+    await shot(page, `${vp.name}-07-create-texto-escrito`);
+
+    // Continuar → config (ya no hay paso de intent)
+    await clickIfVisible(page, '#btn-continue-input', 2000);
+    await page.waitForTimeout(700);
+    await shot(page, `${vp.name}-08-create-config`);
+
+    // Scroll para ver toda la config
+    await page.evaluate(() => window.scrollTo({ top: 300, behavior: 'smooth' }));
+    await page.waitForTimeout(400);
+    await shot(page, `${vp.name}-09-create-config-scroll`);
+
+    await ctx.close();
+  }
+
+  // ── 4. PLAYER + END STATES (mocks API) ──
+  {
+    const ctx  = await browser.newContext({ viewport: { width: vp.width, height: vp.height } });
+    const page = await ctx.newPage();
+    await setupApiMocks(page);
+    await page.goto(BASE_URL, { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => {
+      localStorage.setItem('stillova_ob_done', '1');
+      localStorage.removeItem('stillova_guest_used');
+    });
+    await page.goto(BASE_URL, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(1000);
+
+    // Inyectar player directamente
+    await injectPlayerState(page, 'Un momento solo para ti');
+    await page.waitForTimeout(800);
+    await shot(page, `${vp.name}-10-player-progreso`);
+
+    // End state — guest
+    await injectEndState(page, 'end-guest');
+    await page.waitForTimeout(500);
+    await shot(page, `${vp.name}-11-end-guest`);
+
+    // End state — upsell
+    await injectEndState(page, 'end-upsell');
+    await page.waitForTimeout(500);
+    await shot(page, `${vp.name}-12-end-upsell`);
+
+    await ctx.close();
+  }
+}
+
+async function screenshotCompetitor(browser, name, url, steps) {
+  console.log(`\n[${name}]`);
+  const ctx  = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1'
+  });
+  const page = await ctx.newPage();
+  try {
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await page.waitForTimeout(2500);
+    await shot(page, `comp-${name}-01-landing`);
+
+    for (const step of steps) {
+      await step(page);
+    }
+  } catch (e) {
+    console.log(`  ⚠ ${name}: ${e.message.split('\n')[0]}`);
+  }
+  await ctx.close();
+}
+
+(async () => {
+  const browser = await chromium.launch({ headless: true });
+  console.log(`\nScreenshots → ${OUT_DIR}\n`);
+
+  // ── Stillova mobile ──
+  await screenshotStillova(browser, { name: 'mobile', width: 390, height: 844 });
+
+  // ── Competidores (solo mobile) ──
+
+  await screenshotCompetitor(browser, 'stillmind', 'https://getstillmind.com', [
+    async (page) => {
+      await page.waitForTimeout(1500);
+      await page.evaluate(() => window.scrollTo({ top: 400, behavior: 'smooth' }));
+      await page.waitForTimeout(800);
+      await page.screenshot({ path: '/tmp/stillova-screenshots/comp-stillmind-02-scroll.png' });
+      console.log('  ✓ comp-stillmind-02-scroll.png');
+      await page.evaluate(() => window.scrollTo({ top: 900, behavior: 'smooth' }));
+      await page.waitForTimeout(800);
+      await page.screenshot({ path: '/tmp/stillova-screenshots/comp-stillmind-03-testimonios.png' });
+      console.log('  ✓ comp-stillmind-03-testimonios.png');
+    }
+  ]);
+
+  await screenshotCompetitor(browser, 'downdog', 'https://meditation.downdogapp.com', [
+    async (page) => {
+      await page.waitForTimeout(2000);
+      await page.evaluate(() => window.scrollTo({ top: 500, behavior: 'smooth' }));
+      await page.waitForTimeout(800);
+      await page.screenshot({ path: '/tmp/stillova-screenshots/comp-downdog-02-scroll.png' });
+      console.log('  ✓ comp-downdog-02-scroll.png');
+    }
+  ]);
+
+  await screenshotCompetitor(browser, 'insighttimer', 'https://insighttimer.com', [
+    async (page) => {
+      await page.waitForTimeout(2000);
+      await page.evaluate(() => window.scrollTo({ top: 600, behavior: 'smooth' }));
+      await page.waitForTimeout(800);
+      await page.screenshot({ path: '/tmp/stillova-screenshots/comp-insighttimer-02-scroll.png' });
+      console.log('  ✓ comp-insighttimer-02-scroll.png');
+    }
+  ]);
+
   await browser.close();
-  console.log(`\nDone → ${OUT_DIR}`);
+  console.log(`\n✅ Done → ${OUT_DIR}`);
 })();

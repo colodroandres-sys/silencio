@@ -70,7 +70,7 @@ function showCreate(skipToConfig = false) {
     document.getElementById('input-free').value = state.userInput;
     const btnContinue = document.getElementById('btn-continue-input');
     if (btnContinue) btnContinue.disabled = false;
-    convoRevealIntent();
+    convoRevealConfig();
   }
 
   const banner = document.getElementById('no-credits-banner');
@@ -78,15 +78,6 @@ function showCreate(skipToConfig = false) {
 
   const guestHint = document.getElementById('create-guest-hint');
   if (guestHint) guestHint.style.display = !clerk?.user ? 'block' : 'none';
-
-  const GOAL_TO_INTENT = { calma: 'calmar', claridad: 'entender', liberacion: 'soltar' };
-  const suggestedIntent = GOAL_TO_INTENT[obPrefs.goal] || null;
-  if (suggestedIntent && !state.intent) {
-    state.intent = suggestedIntent;
-    document.querySelectorAll('.intent-card').forEach(c => {
-      c.classList.toggle('active', c.dataset.value === suggestedIntent);
-    });
-  }
 
   applyAllLocks();
   updateCreditsCostDisplay();

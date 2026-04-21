@@ -56,6 +56,8 @@ function updateProgress() {
   document.getElementById('time-now').textContent = formatTime(state.currentSec);
   const countdown = document.getElementById('time-countdown');
   if (countdown) countdown.textContent = formatTime(remaining);
+  const ring = document.getElementById('player-ring-fill');
+  if (ring) ring.style.strokeDashoffset = 753.98 * (1 - pct / 100);
 }
 
 function seekTo(event) {
