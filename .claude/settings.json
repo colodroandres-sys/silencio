@@ -39,7 +39,16 @@
       "Bash(curl -s -X POST https://drkfsqppgnbzkumresjr.supabase.co/rest/v1/rpc/query -H 'apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRya2ZzcXBwZ25iemt1bXJlc2pyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTkwNzk1MSwiZXhwIjoyMDkxNDgzOTUxfQ.q4WUycho2BKv9YBxI6W5VHJraX-6NnNIjEBV0VrQgMQ' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRya2ZzcXBwZ25iemt1bXJlc2pyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTkwNzk1MSwiZXhwIjoyMDkxNDgzOTUxfQ.q4WUycho2BKv9YBxI6W5VHJraX-6NnNIjEBV0VrQgMQ' -H 'Content-Type: application/json')",
       "Bash(curl -s -X POST https://api.supabase.com/v1/projects/drkfsqppgnbzkumresjr/database/query -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRya2ZzcXBwZ25iemt1bXJlc2pyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTkwNzk1MSwiZXhwIjoyMDkxNDgzOTUxfQ.q4WUycho2BKv9YBxI6W5VHJraX-6NnNIjEBV0VrQgMQ' -H 'Content-Type: application/json' -d '{\"query\": \"CREATE TABLE IF NOT EXISTS guest_usage \\(id BIGSERIAL PRIMARY KEY, ip TEXT NOT NULL, timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW\\(\\)\\); CREATE INDEX IF NOT EXISTS guest_usage_ip_idx ON guest_usage \\(ip, timestamp DESC\\);\"}')",
       "Bash(curl -s -X POST https://api.supabase.com/v1/projects/drkfsqppgnbzkumresjr/database/query -H 'Authorization: Bearer sbp_72788dedff618a1ef95df800042a48aaf18b5c31' -H 'Content-Type: application/json' -d '{\"query\": \"CREATE TABLE IF NOT EXISTS guest_usage \\(id BIGSERIAL PRIMARY KEY, ip TEXT NOT NULL, timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW\\(\\)\\); CREATE INDEX IF NOT EXISTS guest_usage_ip_idx ON guest_usage \\(ip, timestamp DESC\\);\"}')",
-      "Bash(curl -s -X POST https://api.supabase.com/v1/projects/drkfsqppgnbzkumresjr/database/query -H 'Authorization: Bearer sbp_72788dedff618a1ef95df800042a48aaf18b5c31' -H 'Content-Type: application/json' -d '{\"query\": \"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '\\\\''guest_usage'\\\\'' ORDER BY ordinal_position;\"}')"
+      "Bash(curl -s -X POST https://api.supabase.com/v1/projects/drkfsqppgnbzkumresjr/database/query -H 'Authorization: Bearer sbp_72788dedff618a1ef95df800042a48aaf18b5c31' -H 'Content-Type: application/json' -d '{\"query\": \"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '\\\\''guest_usage'\\\\'' ORDER BY ordinal_position;\"}')",
+      "Bash(vercel --prod --force)",
+      "WebFetch(domain:stillmind.app)",
+      "WebFetch(domain:eiren.ai)",
+      "WebFetch(domain:getstillmind.com)",
+      "Bash(node --check scripts/screenshot.js)",
+      "Bash(node /Users/andrescolodro/Desktop/stillova/scripts/screenshot.js)",
+      "Bash(node --check /Users/andrescolodro/Desktop/stillova/scripts/screenshot.js)",
+      "Bash(node /tmp/scrape-stillmind.js)",
+      "Bash(node scripts/scrape-stillmind.js)"
     ],
     "additionalDirectories": [
       "/Users/andrescolodro/Desktop/stillova",
