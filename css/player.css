@@ -113,12 +113,7 @@
 }
 
 .progress-area {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  max-width: 300px;
-  margin-bottom: 28px;
+  display: none;
 }
 .time {
   font-size: 0.72rem;
@@ -208,13 +203,13 @@
   padding: 10px 20px;
   background: none;
   border: none;
-  color: var(--text-45);
-  font-size: 0.78rem;
+  color: var(--text-70);
+  font-size: 0.83rem;
   font-family: 'Inter', sans-serif;
   cursor: pointer;
   transition: color 0.2s;
 }
-.btn-upsell-skip:hover { color: var(--text-70); }
+.btn-upsell-skip:hover { color: var(--text); }
 
 .btn-upsell-secondary {
   padding: 10px 20px;

@@ -5,18 +5,14 @@ function profilePillSelect(groupId, btn) {
 }
 
 function checkProfileComplete() {
-  const goal      = document.querySelector('#profile-goal .profile-pill.active');
-  const frequency = document.querySelector('#profile-frequency .profile-pill.active');
-  const timing    = document.querySelector('#profile-timing .profile-pill.active');
-  const btn       = document.getElementById('btn-profile-submit');
-  if (btn) btn.disabled = !(goal && frequency && timing);
+  const goal = document.querySelector('#profile-goal .profile-pill.active');
+  const btn  = document.getElementById('btn-profile-submit');
+  if (btn) btn.disabled = !goal;
 }
 
 async function submitProfile() {
-  const goal      = document.querySelector('#profile-goal .profile-pill.active')?.dataset.value;
-  const frequency = document.querySelector('#profile-frequency .profile-pill.active')?.dataset.value;
-  const timing    = document.querySelector('#profile-timing .profile-pill.active')?.dataset.value;
-  if (!goal || !frequency || !timing) return;
+  const goal = document.querySelector('#profile-goal .profile-pill.active')?.dataset.value;
+  if (!goal) return;
 
   const btn = document.getElementById('btn-profile-submit');
   btn.disabled = true;
@@ -27,7 +23,7 @@ async function submitProfile() {
     const res = await fetch('/api/profile-bonus', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ goal, frequency, timing })
+      body: JSON.stringify({ goal })
     });
     const data = await res.json();
     if (res.ok && (data.success || data.already_completed)) {

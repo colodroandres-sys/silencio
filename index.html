@@ -76,6 +76,7 @@
             <button class="ob-chip" data-value="enfoque" onclick="obChipToggle(this)">Enfoque</button>
             <button class="ob-chip" data-value="decisiones" onclick="obChipToggle(this)">Decisiones</button>
             <button class="ob-chip" data-value="soltar" onclick="obChipToggle(this)">Soltar algo</button>
+            <button class="ob-chip" data-value="otro" onclick="obChipToggle(this)">Otra cosa</button>
           </div>
           <button class="ob-btn-primary" onclick="obNext(3)">Continuar</button>
           <button class="ob-signin-link" onclick="openAuth()">Ya tengo cuenta · Iniciar sesión</button>
@@ -104,7 +105,7 @@
             </button>
           </div>
           <p class="ob-select-hint" id="ob-3-hint">Elige una opción para continuar</p>
-          <button class="ob-btn-primary" id="ob-3-next" onclick="obNext(4)" disabled>Continuar</button>
+          <button class="ob-btn-primary" id="ob-3-next" onclick="obNext(6)" disabled>Continuar</button>
         </div>
       </div>
 
@@ -440,38 +441,22 @@
       </div>
 
       <div id="end-profile" style="display:none" class="end-profile">
-        <p class="end-upsell-eyebrow">Cuéntanos sobre ti</p>
+        <p class="end-upsell-eyebrow">Una pregunta rápida</p>
         <p class="end-profile-title">Gana 1 meditación<br>extra gratis.</p>
-        <p class="end-profile-sub">3 preguntas rápidas para mejorar tus sesiones.</p>
+        <p class="end-profile-sub">Una respuesta para personalizarte mejor.</p>
         <div class="profile-questions">
           <div class="profile-q">
             <p class="profile-q-label">¿Qué buscas con la meditación?</p>
             <div class="profile-pills" id="profile-goal">
-              <button class="profile-pill" data-value="ansiedad">Reducir ansiedad</button>
-              <button class="profile-pill" data-value="sueno">Dormir mejor</button>
-              <button class="profile-pill" data-value="claridad">Claridad mental</button>
-              <button class="profile-pill" data-value="estres">Calmarme</button>
-            </div>
-          </div>
-          <div class="profile-q">
-            <p class="profile-q-label">¿Con qué frecuencia quieres meditar?</p>
-            <div class="profile-pills" id="profile-frequency">
-              <button class="profile-pill" data-value="diario">Cada día</button>
-              <button class="profile-pill" data-value="frecuente">3-4 veces/semana</button>
-              <button class="profile-pill" data-value="cuando_puedo">Cuando lo necesito</button>
-            </div>
-          </div>
-          <div class="profile-q">
-            <p class="profile-q-label">¿Cuándo sueles meditar?</p>
-            <div class="profile-pills" id="profile-timing">
-              <button class="profile-pill" data-value="manana">Por la mañana</button>
-              <button class="profile-pill" data-value="tarde">Por la tarde</button>
-              <button class="profile-pill" data-value="noche">Por la noche</button>
+              <button class="profile-pill" data-value="ansiedad" onclick="profilePillSelect('profile-goal',this)">Reducir ansiedad</button>
+              <button class="profile-pill" data-value="sueno"    onclick="profilePillSelect('profile-goal',this)">Dormir mejor</button>
+              <button class="profile-pill" data-value="claridad" onclick="profilePillSelect('profile-goal',this)">Claridad mental</button>
+              <button class="profile-pill" data-value="estres"   onclick="profilePillSelect('profile-goal',this)">Calmarme</button>
             </div>
           </div>
         </div>
         <button class="btn-upsell-cta" id="btn-profile-submit" onclick="submitProfile()" disabled>Recibir meditación gratis</button>
-        <button class="btn-upsell-skip" onclick="skipProfile()">Prefiero no, ir al plan de pago</button>
+        <button class="btn-upsell-skip" onclick="skipProfile()">Ahora no</button>
       </div>
 
       <div id="end-upsell" style="display:none" class="end-upsell">

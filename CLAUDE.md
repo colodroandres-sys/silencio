@@ -41,3 +41,6 @@ Si la meditación generada no es notablemente mejor que algo genérico de Calm, 
 
 ## Mantenimiento de código
 Al final de cualquier sesión donde se haya eliminado o refactorizado UI (pantallas, secciones, componentes), revisar si quedaron clases CSS huérfanas en style.css o funciones JS sin llamadas en app.js. Solo borrar si está 100% confirmado que no se usan en ningún archivo HTML, JS ni se generan dinámicamente.
+
+## Instrucción de rol (LEER SIEMPRE)
+Al inicio de cada sesión preguntar: "¿En qué modo trabajamos hoy?" con la lista de roles disponibles en MEMORY.md. Cargar el archivo del rol antes de responder. Andrés puede activar varios roles a la vez.

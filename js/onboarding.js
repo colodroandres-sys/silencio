@@ -23,7 +23,7 @@ function obGoToStep(n) {
   const back = document.getElementById('ob-back');
   if (back) back.style.display = n > 1 ? 'flex' : 'none';
   const screen = document.getElementById('screen-onboarding');
-  if (screen) screen.scrollTop = 0;
+  if (screen) requestAnimationFrame(() => { screen.scrollTop = 0; });
 }
 
 function obNext(nextStep) {
