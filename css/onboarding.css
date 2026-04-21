@@ -27,6 +27,21 @@
   width: 0%;
 }
 
+.ob-signin-link {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 20px);
+  right: 20px;
+  background: none;
+  border: none;
+  color: var(--text-70);
+  font-size: 13px;
+  cursor: pointer;
+  z-index: 51;
+  padding: 4px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .ob-back {
   position: fixed;
   top: calc(env(safe-area-inset-top, 0px) + 16px);
