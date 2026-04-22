@@ -221,6 +221,93 @@
   line-height: 1.5;
 }
 
+/* ── Plan cards (design v2) ─────────────────── */
+.pw-subtext {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 22px;
+  line-height: 1.45;
+}
+.pw-plan-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.pw-plan-card {
+  padding: 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  background: var(--surface);
+  border: 1px solid var(--faint);
+  transition: background 0.15s, border-color 0.15s;
+  position: relative;
+  overflow: hidden;
+  color: var(--ink);
+}
+.pw-plan-card.pw-plan-card-selected {
+  background: var(--ink);
+  color: var(--canvas);
+  border-color: var(--ink);
+}
+.pw-plan-card-badge {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.pw-plan-card.pw-plan-card-selected .pw-plan-card-badge {
+  background: var(--accent);
+  color: var(--canvas);
+}
+.pw-plan-card-top {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+.pw-plan-card-name {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+.pw-plan-card-price-info {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  opacity: 0.6;
+}
+.pw-plan-card-meta {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-bottom: 10px;
+}
+.pw-plan-card-features {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.pw-plan-feature-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  opacity: 0.9;
+  line-height: 1.4;
+}
+.pw-plan-feature-row svg { flex-shrink: 0; margin-top: 3px; }
+
 /* Legacy plan cards (mantener compat para pwSelectPlan) */
 .pw-plans-list { display: none; }
 

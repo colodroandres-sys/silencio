@@ -117,13 +117,15 @@ function updateProfileScreen() {
   const avatarEl = document.getElementById('profile-avatar');
   if (avatarEl) avatarEl.textContent = name[0].toUpperCase();
 
-  // "desde mes año" a partir de createdAt de Clerk
+  // "Plan · desde mes año"
   const planInfo = document.getElementById('profile-plan-info');
   if (planInfo) {
     const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
     const created = user.createdAt ? new Date(user.createdAt) : null;
     const sinceStr = created ? 'desde ' + months[created.getMonth()] + ' ' + created.getFullYear() : '';
-    planInfo.textContent = sinceStr;
+    const planNames2 = { free: 'Gratis', essential: 'Essential', premium: 'Premium', studio: 'Studio' };
+    const currentPlan = planNames2[state.userPlan] || state.userPlan;
+    planInfo.textContent = sinceStr ? currentPlan + ' · ' + sinceStr : currentPlan;
   }
 
   // Estadísticas de gamificación
@@ -135,6 +137,22 @@ function updateProfileScreen() {
   setEl('profile-stat-total',    totalMin);
   setEl('profile-stat-sessions', sessions);
   setEl('profile-stat-avg',      avg);
+
+  // Level card
+  const levelCard = document.getElementById('profile-level-card');
+  if (levelCard) {
+    const sessions = state.totalSessions || 0;
+    const ld = _getLevelData(sessions);
+    const eyebrowEl = document.getElementById('profile-level-eyebrow');
+    const nameEl    = document.getElementById('profile-level-name-text');
+    const barEl     = document.getElementById('profile-level-bar');
+    const metaEl    = document.getElementById('profile-level-meta');
+    if (eyebrowEl) eyebrowEl.textContent = 'nivel ' + ld.num;
+    if (nameEl)    nameEl.textContent    = ld.name;
+    if (barEl)     barEl.style.width     = ld.progress + '%';
+    if (metaEl)    metaEl.textContent    = ld.meta;
+    levelCard.style.display = '';
+  }
 
   // Plan card
   const planNames  = { free: 'Gratis', essential: 'Essential', premium: 'Premium', studio: 'Studio' };
@@ -155,6 +173,14 @@ function updateProfileScreen() {
 
   // Ajustes — mostrar valores actuales
   _updateProfileSettings();
+}
+
+function _getLevelData(sessions) {
+  if (sessions >= 30) return { num: 5, name: 'Calma',      progress: 100, meta: 'nivel máximo alcanzado' };
+  if (sessions >= 15) return { num: 4, name: 'Presente',   progress: Math.round((sessions - 15) / 15 * 100), meta: sessions + ' / 30 → Calma' };
+  if (sessions >= 5)  return { num: 3, name: 'Consciente', progress: Math.round((sessions - 5)  / 10 * 100), meta: sessions + ' / 15 → Presente' };
+  if (sessions >= 1)  return { num: 2, name: 'Explorador', progress: Math.round(sessions / 5 * 100),         meta: sessions + ' / 5 → Consciente' };
+  return { num: 1, name: 'Inquieto', progress: 0, meta: '0 / 1 → Explorador' };
 }
 
 function _updateProfileSettings() {
