@@ -273,24 +273,29 @@
             class="home-guest-textarea"
             placeholder="Hoy me siento…"
             oninput="homeGuestInputChange()"
-            rows="3"
           ></textarea>
-          <div class="home-guest-chips">
-            <button class="s-chip s-chip-sm" onclick="homeGuestChip('ansioso/a')">ansioso/a</button>
-            <button class="s-chip s-chip-sm" onclick="homeGuestChip('no puedo dormir')">no puedo dormir</button>
-            <button class="s-chip s-chip-sm" onclick="homeGuestChip('necesito enfocarme')">necesito enfocarme</button>
-            <button class="s-chip s-chip-sm" onclick="homeGuestChip('antes de una reunión')">antes de reunión</button>
-          </div>
         </div>
 
         <button class="s-btn s-btn-primary" id="home-guest-gen-btn" onclick="homeGuestGenerate()" disabled>
           Generar mi primera meditación
         </button>
 
+        <!-- Chips: o prueba con -->
+        <div class="home-guest-chips-section">
+          <p class="s-eyebrow home-guest-chips-eyebrow">o prueba con</p>
+          <div class="home-guest-chips">
+            <button class="s-chip s-chip-sm" onclick="homeGuestChip('ansioso/a')">ansioso/a</button>
+            <button class="s-chip s-chip-sm" onclick="homeGuestChip('no puedo dormir')">no puedo dormir</button>
+            <button class="s-chip s-chip-sm" onclick="homeGuestChip('antes de una reunión')">antes de una reunión</button>
+            <button class="s-chip s-chip-sm" onclick="homeGuestChip('necesito enfocarme')">necesito enfocarme</button>
+            <button class="s-chip s-chip-sm" onclick="homeGuestChip('pausa de 5 min')">pausa de 5 min</button>
+          </div>
+        </div>
+
         <!-- Info strip -->
         <div class="home-guest-info-strip">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="var(--accent)" stroke-width="1.2"/><path d="M7 6.5v3M7 5v.5" stroke="var(--accent)" stroke-width="1.3" stroke-linecap="round"/></svg>
-          <span>Sin tarjeta. Sin cuenta. Una sesión gratis.</span>
+          <span><strong>Sin tarjeta.</strong> Después de tu primera meditación podrás elegir un plan para seguir.</span>
         </div>
       </div>
 
@@ -427,6 +432,20 @@
             Generar meditación
           </button>
         </div>
+      </div>
+
+      <!-- Locked config: solo visible para invitados -->
+      <div class="create-locked-card" id="create-locked-card" style="display:none">
+        <p class="s-eyebrow create-locked-eyebrow">tu primera sesión</p>
+        <div class="create-locked-chips">
+          <span class="s-chip s-chip-sm active">5 min</span>
+          <span class="s-chip s-chip-sm create-chip-locked">10 min</span>
+          <span class="s-chip s-chip-sm create-chip-locked">15 min</span>
+          <span class="s-chip s-chip-sm create-chip-locked">20 min</span>
+          <span class="s-chip s-chip-sm create-chip-locked">voz</span>
+          <span class="s-chip s-chip-sm create-chip-locked">tono</span>
+        </div>
+        <p class="create-locked-hint">elegir duración y voz requiere plan</p>
       </div>
 
       <!-- Sección 2: Config (oculta hasta que el usuario escribe) -->
@@ -692,8 +711,7 @@
           </div>
         </div>
         <button class="s-btn s-btn-dark" style="width:100%;margin-top:16px" onclick="showPaywall()">Ver planes</button>
-        <button class="end-link-btn end-link-btn-dark" onclick="openAuth()">Crear cuenta gratis</button>
-        <button class="end-link-btn end-link-btn-dark" onclick="newMeditation()">Ahora no</button>
+        <button class="end-link-btn end-link-btn-dark" onclick="newMeditation()">Escuchar de nuevo</button>
       </div>
 
     </div>

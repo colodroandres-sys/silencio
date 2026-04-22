@@ -88,6 +88,9 @@ function showCreate(skipToConfig = false) {
   const guestHint = document.getElementById('create-guest-hint');
   if (guestHint) guestHint.style.display = !clerk?.user ? 'block' : 'none';
 
+  const lockedCard = document.getElementById('create-locked-card');
+  if (lockedCard) lockedCard.style.display = !clerk?.user ? '' : 'none';
+
   applyAllLocks();
   updateCreditsCostDisplay();
   showScreen('screen-create');
