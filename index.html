@@ -73,10 +73,10 @@
               <circle cx="12" cy="12" r="2.6" fill="var(--ink)"/>
               <circle cx="19.5" cy="8" r="1.6" fill="var(--ink)"/>
             </svg>
-            <p class="s-eyebrow ob-eyebrow-brand">Meditación · Personalizada</p>
+            <p class="s-eyebrow ob-eyebrow-brand">Meditación · Compuesta para ti</p>
           </div>
-          <h1 class="ob-headline-xl">Una meditación <em>hecha para este</em> momento exacto.</h1>
-          <p class="s-body ob-body-muted">Nada pregrabado. Nada genérico. Te escuchamos y componemos una sesión única, ahora mismo.</p>
+          <h1 class="ob-headline-xl">Una meditación hecha para este momento exacto.</h1>
+          <p class="s-body ob-body-muted">Nada pregrabado. Nada genérico. Escribe cómo te sientes y se compone una sesión única, ahora.</p>
           <div class="ob-ctas">
             <button class="s-btn s-btn-primary" onclick="obNext(2)">Empezar</button>
             <button class="s-btn s-btn-ghost" onclick="openAuth()">Ya tengo cuenta</button>
@@ -94,35 +94,35 @@
             <button class="ob-option-card" data-value="ansiedad" onclick="obCardToggle(this)">
               <div class="ob-option-info">
                 <div class="ob-option-label">Ansiedad o estrés</div>
-                <div class="ob-option-hint">Sesiones para soltar tensión</div>
+                <div class="ob-option-hint">Soltar tensión del cuerpo</div>
               </div>
               <div class="ob-option-check"><div class="ob-check-dot"></div></div>
             </button>
             <button class="ob-option-card" data-value="sueno" onclick="obCardToggle(this)">
               <div class="ob-option-info">
                 <div class="ob-option-label">Dormir mejor</div>
-                <div class="ob-option-hint">Apaga la mente antes de la cama</div>
+                <div class="ob-option-hint">Apagar la mente en la cama</div>
               </div>
               <div class="ob-option-check"><div class="ob-check-dot"></div></div>
             </button>
             <button class="ob-option-card" data-value="enfoque" onclick="obCardToggle(this)">
               <div class="ob-option-info">
                 <div class="ob-option-label">Concentración</div>
-                <div class="ob-option-hint">Enfócate sin esfuerzo</div>
+                <div class="ob-option-hint">Enfocarme sin esfuerzo</div>
               </div>
               <div class="ob-option-check"><div class="ob-check-dot"></div></div>
             </button>
             <button class="ob-option-card" data-value="reconectar" onclick="obCardToggle(this)">
               <div class="ob-option-info">
                 <div class="ob-option-label">Reconectar conmigo</div>
-                <div class="ob-option-hint">Introspección, pausa diaria</div>
+                <div class="ob-option-hint">Una pausa diaria</div>
               </div>
               <div class="ob-option-check"><div class="ob-check-dot"></div></div>
             </button>
             <button class="ob-option-card" data-value="otro" onclick="obCardToggle(this)">
               <div class="ob-option-info">
                 <div class="ob-option-label">Aún no lo sé</div>
-                <div class="ob-option-hint">Lo descubrimos contigo</div>
+                <div class="ob-option-hint">Lo descubriremos contigo</div>
               </div>
               <div class="ob-option-check"><div class="ob-check-dot"></div></div>
             </button>
@@ -140,15 +140,15 @@
             <div class="ob-step-item">
               <span class="ob-step-num">01</span>
               <div class="ob-step-content">
-                <div class="ob-step-title">Cuéntanos cómo te sientes</div>
-                <div class="ob-step-desc">Escribe cómo te sientes, o deja que te guíe con preguntas cortas.</div>
+                <div class="ob-step-title">Escribe cómo te sientes</div>
+                <div class="ob-step-desc">Una palabra, una frase, un párrafo. Sin formato.</div>
               </div>
             </div>
             <div class="ob-step-item">
               <span class="ob-step-num">02</span>
               <div class="ob-step-content">
-                <div class="ob-step-title">La meditación se compone</div>
-                <div class="ob-step-desc">Voz, ritmo y técnica se eligen para tu estado en tiempo real.</div>
+                <div class="ob-step-title">Se compone tu meditación</div>
+                <div class="ob-step-desc">Voz, ritmo y técnica se eligen para tu estado.</div>
               </div>
             </div>
             <div class="ob-step-item ob-step-item-last">
@@ -168,12 +168,12 @@
         <div class="ob-inner">
           <p class="s-eyebrow ob-step-eyebrow">03 · Tu primera sesión</p>
           <h2 class="ob-headline-md">Una, <em>gratis</em>. Sin tarjeta.</h2>
-          <p class="s-body ob-body-sub">Prueba la experiencia completa. Si sientes que es para ti, sigues.</p>
+          <p class="s-body ob-body-sub">Escribe cómo te sientes y se compone una meditación de 5 minutos. Si funciona, eliges tu plan.</p>
           <div class="ob-features-card">
             <div class="ob-feature-row">
               <div class="ob-feature-info">
                 <div class="ob-feature-title">5 minutos</div>
-                <div class="ob-feature-desc">Máximo de tu primera meditación</div>
+                <div class="ob-feature-desc">Duración fija en la gratuita</div>
               </div>
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9l3.5 3.5L14 5.5" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
@@ -321,7 +321,10 @@
         <div class="home-cta-card home-cta-account" onclick="showCreate()">
           <p class="s-eyebrow home-cta-eyebrow">nueva sesión · <span id="home-cta-plan"></span></p>
           <p class="home-cta-title">¿Cómo te <em>sientes</em> ahora?</p>
-          <button class="s-btn s-btn-dark s-btn-sm home-cta-btn" tabindex="-1">Crear meditación</button>
+          <button class="s-btn s-btn-dark s-btn-sm home-cta-btn" tabindex="-1">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.5 3.1 3.4.5-2.45 2.38.58 3.37L8 8.75l-3.03 1.6.58-3.37L3.1 4.6l3.4-.5L8 1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+            Crear meditación
+          </button>
         </div>
 
         <!-- Stats -->
@@ -387,7 +390,7 @@
             <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
         </button>
-        <p class="s-eyebrow">nueva sesión</p>
+        <p class="s-eyebrow" id="create-header-eyebrow">nueva sesión</p>
         <div style="width:38px"></div>
       </div>
 
@@ -399,7 +402,7 @@
         </div>
 
         <h2 class="create-headline">¿Cómo te <em>sientes</em>?</h2>
-        <p class="s-body create-body-muted">Descríbelo como quieras. Una palabra, una frase, un párrafo. Te escuchamos.</p>
+        <p class="s-body create-body-muted">Una palabra, una frase, un párrafo. La IA te entiende.</p>
 
         <!-- Textarea card -->
         <div class="create-input-card">
@@ -429,7 +432,7 @@
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="6" y="1" width="6" height="10" rx="3" stroke="currentColor" stroke-width="1.4"/><path d="M3 9a6 6 0 0012 0M9 15v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
           </button>
           <button class="s-btn s-btn-primary" id="btn-continue-input" onclick="convoRevealConfig()" disabled style="flex:1">
-            Generar meditación
+            Componer meditación
           </button>
         </div>
       </div>
@@ -485,8 +488,7 @@
           <div class="convo-pref-group">
             <span class="pref-label">Voz de quien te habla</span>
             <div id="grp-voice" class="pill-row">
-              <button class="s-chip active" data-value="auto"      onclick="selectPill(this,'grp-voice','voice')">Auto</button>
-              <button class="s-chip"        data-value="feminine"  onclick="selectPill(this,'grp-voice','voice')">Femenina</button>
+              <button class="s-chip active" data-value="feminine"  onclick="selectPill(this,'grp-voice','voice')">Femenina</button>
               <button class="s-chip"        data-value="masculine" onclick="selectPill(this,'grp-voice','voice')">Masculina</button>
             </div>
           </div>
@@ -500,7 +502,7 @@
           </div>
         </div>
 
-        <div class="convo-pref-group">
+        <div class="convo-pref-group" id="grp-music-wrap" style="display:none">
           <span class="pref-label">Sonido de fondo</span>
           <div id="grp-music" class="pill-row">
             <button class="s-chip active" data-value="auto"           onclick="selectPill(this,'grp-music','music')">Auto</button>
@@ -518,9 +520,9 @@
 
       <!-- Botón generar: sticky -->
       <div class="btn-generate-wrap">
-        <button id="btn-generate" class="s-btn s-btn-primary" onclick="goToGenerate()" style="opacity:0;pointer-events:none;transition:opacity 0.3s ease">
+        <button id="btn-generate" class="s-btn s-btn-primary" onclick="goToGenerate()" style="opacity:0.45;pointer-events:none;transition:opacity 0.3s ease">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.5 3.1 3.4.5-2.45 2.38.58 3.37L8 8.75l-3.03 1.6.58-3.37L3.1 4.6l3.4-.5L8 1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
-          Generar meditación
+          Componer meditación
         </button>
       </div>
 
@@ -988,14 +990,14 @@
         </button>
       </div>
 
-      <p class="s-eyebrow pw-eyebrow">un plan para ti</p>
-      <h2 class="pw-headline">Sigue en <em>tu ritmo</em>.</h2>
+      <p class="s-eyebrow pw-eyebrow">Compara los planes</p>
+      <h2 class="pw-headline">Elige el <em>tuyo</em>.</h2>
       <!-- Toggle mensual / anual -->
       <div class="pw-toggle-wrap">
         <div class="pw-toggle-slider" id="pw-toggle-slider"></div>
         <button class="pw-toggle-btn pw-toggle-active" id="pw-btn-monthly" onclick="pwSetBilling('monthly')">Mensual</button>
         <button class="pw-toggle-btn" id="pw-btn-annual" onclick="pwSetBilling('annual')">
-          Anual <span class="pw-save-badge">−35%</span>
+          Anual · <span class="pw-save-badge">−40%</span>
         </button>
       </div>
 
@@ -1007,7 +1009,7 @@
             <th>
               <div class="pw-col-header" id="pw-col-essential" onclick="pwSelectPlan('essential')">
                 <div class="pw-col-name">Essential</div>
-                <div class="pw-col-price"><span id="pw-price-essential">€9,99</span></div>
+                <div class="pw-col-price"><span id="pw-price-essential">$10</span></div>
                 <div class="pw-col-cycle" id="pw-cycle-essential">/mes</div>
               </div>
             </th>
@@ -1015,14 +1017,14 @@
               <div class="pw-col-header pw-col-featured" id="pw-col-premium" onclick="pwSelectPlan('premium')">
                 <div class="pw-col-top-badge">TOP</div>
                 <div class="pw-col-name">Premium</div>
-                <div class="pw-col-price"><span id="pw-price-premium">€19,99</span></div>
+                <div class="pw-col-price"><span id="pw-price-premium">$20</span></div>
                 <div class="pw-col-cycle" id="pw-cycle-premium">/mes</div>
               </div>
             </th>
             <th>
               <div class="pw-col-header" id="pw-col-studio" onclick="pwSelectPlan('studio')">
                 <div class="pw-col-name">Studio</div>
-                <div class="pw-col-price"><span id="pw-price-studio">€39,99</span></div>
+                <div class="pw-col-price"><span id="pw-price-studio">$40</span></div>
                 <div class="pw-col-cycle" id="pw-cycle-studio">/mes</div>
               </div>
             </th>
@@ -1169,9 +1171,9 @@
     let _pwPlan  = 'premium';
 
     const PW_PRICES = {
-      essential: { monthly: '€9,99',  annual: '€6,49'  },
-      premium:   { monthly: '€19,99', annual: '€12,99' },
-      studio:    { monthly: '€39,99', annual: '€25,99' },
+      essential: { monthly: '$10',  annual: '$6'  },
+      premium:   { monthly: '$20',  annual: '$12' },
+      studio:    { monthly: '$40',  annual: '$24' },
     };
 
     function pwSetBilling(cycle) {
@@ -1179,7 +1181,7 @@
       document.getElementById('pw-btn-monthly').classList.toggle('pw-toggle-active', cycle === 'monthly');
       document.getElementById('pw-btn-annual').classList.toggle('pw-toggle-active', cycle === 'annual');
       document.getElementById('pw-toggle-slider').style.transform = cycle === 'monthly' ? 'translateX(0)' : 'translateX(100%)';
-      const suffix = cycle === 'monthly' ? '/mes' : '/año';
+      const suffix = '/mes';
       ['essential','premium','studio'].forEach(p => {
         const el = document.getElementById('pw-price-' + p);
         if (el) el.textContent = PW_PRICES[p][cycle];

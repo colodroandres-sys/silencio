@@ -82,6 +82,40 @@ function showCreate(skipToConfig = false) {
     if (btnGen) { btnGen.style.opacity = '1'; btnGen.style.pointerEvents = 'auto'; }
   }
 
+  const isUser = !!clerk?.user;
+
+  // Header eyebrow según flujo
+  const eyebrow = document.getElementById('create-header-eyebrow');
+  if (eyebrow) eyebrow.textContent = isUser ? 'nueva sesión' : 'primera sesión · gratis';
+
+  // Heading/subtitle: solo para invitados
+  const createHeadline = document.querySelector('#cs-input .create-headline');
+  const createBody = document.querySelector('#cs-input .create-body-muted');
+  if (createHeadline) createHeadline.style.display = isUser ? 'none' : '';
+  if (createBody) createBody.style.display = isUser ? 'none' : '';
+
+  // Quick prompts: ocultar para usuarios con cuenta
+  const quickPrompts = document.querySelector('.create-quick-prompts');
+  if (quickPrompts) quickPrompts.style.display = isUser ? 'none' : '';
+
+  // Siempre ocultar el bottom row inline (lo reemplaza el sticky btn)
+  const bottomRow = document.querySelector('.create-bottom-row');
+  if (bottomRow) bottomRow.style.display = 'none';
+
+  const btnGen = document.getElementById('btn-generate');
+  if (isUser && !skipToConfig) {
+    // Para usuarios con cuenta: mostrar config inmediatamente y activar sticky btn
+    const section = document.getElementById('cs-config');
+    if (section && !section.classList.contains('convo-revealed')) {
+      section.classList.remove('convo-hidden');
+      section.classList.add('convo-revealed');
+    }
+    if (btnGen) { btnGen.style.opacity = '1'; btnGen.style.pointerEvents = 'auto'; }
+  } else if (!isUser) {
+    // Para invitados: sticky btn visible pero desactivado hasta que escriban
+    if (btnGen) { btnGen.style.opacity = '0.45'; btnGen.style.pointerEvents = 'none'; }
+  }
+
   const banner = document.getElementById('no-credits-banner');
   if (banner) banner.style.display = (clerk?.user && !state.userCanGenerate) ? 'flex' : 'none';
 
@@ -126,9 +160,7 @@ function updateProfileScreen() {
     const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
     const created = user.createdAt ? new Date(user.createdAt) : null;
     const sinceStr = created ? 'desde ' + months[created.getMonth()] + ' ' + created.getFullYear() : '';
-    const planNames2 = { free: 'Gratis', essential: 'Essential', premium: 'Premium', studio: 'Studio' };
-    const currentPlan = planNames2[state.userPlan] || state.userPlan;
-    planInfo.textContent = sinceStr ? currentPlan + ' · ' + sinceStr : currentPlan;
+    planInfo.textContent = sinceStr || '—';
   }
 
   // Estadísticas de gamificación
@@ -159,7 +191,7 @@ function updateProfileScreen() {
 
   // Plan card
   const planNames  = { free: 'Gratis', essential: 'Essential', premium: 'Premium', studio: 'Studio' };
-  const planPrices = { free: '—', essential: '€9,99/mes', premium: '€19,99/mes', studio: '€39,99/mes' };
+  const planPrices = { free: '—', essential: '$9.99/mes', premium: '$19.99/mes', studio: '$39.99/mes' };
   const plan = state.userPlan || 'free';
   setEl('profile-plan-name-display',  planNames[plan]  || plan);
   setEl('profile-plan-price-display', planPrices[plan] || '—');
@@ -271,21 +303,20 @@ function _updateTimeGreeting() {
   const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
   const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
   const dayStr = days[now.getDay()];
-  const dateStr = dayStr + ', ' + now.getDate() + ' ' + months[now.getMonth()];
-  const partStr = h < 12 ? 'Mañana' : h < 20 ? 'Tarde' : 'Noche';
+  const dateStr = dayStr + ' · ' + now.getDate() + ' ' + months[now.getMonth()];
 
   const timeEyebrow = document.getElementById('home-time-eyebrow');
-  if (timeEyebrow) timeEyebrow.textContent = dayStr + ' · ' + partStr;
+  if (timeEyebrow) timeEyebrow.textContent = dateStr;
 
   const dateEyebrow = document.getElementById('home-date-eyebrow');
   if (dateEyebrow) dateEyebrow.textContent = dateStr;
 
   const greetingSerifEl = document.getElementById('home-greeting-serif');
   if (greetingSerifEl) {
-    const saludo = h < 12 ? 'Buenos días' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
     const user = clerk?.user;
     const name = user ? (user.firstName || '') : '';
-    greetingSerifEl.innerHTML = saludo + (name ? ', <em>' + name + '</em>' : '');
+    const nameStr = name ? ', ' + name + '.' : '.';
+    greetingSerifEl.innerHTML = 'Hola' + nameStr + ' ¿Cómo estás?<br><em>De verdad.</em>';
   }
 }
 

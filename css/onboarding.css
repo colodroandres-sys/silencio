@@ -14,7 +14,7 @@
 /* Dots de progreso */
 .ob-dots {
   position: fixed;
-  top: calc(env(safe-area-inset-top, 0px) + 18px);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
   left: 50%;
   transform: translateX(-50%);
   display: flex;

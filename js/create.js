@@ -25,6 +25,17 @@ function onInputChange() {
   const val = document.getElementById('input-free')?.value.trim() || '';
   const btn = document.getElementById('btn-continue-input');
   if (btn) btn.disabled = val.length < 3;
+
+  // Para invitados: activar/desactivar sticky button directamente
+  if (!clerk?.user) {
+    const btnGen = document.getElementById('btn-generate');
+    if (btnGen) {
+      const ready = val.length >= 3;
+      btnGen.style.opacity = ready ? '1' : '0.45';
+      btnGen.style.pointerEvents = ready ? 'auto' : 'none';
+      if (ready) { btnGen.style.opacity = '1'; btnGen.style.pointerEvents = 'auto'; }
+    }
+  }
 }
 
 function convoRevealConfig() {
@@ -69,7 +80,10 @@ function resetCreateScreen() {
   if (inputEl) inputEl.value = '';
 
   const csConfig = document.getElementById('cs-config');
-  if (csConfig) { csConfig.classList.remove('convo-revealed'); csConfig.classList.add('convo-hidden'); }
+  if (csConfig && !clerk?.user) {
+    csConfig.classList.remove('convo-revealed');
+    csConfig.classList.add('convo-hidden');
+  }
 
   document.getElementById('cstep-2')?.classList.remove('active');
 
@@ -77,7 +91,7 @@ function resetCreateScreen() {
   if (btnContinue) btnContinue.disabled = true;
 
   const btnGen = document.getElementById('btn-generate');
-  if (btnGen) { btnGen.style.opacity = '0'; btnGen.style.pointerEvents = 'none'; }
+  if (btnGen) { btnGen.style.opacity = '0.45'; btnGen.style.pointerEvents = 'none'; }
 
   const bottomRow = document.querySelector('.create-bottom-row');
   if (bottomRow) bottomRow.style.display = '';
@@ -123,7 +137,7 @@ function applyAllLocks() {
   }
 
   document.querySelectorAll('#grp-voice .s-chip').forEach(pill => {
-    setPillLock(pill, isFree && pill.dataset.value !== 'auto');
+    setPillLock(pill, isFree);
   });
   document.querySelectorAll('#grp-gender .s-chip').forEach(pill => {
     setPillLock(pill, isFree && pill.dataset.value !== 'neutro');
@@ -134,8 +148,6 @@ function applyAllLocks() {
 
   if (isFree) {
     if (state.voice !== 'auto') {
-      document.querySelectorAll('#grp-voice .s-chip').forEach(p => p.classList.remove('active'));
-      document.querySelector('#grp-voice .s-chip[data-value="auto"]')?.classList.add('active');
       state.voice = 'auto';
     }
     if (state.gender !== 'neutro') {

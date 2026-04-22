@@ -109,6 +109,11 @@ function applyLibFilters() {
 }
 
 function renderLibraryList(meditations) {
+  const countEl = document.getElementById('lib-count');
+  if (countEl) {
+    const n = libAllMeditations.length;
+    countEl.textContent = n + ' guardada' + (n !== 1 ? 's' : '');
+  }
   const el = document.getElementById('lib-list');
   if (!meditations || meditations.length === 0) {
     el.innerHTML = libAllMeditations.length === 0
