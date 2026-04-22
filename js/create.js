@@ -40,12 +40,16 @@ function convoRevealConfig() {
     setTimeout(() => {
       const screen = document.getElementById('screen-create');
       const sectionTop = section.offsetTop;
-      const btnHeight = 130; // fixed generate button + gradient
+      const btnHeight = 130;
       const screenHeight = screen.clientHeight;
       screen.scrollTo({ top: sectionTop - (screenHeight - btnHeight) / 2, behavior: 'smooth' });
     }, 150);
   }
   document.getElementById('cstep-2')?.classList.add('active');
+
+  // Ocultar botón inline y mostrar solo el sticky
+  const bottomRow = document.querySelector('.create-bottom-row');
+  if (bottomRow) bottomRow.style.display = 'none';
 
   const btn = document.getElementById('btn-generate');
   if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
@@ -74,6 +78,9 @@ function resetCreateScreen() {
 
   const btnGen = document.getElementById('btn-generate');
   if (btnGen) { btnGen.style.opacity = '0'; btnGen.style.pointerEvents = 'none'; }
+
+  const bottomRow = document.querySelector('.create-bottom-row');
+  if (bottomRow) bottomRow.style.display = '';
 
   state.intent     = null;
   state.emotionTag = null;

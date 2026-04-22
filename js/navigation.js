@@ -69,10 +69,17 @@ function showCreate(skipToConfig = false) {
   }
 
   if (skipToConfig) {
-    document.getElementById('input-free').value = state.userInput;
-    const btnContinue = document.getElementById('btn-continue-input');
-    if (btnContinue) btnContinue.disabled = false;
-    convoRevealConfig();
+    // No pre-llenamos el textarea — el usuario escribe su propia situación
+    // Revelamos el config directamente sin validar input
+    const section = document.getElementById('cs-config');
+    if (section && !section.classList.contains('convo-revealed')) {
+      section.classList.add('convo-revealed');
+    }
+    document.getElementById('cstep-2')?.classList.add('active');
+    const bottomRow = document.querySelector('.create-bottom-row');
+    if (bottomRow) bottomRow.style.display = 'none';
+    const btnGen = document.getElementById('btn-generate');
+    if (btnGen) { btnGen.style.opacity = '1'; btnGen.style.pointerEvents = 'auto'; }
   }
 
   const banner = document.getElementById('no-credits-banner');
