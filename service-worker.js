@@ -1,9 +1,7 @@
-const CACHE = 'stillova-v1';
+const CACHE = 'stillova-v2';
 const PRECACHE = [
   '/',
   '/index.html',
-  '/dashboard.html',
-  '/style.css',
   '/css/base.css',
   '/css/layout.css',
   '/css/player.css',
