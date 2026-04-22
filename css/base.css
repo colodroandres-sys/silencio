@@ -1,18 +1,18 @@
 /* =============================================
-   DESIGN TOKENS — Paleta Mist
+   DESIGN TOKENS — Paleta Clay
    ============================================= */
 :root {
-  /* Paleta Mist */
-  --canvas:      #E6E8E6;   /* fondo principal */
-  --surface:     #EFF1EE;   /* cards, inputs */
-  --ink:         #1A1F1D;   /* texto principal, botones */
-  --muted:       #6B7570;   /* texto secundario */
-  --faint:       #B8BFB9;   /* divisores, bordes */
-  --accent:      #3E5C68;   /* teal profundo */
-  --accent-soft: #C7D5D9;   /* fondos insight, chips badge */
-  --contrast:    #1F2623;   /* cards oscuras sobre canvas */
-  --night:       #121714;   /* fondo dark (player, loading) */
-  --night-fg:    #E8ECE9;   /* texto sobre night */
+  /* Paleta Clay */
+  --canvas:      #EEE4D7;   /* fondo principal */
+  --surface:     #F6EEE1;   /* cards, inputs */
+  --ink:         #2A1C14;   /* texto principal, botones */
+  --muted:       #8A6F5C;   /* texto secundario */
+  --faint:       #D6C3AC;   /* divisores, bordes */
+  --accent:      #B5553A;   /* terracotta */
+  --accent-soft: #E8CBB8;   /* fondos insight, chips badge */
+  --contrast:    #2D1D14;   /* cards oscuras sobre canvas */
+  --night:       #1E120C;   /* fondo dark (player, loading) */
+  --night-fg:    #F3E4D1;   /* texto sobre night */
 
   /* Tipografía */
   --font-display: 'Fraunces', 'Times New Roman', serif;

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stillova — Meditaciones creadas solo para ti</title>
   <meta name="description" content="Describe cómo te sientes y Stillova genera una meditación de audio única, personalizada al 100% para ese momento. Cada sesión es diferente.">
-  <meta name="theme-color" content="#E6E8E6">
+  <meta name="theme-color" content="#EEE4D7">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/manifest.json">
@@ -282,19 +282,22 @@
 
         <!-- Streak strip -->
         <div class="home-streak-strip" id="home-streak-strip" style="display:none">
-          <div class="streak-left">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2C8 6 4 7 4 11c0 3.3 2.7 6 6 6s6-2.7 6-6c0-3-3-5-6-9z" fill="var(--accent)" opacity="0.9"/></svg>
-            <div>
-              <div class="streak-count"><span id="home-streak-num">0</span> <span class="streak-unit">días</span></div>
-              <div class="streak-label">racha consecutiva · tu mente lo nota</div>
+          <div class="streak-top-row">
+            <div class="streak-left">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2C8 6 4 7 4 11c0 3.3 2.7 6 6 6s6-2.7 6-6c0-3-3-5-6-9z" fill="var(--accent)" opacity="0.9"/></svg>
+              <div>
+                <div class="streak-big-num"><span id="home-streak-num">0</span> <span class="streak-unit">días</span></div>
+                <div class="streak-sublabel">racha actual</div>
+              </div>
             </div>
+            <span class="s-eyebrow">esta semana</span>
           </div>
-          <div class="streak-bars" id="home-streak-bars"></div>
+          <div class="streak-days-row" id="home-streak-bars"></div>
         </div>
 
         <!-- CTA generar -->
         <div class="home-cta-card home-cta-account" onclick="showCreate()">
-          <p class="s-eyebrow home-cta-eyebrow">nueva sesión</p>
+          <p class="s-eyebrow home-cta-eyebrow">nueva sesión · <span id="home-cta-plan"></span></p>
           <p class="home-cta-title">¿Cómo te <em>sientes</em> ahora?</p>
           <button class="s-btn s-btn-dark s-btn-sm home-cta-btn" tabindex="-1">Crear meditación</button>
         </div>
@@ -330,7 +333,7 @@
         <!-- Recientes -->
         <div id="home-recents" style="display:none">
           <div class="home-recents-header">
-            <p class="s-eyebrow">tu biblioteca</p>
+            <p class="s-eyebrow">tus últimas sesiones</p>
             <button class="home-recents-ver" onclick="openLibrary()">ver todo</button>
           </div>
           <div id="home-recents-list" class="home-recents-list"></div>
@@ -754,18 +757,8 @@
           <div class="profile-avatar" id="profile-avatar">A</div>
           <div>
             <p class="profile-name" id="profile-name">—</p>
-            <p class="profile-plan-info" id="profile-plan-info">Gratis · Stillova</p>
+            <p class="profile-plan-info" id="profile-plan-info">desde —</p>
           </div>
-        </div>
-
-        <!-- Level card ink -->
-        <div class="profile-level-card" id="profile-level-card">
-          <p class="s-eyebrow profile-level-eyebrow" id="profile-level-eyebrow">nivel 1</p>
-          <p class="profile-level-name" id="profile-level-name"><em>Principiante</em></p>
-          <div class="profile-level-bar-wrap">
-            <div class="profile-level-bar" id="profile-level-bar" style="width:10%"></div>
-          </div>
-          <p class="profile-level-meta" id="profile-level-meta">0 / 100 → nivel 2 · Contemplativo</p>
         </div>
 
         <!-- Stats 2×2 -->
@@ -778,16 +771,16 @@
             </div>
           </div>
           <div class="stat-card">
-            <p class="s-eyebrow stat-label">total meditado</p>
+            <p class="s-eyebrow stat-label">sesiones totales</p>
             <div class="stat-value-row">
-              <span class="stat-number" id="profile-stat-total">0</span>
-              <span class="stat-unit">min</span>
+              <span class="stat-number" id="profile-stat-sessions">0</span>
             </div>
           </div>
           <div class="stat-card">
-            <p class="s-eyebrow stat-label">sesiones</p>
+            <p class="s-eyebrow stat-label">tiempo meditado</p>
             <div class="stat-value-row">
-              <span class="stat-number" id="profile-stat-sessions">0</span>
+              <span class="stat-number" id="profile-stat-total">0</span>
+              <span class="stat-unit">min</span>
             </div>
           </div>
           <div class="stat-card">
@@ -799,9 +792,120 @@
           </div>
         </div>
 
+        <!-- Plan card -->
+        <div class="profile-plan-card" id="profile-plan-card">
+          <div class="profile-plan-card-top">
+            <div>
+              <div class="profile-plan-name-display" id="profile-plan-name-display">Essential</div>
+              <div class="profile-plan-price-display" id="profile-plan-price-display">€9,99/mes</div>
+            </div>
+            <button class="profile-manage-plan-btn" onclick="showPaywall()">gestionar plan →</button>
+          </div>
+          <div class="profile-plan-credit-bar-wrap">
+            <div class="profile-plan-credit-bar" id="profile-plan-credit-bar" style="width:0%"></div>
+          </div>
+          <div class="profile-plan-credit-info" id="profile-plan-credit-info">0 créditos usados este mes</div>
+        </div>
+
+        <!-- Ajustes -->
+        <div class="profile-settings-section">
+          <p class="s-eyebrow profile-section-label">Ajustes</p>
+          <div class="profile-settings-rows">
+            <div class="profile-setting-row" id="profile-setting-row-voice" onclick="profileToggleSetting('voice')">
+              <span class="profile-setting-label">Voz por defecto</span>
+              <span class="profile-setting-value" id="profile-setting-voice">Automática</span>
+            </div>
+            <div class="profile-setting-row" id="profile-setting-row-gender" onclick="profileToggleSetting('gender')">
+              <span class="profile-setting-label">Dirigirse a mí como</span>
+              <span class="profile-setting-value" id="profile-setting-gender">Neutro</span>
+            </div>
+            <div class="profile-setting-row" id="profile-setting-row-duration" onclick="profileToggleSetting('duration')">
+              <span class="profile-setting-label">Duración favorita</span>
+              <span class="profile-setting-value" id="profile-setting-duration">5 min</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buzón -->
+        <div class="profile-buzon-row" onclick="openBuzon()">
+          <div>
+            <div class="profile-buzon-label">Escríbeme</div>
+            <div class="profile-buzon-hint">Sugerencias, problemas, lo que sea</div>
+          </div>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M6 9h6M9 6l3 3-3 3" stroke="var(--muted)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+
         <!-- Sign out (bottom) -->
         <button class="profile-signout-btn" onclick="signOut()">Cerrar sesión</button>
 
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       BUZÓN — mensajes al fundador
+       ══════════════════════════════════════════ -->
+  <div id="screen-buzon" class="screen">
+    <div class="buzon-wrap">
+
+      <div class="buzon-header">
+        <button class="buzon-back-btn" onclick="openProfile()" aria-label="Volver">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M11 4L6 9l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <p class="s-eyebrow">buzón</p>
+      </div>
+
+      <div class="buzon-creator-card">
+        <div class="buzon-avatar">s</div>
+        <div>
+          <div class="buzon-creator-title">Escríbeme. <em>Lo leo yo.</em></div>
+          <div class="buzon-creator-sub">No hay equipo de soporte — soy yo detrás de Stillova. Dime qué piensas, qué echas en falta, qué no funciona o simplemente cuéntame cómo te va.</div>
+        </div>
+      </div>
+
+      <div id="buzon-form">
+        <p class="s-eyebrow buzon-section-label">¿Sobre qué?</p>
+        <div class="buzon-category-grid">
+          <button class="buzon-cat-btn active" data-value="sugerencia" onclick="buzonSelectCat(this)">
+            <span class="buzon-cat-title">Sugerencia</span>
+            <span class="buzon-cat-desc">Algo que añadirías o cambiarías</span>
+          </button>
+          <button class="buzon-cat-btn" data-value="problema" onclick="buzonSelectCat(this)">
+            <span class="buzon-cat-title">Problema</span>
+            <span class="buzon-cat-desc">Algo que no funciona</span>
+          </button>
+          <button class="buzon-cat-btn" data-value="me_gusta" onclick="buzonSelectCat(this)">
+            <span class="buzon-cat-title">Me gusta</span>
+            <span class="buzon-cat-desc">Qué te está ayudando</span>
+          </button>
+          <button class="buzon-cat-btn" data-value="otro" onclick="buzonSelectCat(this)">
+            <span class="buzon-cat-title">Otro</span>
+            <span class="buzon-cat-desc">Pregunta, duda o cualquier cosa</span>
+          </button>
+        </div>
+
+        <p class="s-eyebrow buzon-section-label">Tu mensaje</p>
+        <div class="buzon-textarea-wrap">
+          <textarea id="buzon-msg" class="buzon-textarea" placeholder="Me encantaría que pudiera..." oninput="buzonOnInput()"></textarea>
+        </div>
+
+        <div class="buzon-privacy-note">
+          <svg class="buzon-privacy-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="var(--accent)" stroke-width="1.2"/><path d="M8 7v4M8 5.5v.5" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <span class="buzon-privacy-text">Tu mensaje es privado. Solo yo lo veo y te responderé por email si lo necesitas.</span>
+        </div>
+
+        <button id="buzon-send-btn" class="buzon-send-btn" onclick="buzonSend()" disabled>Enviar</button>
+      </div>
+
+      <div id="buzon-success" style="display:none" class="buzon-success">
+        <div class="buzon-success-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4L19 7" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="buzon-success-title">Mensaje enviado</div>
+        <div class="buzon-success-sub">Lo leeré pronto. Gracias por tomarte el tiempo.</div>
       </div>
 
     </div>
@@ -826,75 +930,88 @@
         </button>
       </div>
 
-      <p class="s-eyebrow pw-eyebrow">un plan para ti</p>
-      <h2 class="pw-headline">Sigue en <em>tu ritmo</em>.</h2>
-      <p class="s-body pw-subhead">Todas las sesiones, únicas. Elige cuánto quieres meditar.</p>
+      <p class="s-eyebrow pw-eyebrow">compara los planes</p>
+      <h2 class="pw-headline">Elige el <em>tuyo</em>.</h2>
 
       <!-- Toggle mensual / anual -->
       <div class="pw-toggle-wrap">
         <div class="pw-toggle-slider" id="pw-toggle-slider"></div>
         <button class="pw-toggle-btn pw-toggle-active" id="pw-btn-monthly" onclick="pwSetBilling('monthly')">Mensual</button>
         <button class="pw-toggle-btn" id="pw-btn-annual" onclick="pwSetBilling('annual')">
-          Anual <span class="pw-save-badge">−20%</span>
+          Anual <span class="pw-save-badge">−35%</span>
         </button>
       </div>
 
-      <!-- Plan cards -->
-      <div class="pw-plans-list">
+      <!-- Tabla comparativa -->
+      <table class="pw-table">
+        <thead>
+          <tr class="pw-table-head-row">
+            <th></th>
+            <th>
+              <div class="pw-col-header" onclick="pwSelectPlan('essential')" style="cursor:pointer">
+                <span class="pw-col-name">Essential</span>
+                <span class="pw-col-price" id="pw-price-essential">€9,99</span>
+                <span class="pw-col-cycle" id="pw-cycle-essential">/mes</span>
+              </div>
+            </th>
+            <th>
+              <div class="pw-col-header pw-col-featured" onclick="pwSelectPlan('premium')" style="cursor:pointer">
+                <span class="pw-col-top-badge">TOP</span>
+                <span class="pw-col-name">Premium</span>
+                <span class="pw-col-price" id="pw-price-premium">€19,99</span>
+                <span class="pw-col-cycle" id="pw-cycle-premium">/mes</span>
+              </div>
+            </th>
+            <th>
+              <div class="pw-col-header" onclick="pwSelectPlan('studio')" style="cursor:pointer">
+                <span class="pw-col-name">Studio</span>
+                <span class="pw-col-price" id="pw-price-studio">€39,99</span>
+                <span class="pw-col-cycle" id="pw-cycle-studio">/mes</span>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Meditaciones / mes</td>
+            <td>10</td>
+            <td class="pw-cell-featured">30</td>
+            <td>Ilimitadas</td>
+          </tr>
+          <tr>
+            <td>Duración máx.</td>
+            <td>15 min</td>
+            <td class="pw-cell-featured">20 min</td>
+            <td>20 min</td>
+          </tr>
+          <tr>
+            <td>Voz (H o M)</td>
+            <td><span class="pw-check"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l2.5 2.5L11 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></td>
+            <td class="pw-cell-featured"><span class="pw-check"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l2.5 2.5L11 4" stroke="var(--canvas)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></td>
+            <td><span class="pw-check"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l2.5 2.5L11 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></td>
+          </tr>
+          <tr>
+            <td>Dirigirse a ti</td>
+            <td style="font-size:11px">H/M/neutro</td>
+            <td class="pw-cell-featured" style="font-size:11px">H/M/neutro</td>
+            <td style="font-size:11px">H/M/neutro</td>
+          </tr>
+          <tr>
+            <td>Guardar sesiones</td>
+            <td>30</td>
+            <td class="pw-cell-featured">150</td>
+            <td>Ilimitado</td>
+          </tr>
+          <tr>
+            <td>Reescucha gratis</td>
+            <td><span class="pw-check"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l2.5 2.5L11 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></td>
+            <td class="pw-cell-featured"><span class="pw-check"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l2.5 2.5L11 4" stroke="var(--canvas)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></td>
+            <td><span class="pw-check"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l2.5 2.5L11 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></td>
+          </tr>
+        </tbody>
+      </table>
 
-        <!-- Essential -->
-        <div class="pw-plan-card pw-plan-selected" id="pw-card-essential" onclick="pwSelectPlan('essential')">
-          <div class="pw-plan-name-row">
-            <span class="pw-plan-name">Essential</span>
-            <span class="pw-plan-price-sm" id="pw-price-essential">€9,99 / mes</span>
-          </div>
-          <div class="pw-plan-meta">para empezar</div>
-          <div class="pw-plan-features">
-            <div class="pw-feat">10 créditos · 50 min / mes</div>
-            <div class="pw-feat">Meditaciones hasta 15 min</div>
-            <div class="pw-feat">Guarda 20 sesiones</div>
-          </div>
-        </div>
-
-        <!-- Premium -->
-        <div class="pw-plan-card" id="pw-card-premium" onclick="pwSelectPlan('premium')">
-          <div class="pw-plan-badge-abs">recomendado</div>
-          <div class="pw-plan-name-row">
-            <span class="pw-plan-name">Premium</span>
-            <span class="pw-plan-price-sm" id="pw-price-premium">€19,99 / mes</span>
-          </div>
-          <div class="pw-plan-meta">el más elegido</div>
-          <div class="pw-plan-features">
-            <div class="pw-feat">25 créditos · 125 min / mes</div>
-            <div class="pw-feat">Meditaciones hasta 20 min</div>
-            <div class="pw-feat">Biblioteca ilimitada</div>
-            <div class="pw-feat">Prioridad en nuevas técnicas</div>
-          </div>
-        </div>
-
-        <!-- Deep — coming soon -->
-        <div class="pw-plan-card pw-plan-soon" id="pw-card-deep">
-          <div class="pw-plan-name-row">
-            <span class="pw-plan-name">Deep</span>
-            <span class="pw-plan-price-sm">€39,99 / mes</span>
-          </div>
-          <div class="pw-plan-meta">práctica diaria</div>
-          <div class="pw-plan-coming-badge">Próximamente</div>
-        </div>
-
-        <!-- Infinite — coming soon -->
-        <div class="pw-plan-card pw-plan-soon" id="pw-card-infinite">
-          <div class="pw-plan-name-row">
-            <span class="pw-plan-name">Infinite</span>
-            <span class="pw-plan-price-sm">€79,99 / mes</span>
-          </div>
-          <div class="pw-plan-meta">sin límites</div>
-          <div class="pw-plan-coming-badge">Próximamente</div>
-        </div>
-
-      </div>
-
-      <button class="s-btn s-btn-primary pw-cta-main" id="pw-cta-btn" onclick="pwProceed()">Empezar con Essential</button>
+      <button class="s-btn s-btn-primary pw-cta-main" id="pw-cta-btn" onclick="pwProceed()">Empezar con Premium</button>
       <p class="pw-guarantee">Sin permanencia. Cancela cuando quieras.</p>
 
     </div>
@@ -967,11 +1084,12 @@
 
     // ── Paywall state ─────────────────────────────────────────
     let _pwCycle = 'monthly';
-    let _pwPlan  = 'essential';
+    let _pwPlan  = 'premium';
 
     const PW_PRICES = {
-      essential: { monthly: '€9,99', yearly: '€7,99' },
-      premium:   { monthly: '€19,99', yearly: '€15,99' },
+      essential: { monthly: '€9,99',  annual: '€6,49'  },
+      premium:   { monthly: '€19,99', annual: '€12,99' },
+      studio:    { monthly: '€39,99', annual: '€25,99' },
     };
 
     function pwSetBilling(cycle) {
@@ -979,27 +1097,77 @@
       document.getElementById('pw-btn-monthly').classList.toggle('pw-toggle-active', cycle === 'monthly');
       document.getElementById('pw-btn-annual').classList.toggle('pw-toggle-active', cycle === 'annual');
       document.getElementById('pw-toggle-slider').style.transform = cycle === 'monthly' ? 'translateX(0)' : 'translateX(100%)';
-      // Update prices
-      document.getElementById('pw-price-essential').textContent = PW_PRICES.essential[cycle] + ' / ' + (cycle === 'monthly' ? 'mes' : 'mes anual');
-      document.getElementById('pw-price-premium').textContent   = PW_PRICES.premium[cycle]   + ' / ' + (cycle === 'monthly' ? 'mes' : 'mes anual');
+      const suffix = cycle === 'monthly' ? '/mes' : '/mes anual';
+      ['essential','premium','studio'].forEach(p => {
+        const el = document.getElementById('pw-price-' + p);
+        if (el) el.textContent = PW_PRICES[p][cycle];
+        const cy = document.getElementById('pw-cycle-' + p);
+        if (cy) cy.textContent = suffix;
+      });
     }
 
     function pwSelectPlan(plan) {
-      if (plan === 'deep' || plan === 'infinite') return; // coming soon
       _pwPlan = plan;
-      document.querySelectorAll('.pw-plan-card:not(.pw-plan-soon)').forEach(c => c.classList.remove('pw-plan-selected'));
-      document.getElementById('pw-card-' + plan).classList.add('pw-plan-selected');
-      const labels = { essential: 'Essential', premium: 'Premium' };
+      const labels = { essential: 'Essential', premium: 'Premium', studio: 'Studio' };
       document.getElementById('pw-cta-btn').textContent = 'Empezar con ' + labels[plan];
     }
 
     function pwProceed() {
       closePaywall();
-      upgradePlan(pwGetPlan(_pwPlan));
+      upgradePlan(_pwPlan);
     }
 
     // Legacy compat
     function pwGetPlan(name) { return name; }
+
+    // ── Buzón ─────────────────────────────────────────────────
+    let _buzonCat = 'sugerencia';
+
+    function buzonSelectCat(btn) {
+      document.querySelectorAll('.buzon-cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      _buzonCat = btn.dataset.value;
+    }
+
+    function buzonOnInput() {
+      const val = document.getElementById('buzon-msg')?.value.trim() || '';
+      const btn = document.getElementById('buzon-send-btn');
+      if (btn) btn.disabled = val.length < 5;
+    }
+
+    async function buzonSend() {
+      const msg = document.getElementById('buzon-msg')?.value.trim();
+      if (!msg || msg.length < 5) return;
+      const btn = document.getElementById('buzon-send-btn');
+      if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
+      try {
+        await fetch('/api/buzon', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            category: _buzonCat,
+            message: msg,
+            user_id: clerk?.user?.id || null,
+            email: clerk?.user?.primaryEmailAddress?.emailAddress || null,
+          }),
+        });
+      } catch(e) { /* best effort */ }
+      document.getElementById('buzon-form').style.display = 'none';
+      document.getElementById('buzon-success').style.display = '';
+    }
+
+    function openBuzon() {
+      // Reset form
+      const msgEl = document.getElementById('buzon-msg');
+      if (msgEl) msgEl.value = '';
+      document.querySelectorAll('.buzon-cat-btn').forEach((b,i) => b.classList.toggle('active', i === 0));
+      _buzonCat = 'sugerencia';
+      const sendBtn = document.getElementById('buzon-send-btn');
+      if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = 'Enviar'; }
+      document.getElementById('buzon-form').style.display = '';
+      document.getElementById('buzon-success').style.display = 'none';
+      showScreen('screen-buzon');
+    }
   </script>
   <script>
     if ('serviceWorker' in navigator) {

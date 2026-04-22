@@ -109,38 +109,106 @@ function updateProfileScreen() {
   if (guestEl) guestEl.style.display = 'none';
   if (userEl)  userEl.style.display  = '';
 
+  const setEl = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+
   // Nombre e inicial
   const name = user.firstName || user.username || 'Tú';
-  const el = document.getElementById('profile-name');
-  if (el) el.textContent = name;
+  setEl('profile-name', name);
   const avatarEl = document.getElementById('profile-avatar');
   if (avatarEl) avatarEl.textContent = name[0].toUpperCase();
+
+  // "desde mes año" a partir de createdAt de Clerk
   const planInfo = document.getElementById('profile-plan-info');
-  if (planInfo) planInfo.textContent = (state.userPlan === 'premium' ? 'Premium' : state.userPlan === 'essential' ? 'Essential' : 'Gratis') + ' · Stillova';
+  if (planInfo) {
+    const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    const created = user.createdAt ? new Date(user.createdAt) : null;
+    const sinceStr = created ? 'desde ' + months[created.getMonth()] + ' ' + created.getFullYear() : '';
+    planInfo.textContent = sinceStr;
+  }
 
   // Estadísticas de gamificación
-  const streak = typeof gamData !== 'undefined' ? (gamData.streak || 0) : 0;
+  const streak   = typeof gamData !== 'undefined' ? (gamData.streak || 0) : 0;
   const totalMin = typeof gamData !== 'undefined' ? (gamData.totalMinutes || 0) : 0;
   const sessions = typeof gamData !== 'undefined' ? (gamData.sessions || 0) : 0;
-  const avg = sessions > 0 ? Math.round(totalMin / sessions) : 0;
-
-  const setEl = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
-  setEl('profile-stat-streak', streak);
-  setEl('profile-stat-total', totalMin);
+  const avg      = sessions > 0 ? Math.round(totalMin / sessions) : 0;
+  setEl('profile-stat-streak',   streak);
+  setEl('profile-stat-total',    totalMin);
   setEl('profile-stat-sessions', sessions);
-  setEl('profile-stat-avg', avg);
+  setEl('profile-stat-avg',      avg);
 
-  // Nivel
-  const levelData = typeof getLevelData === 'function' ? getLevelData() : null;
-  if (levelData) {
-    setEl('profile-level-eyebrow', 'nivel ' + levelData.level);
-    setEl('profile-level-name', '<em>' + levelData.name + '</em>');
-    const nameEl = document.getElementById('profile-level-name');
-    if (nameEl) nameEl.innerHTML = '<em>' + levelData.name + '</em>';
-    const bar = document.getElementById('profile-level-bar');
-    if (bar) bar.style.width = levelData.pct + '%';
-    setEl('profile-level-meta', levelData.points + ' / 100 → nivel ' + (levelData.level + 1));
+  // Plan card
+  const planNames  = { free: 'Gratis', essential: 'Essential', premium: 'Premium', studio: 'Studio' };
+  const planPrices = { free: '—', essential: '€9,99/mes', premium: '€19,99/mes', studio: '€39,99/mes' };
+  const plan = state.userPlan || 'free';
+  setEl('profile-plan-name-display',  planNames[plan]  || plan);
+  setEl('profile-plan-price-display', planPrices[plan] || '—');
+
+  // Barra de créditos
+  const creditBar = document.getElementById('profile-plan-credit-bar');
+  const creditInfo = document.getElementById('profile-plan-credit-info');
+  const totalCr = { essential: 10, premium: 25, studio: 999 };
+  const total = totalCr[plan] || 0;
+  const used  = state.creditsUsed || (total - (state.creditsRemaining || 0));
+  if (creditBar && total > 0) creditBar.style.width = Math.min(100, (used / total) * 100) + '%';
+  if (creditInfo && total > 0) creditInfo.textContent = used + ' de ' + total + ' créditos usados este mes';
+  if (creditInfo && plan === 'free') creditInfo.textContent = 'Plan gratuito';
+
+  // Ajustes — mostrar valores actuales
+  _updateProfileSettings();
+}
+
+function _updateProfileSettings() {
+  const isFree = !clerk?.user || state.userPlan === 'free';
+  const isPremiumOrStudio = state.userPlan === 'premium' || state.userPlan === 'studio';
+
+  const voiceLabels    = { auto: 'Automática', feminine: 'Femenina', masculine: 'Masculina' };
+  const genderLabels   = { neutro: 'Neutro', femenino: 'Mujer', masculino: 'Hombre' };
+  const durationLabels = { '5': '5 min', '10': '10 min', '15': '15 min', '20': '20 min' };
+
+  const voiceEl = document.getElementById('profile-setting-voice');
+  if (voiceEl) voiceEl.textContent = voiceLabels[obPrefs.voice || 'auto'] || 'Automática';
+
+  const genderEl = document.getElementById('profile-setting-gender');
+  if (genderEl) genderEl.textContent = genderLabels[obPrefs.gender || 'neutro'] || 'Neutro';
+
+  const durEl = document.getElementById('profile-setting-duration');
+  if (durEl) durEl.textContent = durationLabels[obPrefs.duration || '5'] || '5 min';
+
+  // Bloquear si es free
+  const voiceRow = document.getElementById('profile-setting-row-voice');
+  if (voiceRow) voiceRow.classList.toggle('profile-setting-locked', isFree);
+  const genderRow = document.getElementById('profile-setting-row-gender');
+  if (genderRow) genderRow.classList.toggle('profile-setting-locked', isFree);
+  const durRow = document.getElementById('profile-setting-row-duration');
+  if (durRow) durRow.classList.toggle('profile-setting-locked', false); // duración siempre visible
+}
+
+function profileToggleSetting(key) {
+  const isFree = !clerk?.user || state.userPlan === 'free';
+  const isPremiumOrStudio = state.userPlan === 'premium' || state.userPlan === 'studio';
+
+  if (key === 'voice') {
+    if (isFree) { showPaywall(); return; }
+    const opts = ['auto', 'feminine', 'masculine'];
+    const cur  = opts.indexOf(obPrefs.voice || 'auto');
+    obPrefs.voice = opts[(cur + 1) % opts.length];
+    state.voice = obPrefs.voice;
+  } else if (key === 'gender') {
+    if (isFree) { showPaywall(); return; }
+    const opts = ['neutro', 'femenino', 'masculino'];
+    const cur  = opts.indexOf(obPrefs.gender || 'neutro');
+    obPrefs.gender = opts[(cur + 1) % opts.length];
+    state.gender = obPrefs.gender;
+  } else if (key === 'duration') {
+    const maxOpts = isPremiumOrStudio ? ['5','10','15','20'] : state.userPlan === 'essential' ? ['5','10','15'] : ['5'];
+    if (maxOpts.length === 1) { showPaywall(); return; }
+    const cur = maxOpts.indexOf(obPrefs.duration || '5');
+    obPrefs.duration = maxOpts[(cur + 1) % maxOpts.length];
+    state.duration = obPrefs.duration;
   }
+
+  try { localStorage.setItem('obPrefs', JSON.stringify(obPrefs)); } catch(e) {}
+  _updateProfileSettings();
 }
 
 // Actualizar home display según estado de usuario
@@ -196,35 +264,48 @@ function _updateUserHomeContent() {
   const user = clerk?.user;
   if (!user) return;
 
+  const setEl = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+
   // Avatar inicial
   const name = user.firstName || user.username || 'T';
   const avatarBtn = document.getElementById('home-avatar-initial');
   if (avatarBtn) avatarBtn.textContent = name[0].toUpperCase();
+
+  // Plan label en CTA
+  const planLabels = { essential: 'Essential', premium: 'Premium', studio: 'Studio', free: '' };
+  const ctaPlan = document.getElementById('home-cta-plan');
+  if (ctaPlan) ctaPlan.textContent = planLabels[state.userPlan] || '';
 
   // Streak
   const streak = typeof gamData !== 'undefined' ? (gamData.streak || 0) : 0;
   const streakStrip = document.getElementById('home-streak-strip');
   if (streakStrip) {
     streakStrip.style.display = streak > 0 ? '' : 'none';
-    const numEl = document.getElementById('home-streak-num');
-    if (numEl) numEl.textContent = streak;
-    // Barras últimos 7 días
+    setEl('home-streak-num', streak);
+
+    // Círculos por día
     const barsEl = document.getElementById('home-streak-bars');
     if (barsEl) {
-      const history = (typeof gamData !== 'undefined' && gamData.weekHistory) || [1,1,1,1,1,1,0];
-      barsEl.innerHTML = history.map(on => `<div class="streak-bar ${on ? 'on' : 'off'}"></div>`).join('');
+      const history = (typeof gamData !== 'undefined' && gamData.weekHistory) || [0,0,0,0,0,0,0];
+      const dayLabels = ['L','M','X','J','V','S','D'];
+      barsEl.innerHTML = history.map((on, i) => `
+        <div class="streak-day-col">
+          <div class="streak-day-circle ${on ? 'on' : 'off'}">
+            ${on ? '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5L9.5 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}
+          </div>
+          <span class="streak-day-label">${dayLabels[i]}</span>
+        </div>
+      `).join('');
     }
   }
 
   // Stats
   const statsGrid = document.getElementById('home-stats-grid');
   if (statsGrid) statsGrid.style.display = '';
-  const weekMin = typeof gamData !== 'undefined' ? (gamData.weekMinutes || 0) : 0;
-  const levelNum = typeof gamData !== 'undefined' ? (gamData.level || 1) : 1;
+  const weekMin  = typeof gamData !== 'undefined' ? (gamData.weekMinutes || 0) : 0;
+  const levelNum  = typeof gamData !== 'undefined' ? (gamData.level || 1) : 1;
   const levelName = typeof gamData !== 'undefined' ? (gamData.levelName || 'Principiante') : 'Principiante';
-
-  const setEl = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
-  setEl('home-stat-minutes', weekMin);
-  setEl('home-stat-level', levelNum);
+  setEl('home-stat-minutes',    weekMin);
+  setEl('home-stat-level',      levelNum);
   setEl('home-stat-level-name', levelName);
 }
