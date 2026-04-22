@@ -885,20 +885,16 @@
               <span class="profile-setting-label">Duración favorita</span>
               <span class="profile-setting-value" id="profile-setting-duration">5 min</span>
             </div>
+            <div class="profile-setting-row profile-setting-highlight" onclick="openBuzon()">
+              <span class="profile-setting-label">Buzón · hablar con el creador</span>
+              <span class="profile-setting-value">→</span>
+            </div>
+            <div class="profile-setting-row profile-setting-nosuffix" onclick="signOut()">
+              <span class="profile-setting-label">Cerrar sesión</span>
+              <span class="profile-setting-value"></span>
+            </div>
           </div>
         </div>
-
-        <!-- Buzón -->
-        <div class="profile-buzon-row" onclick="openBuzon()">
-          <div>
-            <div class="profile-buzon-label">Escríbeme</div>
-            <div class="profile-buzon-hint">Sugerencias, problemas, lo que sea</div>
-          </div>
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M6 9h6M9 6l3 3-3 3" stroke="var(--muted)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-
-        <!-- Sign out (bottom) -->
-        <button class="profile-signout-btn" onclick="signOut()">Cerrar sesión</button>
 
       </div>
 
@@ -994,8 +990,6 @@
 
       <p class="s-eyebrow pw-eyebrow">un plan para ti</p>
       <h2 class="pw-headline">Sigue en <em>tu ritmo</em>.</h2>
-      <p class="pw-subtext">Todas las sesiones, únicas. Elige cuánto quieres meditar.</p>
-
       <!-- Toggle mensual / anual -->
       <div class="pw-toggle-wrap">
         <div class="pw-toggle-slider" id="pw-toggle-slider"></div>
@@ -1005,87 +999,77 @@
         </button>
       </div>
 
-      <!-- Tarjetas de planes -->
-      <div class="pw-plan-cards">
-
-        <!-- Essential -->
-        <div class="pw-plan-card" id="pw-card-essential" onclick="pwSelectPlan('essential')">
-          <div class="pw-plan-card-top">
-            <span class="pw-plan-card-name">Essential</span>
-            <span class="pw-plan-card-price-info"><span id="pw-price-essential">€9,99</span><span id="pw-cycle-essential"> /mes</span></span>
-          </div>
-          <div class="pw-plan-card-meta">para empezar</div>
-          <div class="pw-plan-card-features">
-            <div class="pw-plan-feature-row">
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              10 créditos · 50 min / mes
-            </div>
-            <div class="pw-plan-feature-row">
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Meditaciones hasta 15 min
-            </div>
-            <div class="pw-plan-feature-row">
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Guarda 30 sesiones
-            </div>
-          </div>
-        </div>
-
-        <!-- Premium (destacado) -->
-        <div class="pw-plan-card pw-plan-card-selected" id="pw-card-premium" onclick="pwSelectPlan('premium')">
-          <div class="pw-plan-card-badge">recomendado</div>
-          <div class="pw-plan-card-top">
-            <span class="pw-plan-card-name">Premium</span>
-            <span class="pw-plan-card-price-info"><span id="pw-price-premium">€19,99</span><span id="pw-cycle-premium"> /mes</span></span>
-          </div>
-          <div class="pw-plan-card-meta">el más elegido</div>
-          <div class="pw-plan-card-features">
-            <div class="pw-plan-feature-row">
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              25 créditos · 125 min / mes
-            </div>
-            <div class="pw-plan-feature-row">
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Meditaciones hasta 20 min
-            </div>
-            <div class="pw-plan-feature-row">
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Guarda 150 sesiones
-            </div>
-            <div class="pw-plan-feature-row">
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Prioridad en nuevas técnicas
-            </div>
-          </div>
-        </div>
-
-        <!-- Studio -->
-        <div class="pw-plan-card" id="pw-card-studio" onclick="pwSelectPlan('studio')">
-          <div class="pw-plan-card-top">
-            <span class="pw-plan-card-name">Studio</span>
-            <span class="pw-plan-card-price-info"><span id="pw-price-studio">€39,99</span><span id="pw-cycle-studio"> /mes</span></span>
-          </div>
-          <div class="pw-plan-card-meta">práctica diaria</div>
-          <div class="pw-plan-card-features">
-            <div class="pw-plan-feature-row">
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Meditaciones ilimitadas
-            </div>
-            <div class="pw-plan-feature-row">
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Meditaciones hasta 20 min
-            </div>
-            <div class="pw-plan-feature-row">
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Biblioteca ilimitada
-            </div>
-          </div>
-        </div>
-
-      </div>
+      <!-- Tabla comparativa -->
+      <table class="pw-table">
+        <thead>
+          <tr class="pw-table-head-row">
+            <th></th>
+            <th>
+              <div class="pw-col-header" id="pw-col-essential" onclick="pwSelectPlan('essential')">
+                <div class="pw-col-name">Essential</div>
+                <div class="pw-col-price"><span id="pw-price-essential">€9,99</span></div>
+                <div class="pw-col-cycle" id="pw-cycle-essential">/mes</div>
+              </div>
+            </th>
+            <th>
+              <div class="pw-col-header pw-col-featured" id="pw-col-premium" onclick="pwSelectPlan('premium')">
+                <div class="pw-col-top-badge">TOP</div>
+                <div class="pw-col-name">Premium</div>
+                <div class="pw-col-price"><span id="pw-price-premium">€19,99</span></div>
+                <div class="pw-col-cycle" id="pw-cycle-premium">/mes</div>
+              </div>
+            </th>
+            <th>
+              <div class="pw-col-header" id="pw-col-studio" onclick="pwSelectPlan('studio')">
+                <div class="pw-col-name">Studio</div>
+                <div class="pw-col-price"><span id="pw-price-studio">€39,99</span></div>
+                <div class="pw-col-cycle" id="pw-cycle-studio">/mes</div>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Meditaciones / mes</td>
+            <td>10</td>
+            <td class="pw-cell-featured">30</td>
+            <td>Ilimitadas</td>
+          </tr>
+          <tr>
+            <td>Duración máx.</td>
+            <td>15 min</td>
+            <td class="pw-cell-featured">20 min</td>
+            <td>20 min</td>
+          </tr>
+          <tr>
+            <td>Voz (H o M)</td>
+            <td><span class="pw-check"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></td>
+            <td class="pw-cell-featured"><span class="pw-check"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5l3 3 5-5" stroke="var(--canvas)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></td>
+            <td><span class="pw-check"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></td>
+          </tr>
+          <tr>
+            <td>Dirigirse a ti</td>
+            <td style="font-size:11px">H/M/neutro</td>
+            <td class="pw-cell-featured" style="font-size:11px">H/M/neutro</td>
+            <td style="font-size:11px">H/M/neutro</td>
+          </tr>
+          <tr>
+            <td>Guardar sesiones</td>
+            <td>30</td>
+            <td class="pw-cell-featured">150</td>
+            <td>Ilimitado</td>
+          </tr>
+          <tr>
+            <td>Reescucha gratis</td>
+            <td><span class="pw-check"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></td>
+            <td class="pw-cell-featured"><span class="pw-check"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5l3 3 5-5" stroke="var(--canvas)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></td>
+            <td><span class="pw-check"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></td>
+          </tr>
+        </tbody>
+      </table>
 
       <button class="s-btn s-btn-primary pw-cta-main" id="pw-cta-btn" onclick="pwProceed()">Empezar con Premium</button>
-      <p class="pw-guarantee">Sin permanencia. Cancela cuando quieras.</p>
+      <p class="pw-guarantee">cancela cuando quieras</p>
 
     </div>
   </div>
@@ -1195,7 +1179,7 @@
       document.getElementById('pw-btn-monthly').classList.toggle('pw-toggle-active', cycle === 'monthly');
       document.getElementById('pw-btn-annual').classList.toggle('pw-toggle-active', cycle === 'annual');
       document.getElementById('pw-toggle-slider').style.transform = cycle === 'monthly' ? 'translateX(0)' : 'translateX(100%)';
-      const suffix = cycle === 'monthly' ? ' /mes' : ' /mes anual';
+      const suffix = cycle === 'monthly' ? '/mes' : '/año';
       ['essential','premium','studio'].forEach(p => {
         const el = document.getElementById('pw-price-' + p);
         if (el) el.textContent = PW_PRICES[p][cycle];
@@ -1210,8 +1194,8 @@
       const ctaBtn = document.getElementById('pw-cta-btn');
       if (ctaBtn) ctaBtn.textContent = 'Empezar con ' + labels[plan];
       ['essential','premium','studio'].forEach(p => {
-        const card = document.getElementById('pw-card-' + p);
-        if (card) card.classList.toggle('pw-plan-card-selected', p === plan);
+        const col = document.getElementById('pw-col-' + p);
+        if (col) col.classList.toggle('pw-col-selected', p === plan);
       });
     }
 

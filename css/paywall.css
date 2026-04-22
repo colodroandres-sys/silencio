@@ -211,6 +211,19 @@
   border-radius: 0 0 14px 14px;
 }
 
+/* Selected column highlight */
+.pw-col-header.pw-col-selected {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
+  border-radius: 14px 14px 0 0;
+}
+.pw-col-header.pw-col-featured.pw-col-selected {
+  outline: 2px solid var(--accent);
+}
+
+/* Column header cursor */
+.pw-col-header { cursor: pointer; }
+
 /* CTA main */
 .pw-cta-main { margin-bottom: 12px; }
 .pw-guarantee {

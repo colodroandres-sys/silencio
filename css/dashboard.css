@@ -427,6 +427,8 @@
   cursor: default;
 }
 .profile-setting-locked:hover { background: transparent; }
+.profile-setting-highlight .profile-setting-label { color: var(--accent); }
+.profile-setting-nosuffix .profile-setting-value::after { display: none; }
 
 /* Buzón row in profile */
 .profile-buzon-row {
