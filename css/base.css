@@ -1,20 +1,36 @@
 /* =============================================
-   TOKENS
+   DESIGN TOKENS — Paleta Mist
    ============================================= */
 :root {
-  --sand:       #c9a96e;
-  --sand-light: #e8d5a8;
-  --sand-dim:   rgba(201, 169, 110, 0.6);
-  --text:       #f2ede4;
-  --text-70:    rgba(242, 237, 228, 0.70);
-  --text-45:    rgba(242, 237, 228, 0.45);
-  --text-20:    rgba(242, 237, 228, 0.20);
-  --glass:      rgba(10, 15, 8, 0.52);
-  --glass-b:    rgba(242, 237, 228, 0.08);
-  --glass-brd:  rgba(242, 237, 228, 0.12);
-  --ease:       cubic-bezier(0.4, 0, 0.2, 1);
-  --r-card:     22px;
-  --r-pill:     100px;
+  /* Paleta Mist */
+  --canvas:      #E6E8E6;   /* fondo principal */
+  --surface:     #EFF1EE;   /* cards, inputs */
+  --ink:         #1A1F1D;   /* texto principal, botones */
+  --muted:       #6B7570;   /* texto secundario */
+  --faint:       #B8BFB9;   /* divisores, bordes */
+  --accent:      #3E5C68;   /* teal profundo */
+  --accent-soft: #C7D5D9;   /* fondos insight, chips badge */
+  --contrast:    #1F2623;   /* cards oscuras sobre canvas */
+  --night:       #121714;   /* fondo dark (player, loading) */
+  --night-fg:    #E8ECE9;   /* texto sobre night */
+
+  /* Tipografía */
+  --font-display: 'Fraunces', 'Times New Roman', serif;
+  --font-sans:    'Inter Tight', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, monospace;
+
+  /* Radios */
+  --r-pill:   999px;
+  --r-btn:    999px;
+  --r-card:   18px;
+  --r-card-sm: 14px;
+  --r-card-lg: 24px;
+
+  /* Sombras */
+  --shadow-card: 0 1px 3px rgba(0,0,0,.06);
+
+  /* Ease */
+  --ease: cubic-bezier(0.4, 0.2, 0.2, 1);
 }
 
 /* =============================================
@@ -23,11 +39,12 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
 body {
-  font-family: 'Inter', sans-serif;
-  font-weight: 300;
-  background: #0a0e08;
-  color: var(--text);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  background: var(--canvas);
+  color: var(--ink);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* =============================================
@@ -37,14 +54,9 @@ body {
   position: fixed;
   inset: 0;
   z-index: 0;
-  background:
-    radial-gradient(ellipse 90% 55% at 50% -5%, rgba(201, 169, 110, 0.09) 0%, transparent 70%),
-    radial-gradient(ellipse 55% 70% at 15% 85%, rgba(90, 110, 85, 0.07) 0%, transparent 65%),
-    #0a0e08;
+  background: var(--canvas);
 }
-.bg-overlay {
-  display: none;
-}
+.bg-overlay { display: none; }
 
 /* =============================================
    SCREENS
@@ -55,19 +67,24 @@ body {
   display: flex;
   flex-direction: column;
   opacity: 0;
-  transform: translateY(18px);
+  transform: translateY(12px);
   pointer-events: none;
-  transition: opacity 0.45s var(--ease), transform 0.45s var(--ease);
+  transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
   z-index: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  background: var(--canvas);
+}
+.screen.dark-screen {
+  background: var(--night);
 }
 .screen.active {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
 }
+
 .screen-inner {
   width: 100%;
   max-width: 460px;
@@ -85,8 +102,186 @@ body {
   padding-top: 24px;
   padding-bottom: 24px;
 }
-/* Cuando los end states tienen contenido largo, el player hace scroll desde arriba */
-#screen-player.end-active .screen-inner.center {
-  justify-content: flex-start;
-  padding-top: 40px;
+
+/* =============================================
+   TIPOGRAFÍA GLOBAL
+   ============================================= */
+.s-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.022em;
+  line-height: 1.15;
+  color: var(--ink);
 }
+.s-display em { font-style: italic; font-weight: 300; }
+
+.s-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0.75;
+}
+
+.s-body {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  color: var(--muted);
+}
+
+/* =============================================
+   BOTONES GLOBALES
+   ============================================= */
+.s-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 54px;
+  padding: 0 22px;
+  border-radius: var(--r-btn);
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  letter-spacing: -0.01em;
+}
+.s-btn:active { transform: scale(0.985); }
+.s-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+.s-btn-primary {
+  background: var(--ink);
+  color: var(--canvas);
+}
+.s-btn-primary:hover:not(:disabled) { opacity: 0.9; }
+
+.s-btn-accent {
+  background: var(--accent);
+  color: var(--night-fg);
+}
+
+.s-btn-ghost {
+  background: transparent;
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+}
+.s-btn-ghost:hover:not(:disabled) { background: var(--surface); }
+
+.s-btn-soft {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+.s-btn-dark {
+  background: var(--night-fg);
+  color: var(--night);
+}
+.s-btn-dark:hover:not(:disabled) { opacity: 0.9; }
+
+.s-btn-sm {
+  height: 40px;
+  font-size: 14px;
+  padding: 0 16px;
+}
+
+/* =============================================
+   CHIPS
+   ============================================= */
+.s-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--faint);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.s-chip:hover { background: var(--surface); }
+.s-chip.active {
+  background: var(--ink);
+  color: var(--canvas);
+  border-color: var(--ink);
+}
+.s-chip.locked {
+  opacity: 0.45;
+  cursor: default;
+}
+.s-chip-sm {
+  height: 34px;
+  font-size: 13px;
+  padding: 0 12px;
+}
+
+/* =============================================
+   LOGO / WORDMARK
+   ============================================= */
+.stillova-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+
+.stillova-glyph svg { display: block; }
+
+/* =============================================
+   TOAST
+   ============================================= */
+.toast {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  background: var(--ink);
+  border-radius: 100px;
+  padding: 11px 20px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--canvas);
+  opacity: 0;
+  z-index: 999;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+.toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* =============================================
+   FOOTER
+   ============================================= */
+.site-footer {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 72px);
+  left: 0; right: 0;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--faint);
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.site-footer a { color: var(--faint); text-decoration: none; pointer-events: auto; }
+.site-footer a:hover { color: var(--muted); }
+
+/* =============================================
+   MISC UTILS
+   ============================================= */
+.hidden { display: none !important; }

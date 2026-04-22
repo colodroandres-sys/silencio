@@ -38,20 +38,14 @@ function renderHomeRecents(meditations) {
 
   list.innerHTML = meditations.slice(0, 3).map(m => {
     const dateStr = formatRelativeDate(m.created_at);
-    const tagHtml = m.emotion_tag
-      ? `<span class="home-recent-tag">${EMOTION_LABELS[m.emotion_tag] || m.emotion_tag}</span>`
-      : '';
+    const tag = m.emotion_tag ? (EMOTION_LABELS[m.emotion_tag] || m.emotion_tag) : null;
     return `
-      <div class="home-recent-card" onclick="showCreate()">
-        <div>
-          <div class="home-recent-title">${escapeHtml(m.title)}</div>
-          <div class="home-recent-meta">
-            <span>${dateStr}</span>
-            <span>${m.duration} min</span>
-            ${tagHtml}
-          </div>
+      <div class="med-card" onclick="showCreate()">
+        <div class="med-info">
+          <div class="med-title">${escapeHtml(m.title)}</div>
+          <div class="med-meta">${dateStr} · ${m.duration} min${tag ? ' · ' + tag : ''}</div>
         </div>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;color:var(--text-45)">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;color:var(--muted)">
           <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>`;

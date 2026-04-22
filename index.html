@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Stillova — Meditaciones creadas solo para ti</title>
   <meta name="description" content="Describe cómo te sientes y Stillova genera una meditación de audio única, personalizada al 100% para ese momento. Cada sesión es diferente.">
-  <meta name="theme-color" content="#0a0e08">
+  <meta name="theme-color" content="#E6E8E6">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <link rel="manifest" href="/manifest.json">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Stillova">
   <meta property="og:title" content="Stillova — Meditaciones creadas solo para ti">
   <meta property="og:description" content="No hay meditaciones genéricas. Cada sesión se genera en el momento, solo para ti.">
@@ -22,7 +22,7 @@
   <meta name="twitter:description" content="No hay meditaciones genéricas. Cada sesión se genera en el momento, solo para ti.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/player.css">
@@ -44,107 +44,160 @@
   <div class="bg-photo"></div>
 
   <!-- ══════════════════════════════════════════
-       ONBOARDING — solo primera vez
+       ONBOARDING — solo primera vez (4 pasos)
        ══════════════════════════════════════════ -->
   <div id="screen-onboarding" class="screen">
     <div class="ob-wrap">
 
-      <!-- Progress bar -->
-      <div class="ob-progress" id="ob-progress">
-        <div class="ob-progress-fill" id="ob-progress-fill"></div>
+      <!-- Dots de progreso (top) -->
+      <div class="ob-dots" id="ob-dots">
+        <div class="ob-dot active" id="ob-dot-1"></div>
+        <div class="ob-dot" id="ob-dot-2"></div>
+        <div class="ob-dot" id="ob-dot-3"></div>
+        <div class="ob-dot" id="ob-dot-4"></div>
       </div>
 
       <!-- Back button -->
-      <button class="ob-back" id="ob-back" onclick="obBack()" style="display:none">
+      <button class="ob-back" id="ob-back" onclick="obBack()" style="display:none" aria-label="Volver">
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
           <path d="M11 4L6 9l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
 
-      <!-- ── Paso 1 — ¿Qué ocupa tu mente? ── -->
+      <!-- ── Paso 1 — Bienvenida ── -->
       <div class="ob-step active" id="ob-1">
-        <div class="ob-inner">
-          <p class="ob-eyebrow">Bienvenido a Stillova</p>
-          <h2 class="ob-headline">¿Qué ha estado<br>ocupando tu mente<br>últimamente?</h2>
-          <p class="ob-sub">Elige lo que más resuene. Puedes seleccionar varios.</p>
-          <div class="ob-chips" id="ob-topics">
-            <button class="ob-chip" data-value="ansiedad" onclick="obChipToggle(this)">Ansiedad</button>
-            <button class="ob-chip" data-value="trabajo" onclick="obChipToggle(this)">Trabajo</button>
-            <button class="ob-chip" data-value="relaciones" onclick="obChipToggle(this)">Relaciones</button>
-            <button class="ob-chip" data-value="familia" onclick="obChipToggle(this)">Familia</button>
-            <button class="ob-chip" data-value="sueno" onclick="obChipToggle(this)">Sueño</button>
-            <button class="ob-chip" data-value="enfoque" onclick="obChipToggle(this)">Enfoque</button>
-            <button class="ob-chip" data-value="decisiones" onclick="obChipToggle(this)">Decisiones</button>
-            <button class="ob-chip" data-value="soltar" onclick="obChipToggle(this)">Soltar algo</button>
-            <button class="ob-chip" data-value="otro" onclick="obChipToggle(this)">Otra cosa</button>
+        <div class="ob-inner ob-inner-welcome">
+          <div class="ob-brand-mark">
+            <svg class="ob-glyph" width="36" height="36" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" stroke="var(--ink)" stroke-width="0.9" stroke-opacity="0.35"/>
+              <circle cx="12" cy="12" r="2.6" fill="var(--ink)"/>
+              <circle cx="19.5" cy="8" r="1.6" fill="var(--ink)"/>
+            </svg>
+            <p class="s-eyebrow ob-eyebrow-brand">Meditación · IA generativa</p>
           </div>
-          <button class="ob-btn-primary" onclick="obNext(3)">Continuar</button>
-          <button class="ob-signin-link" onclick="openAuth()">Ya tengo cuenta · Iniciar sesión</button>
+          <h1 class="ob-headline-xl">Una meditación <em>hecha para este</em> momento exacto.</h1>
+          <p class="s-body ob-body-muted">Nada pregrabado. Nada genérico. La IA escucha cómo te sientes y compone una sesión única, ahora.</p>
+          <div class="ob-ctas">
+            <button class="s-btn s-btn-primary" onclick="obNext(2)">Empezar</button>
+            <button class="s-btn s-btn-ghost" onclick="openAuth()">Ya tengo cuenta</button>
+          </div>
         </div>
       </div>
 
-      <!-- ── Paso 3 — Objetivo ── -->
+      <!-- ── Paso 2 — Por qué meditas ── -->
+      <div class="ob-step" id="ob-2">
+        <div class="ob-inner">
+          <p class="s-eyebrow ob-step-eyebrow">01 · Por qué meditas</p>
+          <h2 class="ob-headline-md">¿Qué te trae <em>aquí</em>?</h2>
+          <p class="s-body ob-body-sub">Elige una o varias. Puedes cambiarlo cuando quieras.</p>
+          <div class="ob-option-cards" id="ob-topics">
+            <button class="ob-option-card" data-value="ansiedad" onclick="obCardToggle(this)">
+              <div class="ob-option-info">
+                <div class="ob-option-label">Ansiedad o estrés</div>
+                <div class="ob-option-hint">Sesiones para soltar tensión</div>
+              </div>
+              <div class="ob-option-check"><div class="ob-check-dot"></div></div>
+            </button>
+            <button class="ob-option-card" data-value="sueno" onclick="obCardToggle(this)">
+              <div class="ob-option-info">
+                <div class="ob-option-label">Dormir mejor</div>
+                <div class="ob-option-hint">Apaga la mente antes de la cama</div>
+              </div>
+              <div class="ob-option-check"><div class="ob-check-dot"></div></div>
+            </button>
+            <button class="ob-option-card" data-value="enfoque" onclick="obCardToggle(this)">
+              <div class="ob-option-info">
+                <div class="ob-option-label">Concentración</div>
+                <div class="ob-option-hint">Enfócate sin esfuerzo</div>
+              </div>
+              <div class="ob-option-check"><div class="ob-check-dot"></div></div>
+            </button>
+            <button class="ob-option-card" data-value="reconectar" onclick="obCardToggle(this)">
+              <div class="ob-option-info">
+                <div class="ob-option-label">Reconectar conmigo</div>
+                <div class="ob-option-hint">Introspección, pausa diaria</div>
+              </div>
+              <div class="ob-option-check"><div class="ob-check-dot"></div></div>
+            </button>
+            <button class="ob-option-card" data-value="otro" onclick="obCardToggle(this)">
+              <div class="ob-option-info">
+                <div class="ob-option-label">Aún no lo sé</div>
+                <div class="ob-option-hint">La IA lo descubre contigo</div>
+              </div>
+              <div class="ob-option-check"><div class="ob-check-dot"></div></div>
+            </button>
+          </div>
+          <button class="s-btn s-btn-primary ob-cta" onclick="obNext(3)">Continuar</button>
+        </div>
+      </div>
+
+      <!-- ── Paso 3 — Cómo funciona ── -->
       <div class="ob-step" id="ob-3">
         <div class="ob-inner">
-          <h2 class="ob-headline">¿Para qué<br>quieres meditar?</h2>
-          <div class="ob-goal-cards">
-            <button class="ob-goal-card" data-value="calma" onclick="obSelectGoal(this)">
-              <div class="ob-goal-emoji">🌊</div>
-              <div class="ob-goal-name">Calma</div>
-              <div class="ob-goal-desc">Soltar el estrés y encontrar paz interior</div>
-            </button>
-            <button class="ob-goal-card" data-value="claridad" onclick="obSelectGoal(this)">
-              <div class="ob-goal-emoji">✨</div>
-              <div class="ob-goal-name">Claridad</div>
-              <div class="ob-goal-desc">Ordenar la mente y ver las cosas con perspectiva</div>
-            </button>
-            <button class="ob-goal-card" data-value="liberacion" onclick="obSelectGoal(this)">
-              <div class="ob-goal-emoji">🌿</div>
-              <div class="ob-goal-name">Liberación</div>
-              <div class="ob-goal-desc">Soltar emociones y sentirme más libre</div>
-            </button>
+          <p class="s-eyebrow ob-step-eyebrow">02 · Cómo funciona</p>
+          <h2 class="ob-headline-md">Tres pasos. <em>Sin guión.</em></h2>
+          <div class="ob-steps-list">
+            <div class="ob-step-item">
+              <span class="ob-step-num">01</span>
+              <div class="ob-step-content">
+                <div class="ob-step-title">Cuéntale a la IA</div>
+                <div class="ob-step-desc">Escribe cómo te sientes, o deja que te guíe con preguntas cortas.</div>
+              </div>
+            </div>
+            <div class="ob-step-item">
+              <span class="ob-step-num">02</span>
+              <div class="ob-step-content">
+                <div class="ob-step-title">La meditación se compone</div>
+                <div class="ob-step-desc">Voz, ritmo y técnica se eligen para tu estado en tiempo real.</div>
+              </div>
+            </div>
+            <div class="ob-step-item ob-step-item-last">
+              <span class="ob-step-num">03</span>
+              <div class="ob-step-content">
+                <div class="ob-step-title">Escucha. Respira.</div>
+                <div class="ob-step-desc">Cada sesión es única. No habrá otra igual.</div>
+              </div>
+            </div>
           </div>
-          <p class="ob-select-hint" id="ob-3-hint">Elige una opción para continuar</p>
-          <button class="ob-btn-primary" id="ob-3-next" onclick="obNext(6)" disabled>Continuar</button>
+          <button class="s-btn s-btn-primary ob-cta" onclick="obNext(4)">Continuar</button>
         </div>
       </div>
 
-      <!-- ── Paso 6 — Paywall onboarding ── -->
-      <div class="ob-step" id="ob-6">
+      <!-- ── Paso 4 — Primera sesión ── -->
+      <div class="ob-step" id="ob-4">
         <div class="ob-inner">
-          <p class="ob-eyebrow">Elige tu plan</p>
-          <h2 class="ob-headline">Una meditación distinta<br>cada vez que la necesites.</h2>
-          <p class="ob-retention-hook">Cada sesión te conoce mejor. Con el tiempo, la meditación cambia contigo.</p>
-
-          <div class="ob-plan-cards">
-            <button class="ob-plan-card ob-plan-featured" onclick="obStartPlan('premium')">
-              <div class="ob-plan-badge">★ Más popular</div>
-              <div class="ob-plan-name">Premium</div>
-              <div class="ob-plan-price"><span class="ob-plan-price-was">€19.99</span>€13.99<span class="ob-plan-period">/mes</span></div>
-              <div class="ob-plan-price-note">primer mes · luego €19.99</div>
-              <ul class="ob-plan-features">
-                <li>25 sesiones únicas al mes</li>
-                <li>Hasta 20 min por sesión</li>
-                <li>Biblioteca personal ilimitada</li>
-                <li>Voz y sonido a tu elección</li>
-              </ul>
-              <div class="ob-plan-cta-btn">Empezar</div>
-            </button>
-            <button class="ob-plan-card" onclick="obStartPlan('essential')">
-              <div class="ob-plan-name">Essential</div>
-              <div class="ob-plan-price"><span class="ob-plan-price-was">€9.99</span>€6.99<span class="ob-plan-period">/mes</span></div>
-              <div class="ob-plan-price-note">primer mes · luego €9.99</div>
-              <ul class="ob-plan-features">
-                <li>10 sesiones únicas al mes</li>
-                <li>Hasta 15 min por sesión</li>
-                <li>Guarda hasta 20 sesiones</li>
-              </ul>
-              <div class="ob-plan-cta-btn ob-plan-cta-ghost">Elegir</div>
-            </button>
+          <p class="s-eyebrow ob-step-eyebrow">03 · Tu primera sesión</p>
+          <h2 class="ob-headline-md">Una, <em>gratis</em>. Sin tarjeta.</h2>
+          <p class="s-body ob-body-sub">Prueba la experiencia completa. Si sientes que es para ti, sigues.</p>
+          <div class="ob-features-card">
+            <div class="ob-feature-row">
+              <div class="ob-feature-info">
+                <div class="ob-feature-title">5 minutos</div>
+                <div class="ob-feature-desc">Máximo de tu primera meditación</div>
+              </div>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9l3.5 3.5L14 5.5" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="ob-feature-divider"></div>
+            <div class="ob-feature-row">
+              <div class="ob-feature-info">
+                <div class="ob-feature-title">Voz automática</div>
+                <div class="ob-feature-desc">Elegida según tu estado</div>
+              </div>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9l3.5 3.5L14 5.5" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="ob-feature-divider"></div>
+            <div class="ob-feature-row">
+              <div class="ob-feature-info">
+                <div class="ob-feature-title">No se guarda</div>
+                <div class="ob-feature-desc">Crea cuenta después para conservarla</div>
+              </div>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9l3.5 3.5L14 5.5" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
           </div>
-
-          <p class="ob-plan-guarantee">Sin permanencia · Cancela cuando quieras</p>
-          <button class="ob-free-link" onclick="obSkipToFree()">Probar gratis · 1 sesión sin tarjeta</button>
+          <div class="ob-ctas">
+            <button class="s-btn s-btn-primary" onclick="obSkipToFree()">Empezar mi primera sesión</button>
+            <button class="ob-link-btn" onclick="openAuth()">Crear cuenta ahora</button>
+          </div>
         </div>
       </div>
 
@@ -155,17 +208,31 @@
        PANTALLA HOME
        ══════════════════════════════════════════ -->
   <div id="screen-home" class="screen">
-    <div class="screen-inner">
+    <div class="home-scroll">
 
-      <div class="top-bar">
-        <div class="logo"><span>Stillova</span></div>
-
-        <div id="user-status" class="user-menu-wrap" style="display:none">
-          <button class="user-avatar-btn" id="user-avatar-btn" onclick="toggleUserMenu()" aria-label="Menú de usuario">
-            <svg width="17" height="17" viewBox="0 0 18 18" fill="none">
-              <circle cx="9" cy="6.5" r="3" stroke="currentColor" stroke-width="1.5"/>
-              <path d="M2 16c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- TOP BAR -->
+      <div class="home-topbar">
+        <!-- Guest: wordmark + Entrar -->
+        <div id="home-guest-bar" class="home-topbar-inner" style="display:none">
+          <div class="stillova-wordmark">
+            <svg class="stillova-glyph" width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" stroke="var(--ink)" stroke-width="0.9" stroke-opacity="0.35"/>
+              <circle cx="12" cy="12" r="2.6" fill="var(--ink)"/>
+              <circle cx="19.5" cy="8" r="1.6" fill="var(--ink)"/>
             </svg>
+            <span>stillova</span>
+          </div>
+          <button class="home-btn-entrar" onclick="openAuth()">Entrar</button>
+        </div>
+
+        <!-- User: fecha + saludo + avatar -->
+        <div id="home-user-bar" class="home-topbar-inner" style="display:none">
+          <div>
+            <p class="s-eyebrow home-date-eyebrow" id="home-date-eyebrow">—</p>
+            <p class="home-greeting-serif" id="home-greeting-serif">Buenas tardes</p>
+          </div>
+          <button class="home-avatar-btn" id="home-avatar-btn" onclick="toggleUserMenu()" aria-label="Menú de usuario">
+            <span id="home-avatar-initial">A</span>
           </button>
           <div class="user-dropdown" id="user-dropdown">
             <div class="user-dropdown-info">
@@ -173,79 +240,109 @@
               <span id="usage-info" class="usage-info">Primera meditación gratis</span>
             </div>
             <div class="user-dropdown-sep"></div>
-            <a href="#" onclick="openLibrary(); return false;" class="user-dropdown-link">Mi biblioteca</a>
             <button class="user-dropdown-btn" onclick="signOut()">Cerrar sesión</button>
           </div>
         </div>
+      </div>
 
-        <div id="guest-actions" style="display:none">
-          <button class="btn-signin" onclick="openAuth()">Iniciar sesión</button>
+      <!-- HOME GUEST CONTENT -->
+      <div id="home-guest-content" class="home-body" style="display:none">
+        <p class="s-eyebrow home-time-eyebrow" id="home-time-eyebrow">—</p>
+        <h1 class="home-headline">Hola. <em>¿Cómo estás hoy?</em></h1>
+        <p class="s-body home-sub">Tu primera meditación es gratis. Cuéntame qué sientes y la genero ahora.</p>
+
+        <!-- CTA card ink -->
+        <div class="home-cta-card" onclick="showCreate()">
+          <p class="s-eyebrow home-cta-eyebrow">gratis · sin tarjeta</p>
+          <p class="home-cta-title">Empieza tu <em>primera</em><br>sesión de 5 min</p>
+          <button class="s-btn s-btn-dark s-btn-sm home-cta-btn" tabindex="-1">Generar meditación</button>
+        </div>
+
+        <!-- Coming soon grid -->
+        <div class="home-coming-grid">
+          <div class="home-coming-card">
+            <p class="s-eyebrow home-coming-eyebrow">próximamente</p>
+            <p class="home-coming-title">Respiración guiada</p>
+          </div>
+          <div class="home-coming-card">
+            <p class="s-eyebrow home-coming-eyebrow">próximamente</p>
+            <p class="home-coming-title">Body scan</p>
+          </div>
+        </div>
+
+        <!-- Editorial -->
+        <div class="home-editorial">
+          <p class="s-eyebrow" style="margin-bottom:8px">Por qué Stillova</p>
+          <p class="home-editorial-text">Cada sesión se <em>compone en el momento</em> según tu estado. Nada se repite.</p>
         </div>
       </div>
 
-      <div class="home-body">
+      <!-- HOME USER CONTENT -->
+      <div id="home-user-content" class="home-body" style="display:none">
 
-        <!-- Saludo + CTA principal -->
-        <div class="home-hero">
-          <p class="home-greeting" id="home-greeting">¿Cómo te sientes hoy... de verdad?</p>
-          <button class="home-cta" onclick="showCreate()">
-            <span>Crear meditación para mí</span>
-            <span class="home-cta-arrow">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-          </button>
+        <!-- Streak strip -->
+        <div class="home-streak-strip" id="home-streak-strip" style="display:none">
+          <div class="streak-left">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2C8 6 4 7 4 11c0 3.3 2.7 6 6 6s6-2.7 6-6c0-3-3-5-6-9z" fill="var(--accent)" opacity="0.9"/></svg>
+            <div>
+              <div class="streak-count"><span id="home-streak-num">0</span> <span class="streak-unit">días</span></div>
+              <div class="streak-label">racha consecutiva · tu mente lo nota</div>
+            </div>
+          </div>
+          <div class="streak-bars" id="home-streak-bars"></div>
         </div>
 
-        <!-- Accesos rápidos -->
-        <p id="home-quick-label" class="home-quick-label">¿Sabes ya para qué?</p>
-        <div class="quick-access">
-          <button class="quick-btn" onclick="quickAccess('ansiedad','Me siento ansioso y necesito calmarme')">Ansiedad</button>
-          <button class="quick-btn" onclick="quickAccess('sueno','Necesito prepararme para dormir')">Dormir</button>
-          <button class="quick-btn" onclick="quickAccess('claridad','Necesito claridad mental y enfocarme')">Claridad</button>
-          <button class="quick-btn" onclick="quickAccess('liberacion','Necesito soltar algo que me está pesando')">Soltar</button>
-          <button class="quick-btn" onclick="quickAccess('enfoque','Quiero concentrarme y ser más productivo')">Enfoque</button>
+        <!-- CTA generar -->
+        <div class="home-cta-card home-cta-account" onclick="showCreate()">
+          <p class="s-eyebrow home-cta-eyebrow">nueva sesión</p>
+          <p class="home-cta-title">¿Cómo te <em>sientes</em> ahora?</p>
+          <button class="s-btn s-btn-dark s-btn-sm home-cta-btn" tabindex="-1">Crear meditación</button>
         </div>
 
-        <!-- Guest intro — solo visible sin sesión -->
-        <div id="home-guest-intro" class="home-guest-intro" style="display:none">
-          <p class="home-guest-narrative">¿Ansiedad antes de una reunión? ¿No puedes dormir? ¿Demasiadas cosas en la cabeza?<br>Esta sesión es para ese momento exacto — no para cualquiera.</p>
-          <div class="home-guest-testimonial">
-            <span class="home-guest-stars">★★★★★</span>
-            <p class="home-guest-quote">"Por primera vez una meditación que realmente habla de lo que me pasa a mí."</p>
-            <span class="home-guest-author">— Marta G., primera sesión</span>
+        <!-- Stats -->
+        <div class="home-stats-grid" id="home-stats-grid" style="display:none">
+          <div class="stat-card">
+            <p class="s-eyebrow stat-label">esta semana</p>
+            <div class="stat-value-row">
+              <span class="stat-number" id="home-stat-minutes">0</span>
+              <span class="stat-unit">min</span>
+            </div>
           </div>
-          <div class="home-guest-pills">
-            <span class="home-guest-pill">Sin cuenta · sin tarjeta</span>
-            <span class="home-guest-pill">Diferente cada vez</span>
-            <span class="home-guest-pill">Primera sesión gratis</span>
-          </div>
-          <p class="home-guest-anti-pressure">Sin rachas. Sin objetivos. Solo este momento.</p>
-        </div>
-
-        <!-- Gamificación -->
-        <div class="home-gam" id="home-gam" style="display:none">
-          <div class="gam-stat">
-            <div class="gam-value" id="gam-streak">0</div>
-            <div class="gam-label">Racha</div>
-          </div>
-          <div class="gam-divider"></div>
-          <div class="gam-stat">
-            <div class="gam-value" id="gam-minutes">0</div>
-            <div class="gam-label">Min esta semana</div>
-          </div>
-          <div class="gam-divider"></div>
-          <div class="gam-stat">
-            <div class="gam-value gam-level" id="gam-level">—</div>
-            <div class="gam-label">Nivel</div>
+          <div class="stat-card">
+            <p class="s-eyebrow stat-label">nivel</p>
+            <div class="stat-value-row">
+              <span class="stat-number" id="home-stat-level">1</span>
+              <span class="stat-unit">·</span>
+            </div>
+            <div class="stat-sublabel" id="home-stat-level-name">Principiante</div>
           </div>
         </div>
 
-        <!-- Meditaciones recientes -->
+        <!-- Insight card -->
+        <div class="home-insight-card" id="home-insight-card" style="display:none">
+          <div class="home-insight-header">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.5 3.1 3.4.5-2.45 2.38.58 3.37L8 8.75l-3.03 1.6.58-3.37L3.1 4.6l3.4-.5L8 1z" stroke="var(--accent)" stroke-width="1.2" stroke-linejoin="round"/></svg>
+            <p class="s-eyebrow" style="color:var(--accent)">insight personal</p>
+          </div>
+          <p class="home-insight-text" id="home-insight-text">Sueles meditar cuando tienes <em>ansiedad</em>. Tu sesión más efectiva fue de 10 min por la mañana.</p>
+        </div>
+
+        <!-- Recientes -->
         <div id="home-recents" style="display:none">
-          <p class="home-section-title">Recientes</p>
+          <div class="home-recents-header">
+            <p class="s-eyebrow">tu biblioteca</p>
+            <button class="home-recents-ver" onclick="openLibrary()">ver todo</button>
+          </div>
           <div id="home-recents-list" class="home-recents-list"></div>
+        </div>
+
+        <!-- Gamificación legacy (oculto) -->
+        <div class="home-gam" id="home-gam" style="display:none">
+          <div class="gam-stat"><div class="gam-value" id="gam-streak">0</div><div class="gam-label">Racha</div></div>
+          <div class="gam-divider"></div>
+          <div class="gam-stat"><div class="gam-value" id="gam-minutes">0</div><div class="gam-label">Min esta semana</div></div>
+          <div class="gam-divider"></div>
+          <div class="gam-stat"><div class="gam-value gam-level" id="gam-level">—</div><div class="gam-label">Nivel</div></div>
         </div>
 
       </div>
@@ -253,21 +350,20 @@
   </div>
 
   <!-- ══════════════════════════════════════════
-       PANTALLA CREAR — conversacional
+       PANTALLA CREAR
        ══════════════════════════════════════════ -->
   <div id="screen-create" class="screen">
-    <div class="screen-inner">
+    <div class="screen-inner create-inner">
 
-      <button class="create-back" onclick="showHome()">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Volver
-      </button>
-
-      <div class="create-steps" id="create-steps">
-        <span class="create-step active" id="cstep-1"></span>
-        <span class="create-step" id="cstep-2"></span>
+      <!-- Header -->
+      <div class="create-header">
+        <button class="create-close-btn" onclick="showHome()" aria-label="Cerrar">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <p class="s-eyebrow">nueva sesión</p>
+        <div style="width:38px"></div>
       </div>
 
       <!-- Sección 1: Input -->
@@ -276,42 +372,60 @@
           <span>Ya usaste tu meditación gratuita.</span>
           <button onclick="showPaywall(); track('paywall_shown',{trigger:'no_credits_banner'})" class="no-credits-cta">Ver planes</button>
         </div>
-        <h2 class="convo-headline">¿Qué tienes<br>en la cabeza ahora?</h2>
 
-        <div id="create-guest-hint" class="create-guest-hint" style="display:none">
-          <p class="create-guest-hint-text">Cuéntame y en segundos tendrás una meditación de audio creada solo para este momento.</p>
-          <div class="create-guest-tags">
-            <span class="create-guest-tag">Voz humana real</span>
-            <span class="create-guest-tag">5 min · Gratis</span>
-            <span class="create-guest-tag">Sin cuenta</span>
+        <h2 class="create-headline">¿Cómo te <em>sientes</em>?</h2>
+        <p class="s-body create-body-muted">Descríbelo como quieras. Una palabra, una frase, un párrafo. La IA te entiende.</p>
+
+        <!-- Textarea card -->
+        <div class="create-input-card">
+          <textarea
+            id="input-free"
+            class="create-textarea"
+            placeholder="Hoy me siento…"
+            oninput="onInputChange()"
+          ></textarea>
+        </div>
+
+        <!-- Quick prompts -->
+        <div class="create-quick-prompts">
+          <p class="s-eyebrow create-prompts-label">o prueba con</p>
+          <div class="create-chips-row">
+            <button class="s-chip s-chip-sm" onclick="quickPrompt('ansioso/a')">ansioso/a</button>
+            <button class="s-chip s-chip-sm" onclick="quickPrompt('no puedo dormir')">no puedo dormir</button>
+            <button class="s-chip s-chip-sm" onclick="quickPrompt('antes de una reunión')">antes de una reunión</button>
+            <button class="s-chip s-chip-sm" onclick="quickPrompt('necesito enfocarme')">necesito enfocarme</button>
+            <button class="s-chip s-chip-sm" onclick="quickPrompt('pausa de 5 min')">pausa de 5 min</button>
           </div>
         </div>
 
-        <textarea
-          id="input-free"
-          class="convo-textarea"
-          placeholder="Cuéntame cómo te sientes. Sin filtros."
-          oninput="onInputChange()"
-        ></textarea>
-        <button class="convo-continue-btn" id="btn-continue-input" onclick="convoRevealConfig()" disabled>
-          Continuar
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
+        <!-- Bottom row: mic + generate -->
+        <div class="create-bottom-row">
+          <button class="create-mic-btn" aria-label="Micrófono" style="visibility:hidden">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="6" y="1" width="6" height="10" rx="3" stroke="currentColor" stroke-width="1.4"/><path d="M3 9a6 6 0 0012 0M9 15v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </button>
+          <button class="s-btn s-btn-primary" id="btn-continue-input" onclick="convoRevealConfig()" disabled style="flex:1">
+            Generar meditación
+          </button>
+        </div>
       </div>
 
       <!-- Sección 2: Config (oculta hasta que el usuario escribe) -->
       <div class="convo-section convo-hidden" id="cs-config">
         <p class="convo-question">Personaliza tu sesión</p>
 
+        <!-- IA detected row -->
+        <div class="ia-detected-row" id="ia-detected-row" style="display:none">
+          <svg class="ia-sparkle" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.5 3.1 3.4.5-2.45 2.38.58 3.37L8 8.75l-3.03 1.6.58-3.37L3.1 4.6l3.4-.5L8 1z" stroke="var(--accent)" stroke-width="1.2" stroke-linejoin="round"/></svg>
+          <p class="ia-detected-text" id="ia-detected-text">La IA detectó <strong>ansiedad</strong> · técnica sugerida: respiración 4-7-8</p>
+        </div>
+
         <div class="convo-pref-group">
           <span class="pref-label">Duración</span>
           <div id="grp-duration" class="pill-row">
-            <button class="pill active" data-value="5"  onclick="selectPill(this,'grp-duration','duration')">5 min</button>
-            <button class="pill"        data-value="10" onclick="selectPill(this,'grp-duration','duration')">10 min</button>
-            <button class="pill"        data-value="15" onclick="selectPill(this,'grp-duration','duration')">15 min</button>
-            <button class="pill"        data-value="20" onclick="selectPill(this,'grp-duration','duration')">20 min</button>
+            <button class="s-chip active" data-value="5"  onclick="selectPill(this,'grp-duration','duration')">5 min</button>
+            <button class="s-chip"        data-value="10" onclick="selectPill(this,'grp-duration','duration')">10 min</button>
+            <button class="s-chip"        data-value="15" onclick="selectPill(this,'grp-duration','duration')">15 min</button>
+            <button class="s-chip"        data-value="20" onclick="selectPill(this,'grp-duration','duration')">20 min</button>
           </div>
           <div id="credits-info" class="credits-info" style="display:none">
             <span class="credits-costs">5 min = 1 cr · 10 min = 2 cr · 15 min = 3 cr · 20 min = 4 cr</span>
@@ -319,21 +433,30 @@
           </div>
         </div>
 
+        <!-- Credit strip -->
+        <div class="credit-strip" id="credit-strip" style="display:none">
+          <div class="credit-strip-info">
+            <div class="credit-strip-title" id="credit-strip-title">Usarás 2 créditos</div>
+            <div class="credit-strip-sub" id="credit-strip-sub">Te quedan 8 de 10 este mes</div>
+          </div>
+          <div class="credit-bars" id="credit-bars"></div>
+        </div>
+
         <div class="convo-prefs-split">
           <div class="convo-pref-group">
             <span class="pref-label">Voz</span>
             <div id="grp-voice" class="pill-row">
-              <button class="pill active" data-value="auto"      onclick="selectPill(this,'grp-voice','voice')">Auto</button>
-              <button class="pill"        data-value="feminine"  onclick="selectPill(this,'grp-voice','voice')">Femenina</button>
-              <button class="pill"        data-value="masculine" onclick="selectPill(this,'grp-voice','voice')">Masculina</button>
+              <button class="s-chip active" data-value="auto"      onclick="selectPill(this,'grp-voice','voice')">Auto</button>
+              <button class="s-chip"        data-value="feminine"  onclick="selectPill(this,'grp-voice','voice')">Femenina</button>
+              <button class="s-chip"        data-value="masculine" onclick="selectPill(this,'grp-voice','voice')">Masculina</button>
             </div>
           </div>
           <div class="convo-pref-group">
             <span class="pref-label">Género</span>
             <div id="grp-gender" class="pill-row">
-              <button class="pill"        data-value="femenino"  onclick="selectPill(this,'grp-gender','gender')">Fem.</button>
-              <button class="pill"        data-value="masculino" onclick="selectPill(this,'grp-gender','gender')">Masc.</button>
-              <button class="pill active" data-value="neutro"    onclick="selectPill(this,'grp-gender','gender')">Neutro</button>
+              <button class="s-chip"        data-value="femenino"  onclick="selectPill(this,'grp-gender','gender')">Fem.</button>
+              <button class="s-chip"        data-value="masculino" onclick="selectPill(this,'grp-gender','gender')">Masc.</button>
+              <button class="s-chip active" data-value="neutro"    onclick="selectPill(this,'grp-gender','gender')">Neutro</button>
             </div>
           </div>
         </div>
@@ -341,11 +464,11 @@
         <div class="convo-pref-group">
           <span class="pref-label">Sonido de fondo</span>
           <div id="grp-music" class="pill-row">
-            <button class="pill active" data-value="auto"           onclick="selectPill(this,'grp-music','music')">Auto</button>
-            <button class="pill"        data-value="calma"          onclick="selectPill(this,'grp-music','music')">Calma</button>
-            <button class="pill"        data-value="transformacion" onclick="selectPill(this,'grp-music','music')">Transformación</button>
-            <button class="pill"        data-value="amor"           onclick="selectPill(this,'grp-music','music')">Amor</button>
-            <button class="pill"        data-value="espiritual"     onclick="selectPill(this,'grp-music','music')">Espiritual</button>
+            <button class="s-chip active" data-value="auto"           onclick="selectPill(this,'grp-music','music')">Auto</button>
+            <button class="s-chip"        data-value="calma"          onclick="selectPill(this,'grp-music','music')">Calma</button>
+            <button class="s-chip"        data-value="transformacion" onclick="selectPill(this,'grp-music','music')">Transformación</button>
+            <button class="s-chip"        data-value="amor"           onclick="selectPill(this,'grp-music','music')">Amor</button>
+            <button class="s-chip"        data-value="espiritual"     onclick="selectPill(this,'grp-music','music')">Espiritual</button>
           </div>
         </div>
 
@@ -354,92 +477,147 @@
         </div>
       </div>
 
-      <!-- Botón generar: sticky — visible solo tras seleccionar intent -->
+      <!-- Botón generar: sticky -->
       <div class="btn-generate-wrap">
-        <button id="btn-generate" class="btn-primary" onclick="goToGenerate()" style="opacity:0;pointer-events:none;transition:opacity 0.3s ease">Crear mi meditación</button>
+        <button id="btn-generate" class="s-btn s-btn-primary" onclick="goToGenerate()" style="opacity:0;pointer-events:none;transition:opacity 0.3s ease">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.5 3.1 3.4.5-2.45 2.38.58 3.37L8 8.75l-3.03 1.6.58-3.37L3.1 4.6l3.4-.5L8 1z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+          Componer mi meditación
+        </button>
       </div>
 
     </div>
   </div>
 
   <!-- ══════════════════════════════════════════
-       PANTALLA CARGANDO
+       PANTALLA CARGANDO (dark)
        ══════════════════════════════════════════ -->
-  <div id="screen-loading" class="screen">
-    <div class="screen-inner center">
+  <div id="screen-loading" class="screen dark-screen">
+    <div class="screen-inner center loading-inner">
 
-      <div class="breathing-wrap loading-mode">
-        <div class="b-ring r1"></div>
-        <div class="b-ring r2"></div>
-        <div class="b-ring r3"></div>
-        <div class="b-core"></div>
+      <!-- Ring visual 220px -->
+      <div class="loading-ring-wrap">
+        <svg class="player-ring-svg" viewBox="0 0 100 100" style="width:220px;height:220px" aria-hidden="true">
+          <circle class="ring-track" cx="50" cy="50" r="46"/>
+          <circle class="ring-progress" id="loading-ring" cx="50" cy="50" r="46" stroke-dasharray="289.03" stroke-dashoffset="289.03"/>
+          <circle class="ring-breath-dot" id="loading-dot" cx="50" cy="50" r="3"/>
+        </svg>
       </div>
 
-      <p id="loading-title" class="loading-title">Escuchándote...</p>
-      <p id="loading-sub" class="loading-sub">Leyendo lo que sientes y creando algo que solo existe para este momento.</p>
+      <p class="s-eyebrow loading-eyebrow">componiendo</p>
+      <p class="loading-headline"><em>Escuchándote de verdad…</em></p>
 
-      <button id="btn-retry"      class="btn-ghost" onclick="retryFromError()"   style="display:none">Intentar de nuevo</button>
-      <button id="btn-back-input" class="btn-ghost" onclick="backToInput()"      style="display:none">Cambiar el texto</button>
-      <button id="btn-cancel"     class="btn-ghost" onclick="cancelGeneration()" style="display:none">Cancelar</button>
-
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════════
-       PANTALLA REPRODUCTOR
-       ══════════════════════════════════════════ -->
-  <div id="screen-player" class="screen">
-    <div class="screen-inner center player-inner">
-
-      <button class="player-exit-btn" onclick="newMeditation()" aria-label="Salir">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-
-      <div class="player-timer-wrap">
-        <svg class="player-ring-svg" viewBox="0 0 260 260" aria-hidden="true">
-          <circle class="player-ring-bg"   cx="130" cy="130" r="120"/>
-          <circle class="player-ring-fill" id="player-ring-fill" cx="130" cy="130" r="120"/>
-        </svg>
-        <div id="breathing-player" class="breathing-wrap player-mode paused">
-          <div class="b-ring r1"></div>
-          <div class="b-ring r2"></div>
-          <div class="b-ring r3"></div>
-          <div class="b-core">
-            <button class="play-pause-btn" onclick="togglePlay()">
-              <svg id="icon-play" width="28" height="28" viewBox="0 0 28 28" fill="none">
-                <path d="M10 7l12 7-12 7V7z" fill="currentColor"/>
-              </svg>
-              <svg id="icon-pause" width="28" height="28" viewBox="0 0 28 28" fill="none" style="display:none">
-                <rect x="8"  y="6" width="4" height="16" rx="1.5" fill="currentColor"/>
-                <rect x="16" y="6" width="4" height="16" rx="1.5" fill="currentColor"/>
-              </svg>
-            </button>
-          </div>
+      <!-- Progress trail -->
+      <div class="loading-trail" id="loading-trail">
+        <div class="trail-step" id="trail-1">
+          <div class="trail-dot trail-pending"></div>
+          <span class="trail-label">Entendiendo contexto emocional</span>
         </div>
-        <p id="time-countdown" class="time-countdown">0:00</p>
+        <div class="trail-step" id="trail-2">
+          <div class="trail-dot trail-pending"></div>
+          <span class="trail-label">Eligiendo técnica y voz</span>
+        </div>
+        <div class="trail-step" id="trail-3">
+          <div class="trail-dot trail-pending"></div>
+          <span class="trail-label">Generando guion y audio</span>
+        </div>
       </div>
 
-      <p id="session-title" class="session-title"></p>
+      <button id="btn-retry"      class="btn-ghost-dark" onclick="retryFromError()"   style="display:none">Intentar de nuevo</button>
+      <button id="btn-back-input" class="btn-ghost-dark" onclick="backToInput()"      style="display:none">Cambiar el texto</button>
+      <button id="btn-cancel"     class="btn-ghost-dark" onclick="cancelGeneration()" style="display:none">Cancelar</button>
 
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PANTALLA REPRODUCTOR (dark)
+       ══════════════════════════════════════════ -->
+  <div id="screen-player" class="screen dark-screen">
+    <div class="screen-inner player-inner">
+
+      <!-- Player header -->
+      <div class="player-header">
+        <button class="player-btn-icon" onclick="newMeditation()" aria-label="Salir">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M13 5L5 13M5 5l8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <p class="s-eyebrow player-eyebrow">meditación · ahora</p>
+        <button class="player-btn-icon" id="btn-heart" onclick="toggleFavorite()" aria-label="Favorito">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 14.5s-6-3.8-6-7.5a3.5 3.5 0 017-0.5 3.5 3.5 0 017 .5c0 3.7-6 7.5-6 7.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Ring 260px -->
+      <div class="player-ring-wrap">
+        <svg class="player-ring-svg" viewBox="0 0 100 100" style="width:260px;height:260px" aria-hidden="true">
+          <circle class="ring-track" cx="50" cy="50" r="46"/>
+          <circle class="ring-progress" id="player-ring-fill" cx="50" cy="50" r="46" stroke-dasharray="289.03" stroke-dashoffset="289.03"/>
+          <circle class="ring-breath-dot" id="player-dot" cx="50" cy="50" r="3"/>
+        </svg>
+      </div>
+
+      <!-- Session info -->
+      <div class="player-info">
+        <p class="s-eyebrow player-technique-eyebrow" id="player-technique-label">respiración 4-7-8 · voz auto</p>
+        <p class="player-title" id="session-title"></p>
+      </div>
+
+      <!-- Progress bar -->
       <div class="progress-area">
-        <span id="time-now" class="time">0:00</span>
+        <span id="time-now" class="time-mono">0:00</span>
         <div class="progress-track" onclick="seekTo(event)" ontouchend="seekTo(event); event.preventDefault()">
           <div id="progress-fill" class="progress-fill"></div>
         </div>
-        <span id="time-end" class="time">0:00</span>
+        <span id="time-end" class="time-mono time-remain">0:00</span>
       </div>
 
+      <!-- Controls -->
+      <div class="player-controls">
+        <button class="player-btn-skip" onclick="seekOffset(-10)" aria-label="−10s">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 13a5 5 0 1110 0M14 10h4V6"/>
+          </svg>
+        </button>
+        <button class="player-play-btn" id="btn-play-pause" onclick="togglePlay()">
+          <svg id="icon-play" width="26" height="26" viewBox="0 0 26 26" fill="currentColor">
+            <path d="M9 5v16l14-8L9 5z"/>
+          </svg>
+          <svg id="icon-pause" width="26" height="26" viewBox="0 0 26 26" fill="currentColor" style="display:none">
+            <rect x="6" y="5" width="4" height="16" rx="1"/>
+            <rect x="14" y="5" width="4" height="16" rx="1"/>
+          </svg>
+        </button>
+        <button class="player-btn-skip" onclick="seekOffset(10)" aria-label="+10s">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13a5 5 0 10-10 0M12 10H8V6"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Timer countdown (para compatibilidad JS) -->
+      <p id="time-countdown" class="time-countdown" style="display:none">0:00</p>
+
+      <!-- End states -->
       <p id="end-message" class="end-message" style="display:none">Bien.<br>Lleva este silencio contigo.</p>
-      <button id="btn-new-meditation" class="btn-ghost" onclick="newMeditation()" style="display:none">Nueva meditación</button>
+      <button id="btn-new-meditation" class="btn-ghost-dark" onclick="newMeditation()" style="display:none">Nueva meditación</button>
 
-      <div id="end-save" style="display:none" class="end-save">
-        <p class="end-save-hint">Guárdala para escucharla cuando quieras.</p>
-        <button id="btn-save-meditation" class="btn-save" onclick="saveMeditation()">Guardar en mi biblioteca</button>
-        <button class="btn-upsell-skip" onclick="skipSave()">Ahora no</button>
+      <!-- END: guardar (usuario con cuenta) -->
+      <div id="end-save" style="display:none" class="end-save-card">
+        <p class="s-eyebrow end-save-eyebrow">guardar como</p>
+        <p class="end-save-title" id="end-save-title-display"></p>
+        <div class="end-feedback-chips">
+          <button class="s-chip s-chip-sm" onclick="selectFeedback(this)" data-value="helped">Me ayudó</button>
+          <button class="s-chip s-chip-sm" onclick="selectFeedback(this)" data-value="ok">Regular</button>
+          <button class="s-chip s-chip-sm" onclick="selectFeedback(this)" data-value="nope">No mucho</button>
+        </div>
+        <button id="btn-save-meditation" class="s-btn s-btn-primary" onclick="saveMeditation()" style="width:100%;margin-top:8px">Guardar en biblioteca</button>
+        <button class="end-link-btn" onclick="skipSave()">Cerrar sin guardar</button>
       </div>
 
+      <!-- END: perfil bonus -->
       <div id="end-profile" style="display:none" class="end-profile">
         <p class="end-upsell-eyebrow">Una pregunta rápida</p>
         <p class="end-profile-title">Gana 1 meditación<br>extra gratis.</p>
@@ -448,40 +626,53 @@
           <div class="profile-q">
             <p class="profile-q-label">¿Qué buscas con la meditación?</p>
             <div class="profile-pills" id="profile-goal">
-              <button class="profile-pill" data-value="ansiedad" onclick="profilePillSelect('profile-goal',this)">Reducir ansiedad</button>
-              <button class="profile-pill" data-value="sueno"    onclick="profilePillSelect('profile-goal',this)">Dormir mejor</button>
-              <button class="profile-pill" data-value="claridad" onclick="profilePillSelect('profile-goal',this)">Claridad mental</button>
-              <button class="profile-pill" data-value="estres"   onclick="profilePillSelect('profile-goal',this)">Calmarme</button>
+              <button class="s-chip s-chip-sm" data-value="ansiedad" onclick="profilePillSelect('profile-goal',this)">Reducir ansiedad</button>
+              <button class="s-chip s-chip-sm" data-value="sueno"    onclick="profilePillSelect('profile-goal',this)">Dormir mejor</button>
+              <button class="s-chip s-chip-sm" data-value="claridad" onclick="profilePillSelect('profile-goal',this)">Claridad mental</button>
+              <button class="s-chip s-chip-sm" data-value="estres"   onclick="profilePillSelect('profile-goal',this)">Calmarme</button>
             </div>
           </div>
         </div>
-        <button class="btn-upsell-cta" id="btn-profile-submit" onclick="submitProfile()" disabled>Recibir meditación gratis</button>
-        <button class="btn-upsell-skip" onclick="skipProfile()">Ahora no</button>
+        <button class="s-btn s-btn-primary" id="btn-profile-submit" onclick="submitProfile()" disabled style="width:100%;margin-top:8px">Recibir meditación gratis</button>
+        <button class="end-link-btn" onclick="skipProfile()">Ahora no</button>
       </div>
 
-      <div id="end-upsell" style="display:none" class="end-upsell">
-        <p class="end-upsell-eyebrow">Primera meditación completada</p>
-        <p class="end-upsell-title">Así de bien puedes<br>sentirte cada día.</p>
-        <ul class="end-upsell-benefits">
+      <!-- END: upsell (free que completó sesión) -->
+      <div id="end-upsell" style="display:none" class="end-upsell-card">
+        <p class="s-eyebrow end-card-eyebrow">Primera meditación completada</p>
+        <p class="end-card-title">Así de bien puedes<br>sentirte cada día.</p>
+        <ul class="end-benefits-list">
           <li>Música de fondo adaptada a tu sesión</li>
           <li>Silencios estratégicos en el momento exacto</li>
           <li>Meditaciones de hasta 20 minutos</li>
           <li>Guarda tus favoritas para volver a escucharlas</li>
         </ul>
-        <button class="btn-upsell-cta" onclick="closeEndUpsell(); showPaywall()">Quiero acceso completo</button>
-        <button class="btn-upsell-skip" onclick="closeEndUpsell(); newMeditation()">Ahora no</button>
+        <button class="s-btn s-btn-primary" style="width:100%" onclick="closeEndUpsell(); showPaywall()">Quiero acceso completo</button>
+        <button class="end-link-btn" onclick="closeEndUpsell(); newMeditation()">Ahora no</button>
       </div>
 
-      <div id="end-guest" style="display:none" class="end-upsell">
-        <p class="end-upsell-eyebrow">Tu primera meditación</p>
-        <p class="end-upsell-title">Guárdala.<br>Vuelve cuando la necesites.</p>
-        <ul class="end-upsell-benefits">
-          <li>Guarda esta meditación en tu biblioteca</li>
-          <li>Genera más — 1 gratis incluida con tu cuenta</li>
-          <li>Accede desde cualquier dispositivo</li>
-        </ul>
-        <button class="btn-upsell-cta" onclick="openAuth()">Crear cuenta gratis</button>
-        <button class="btn-upsell-secondary" onclick="newMeditation()">Ahora no</button>
+      <!-- END: guest (sin cuenta) — dark style -->
+      <div id="end-guest" style="display:none" class="end-guest-card">
+        <p class="s-eyebrow end-guest-eyebrow">5:00 · completado</p>
+        <p class="end-guest-title">Esa sesión <em>no volverá</em>.</p>
+        <p class="end-guest-body">Fue única, como cada meditación aquí. Crea una cuenta para guardarla y seguir el hilo.</p>
+        <div class="end-guest-benefits">
+          <p class="s-eyebrow" style="color:var(--night-fg);opacity:0.5;margin-bottom:8px">con cuenta</p>
+          <div class="end-guest-benefit-row">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Guarda las sesiones que te funcionen</span>
+          </div>
+          <div class="end-guest-benefit-row">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Tu racha y tu nivel empiezan a crecer</span>
+          </div>
+          <div class="end-guest-benefit-row">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>La IA te conoce mejor con cada sesión</span>
+          </div>
+        </div>
+        <button class="s-btn s-btn-dark" style="width:100%;margin-top:16px" onclick="openAuth()">Crear cuenta gratis</button>
+        <button class="end-link-btn end-link-btn-dark" onclick="newMeditation()">Ahora no</button>
       </div>
 
     </div>
@@ -493,74 +684,123 @@
   <div id="screen-library" class="screen">
     <div class="dash-wrap">
 
-      <header class="dash-header">
-        <button onclick="showHome()" style="display:flex;align-items:center;background:none;border:none;color:var(--text-45);gap:6px;font-size:0.83rem;cursor:pointer;padding:0;font-family:'Inter',sans-serif;transition:color 0.2s;" onmouseover="this.style.color='var(--text-70)'" onmouseout="this.style.color='var(--text-45)'">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Inicio
-        </button>
-        <div class="logo"><span>Stillova</span></div>
-        <div style="width:60px"></div>
-      </header>
+      <div class="lib-header">
+        <p class="s-eyebrow">biblioteca</p>
+        <button class="lib-filter-btn" id="lib-filter-trigger" style="display:none">Filtrar</button>
+      </div>
 
       <div id="lib-loading" class="dash-loading">Cargando tu biblioteca...</div>
 
       <div id="lib-error" class="dash-error" style="display:none">
         <p>Inicia sesión para ver<br>tus meditaciones guardadas.</p>
-        <button onclick="clerk?.openSignIn()" style="margin-top:20px;padding:12px 28px;background:var(--sand);color:#0a0e08;border:none;border-radius:24px;font-family:'Inter',sans-serif;font-size:0.875rem;font-weight:500;cursor:pointer;letter-spacing:0.01em;">Iniciar sesión</button>
+        <button onclick="clerk?.openSignIn()" class="s-btn s-btn-primary" style="margin-top:20px;width:auto;padding:0 28px">Iniciar sesión</button>
       </div>
 
       <div id="lib-content" style="display:none">
-
-        <h1 class="dash-headline">Mi biblioteca</h1>
+        <div class="lib-title-row">
+          <h1 class="lib-headline">Tus <em>sesiones</em></h1>
+          <span class="lib-count" id="lib-count">0 / 0</span>
+        </div>
 
         <div class="dash-plan-row">
           <span id="lib-plan-badge" class="plan-badge"></span>
           <span id="lib-credits" class="dash-credits"></span>
         </div>
 
-        <div class="dash-stats">
-          <div class="stat-card">
-            <div class="stat-value" id="lib-stat-streak">0</div>
-            <div class="stat-label">Racha</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="lib-stat-minutes">0</div>
-            <div class="stat-label">Min totales</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="lib-stat-sessions">0</div>
-            <div class="stat-label">Sesiones</div>
-          </div>
-        </div>
-
-        <p class="dash-section-title">Guardadas</p>
-
         <div class="dash-filters">
-          <div class="filter-row">
-            <span class="filter-label">Emoción</span>
-            <div class="filter-pills" id="lib-filter-emotion">
-              <button class="filter-pill active" data-val="">Todas</button>
-              <button class="filter-pill" data-val="ansiedad">Ansiedad</button>
-              <button class="filter-pill" data-val="sueno">Sueño</button>
-              <button class="filter-pill" data-val="claridad">Claridad</button>
-              <button class="filter-pill" data-val="liberacion">Liberación</button>
-              <button class="filter-pill" data-val="enfoque">Enfoque</button>
-            </div>
-          </div>
-          <div class="filter-row">
-            <span class="filter-label">Duración</span>
-            <div class="filter-pills" id="lib-filter-duration">
-              <button class="filter-pill active" data-val="">Todas</button>
-              <button class="filter-pill" data-val="5">5 min</button>
-              <button class="filter-pill" data-val="10">10 min</button>
-              <button class="filter-pill" data-val="15">15 min</button>
-            </div>
+          <div class="filter-chips-row" id="lib-filter-emotion">
+            <button class="s-chip s-chip-sm active" data-val="">Todas</button>
+            <button class="s-chip s-chip-sm" data-val="ansiedad">Ansiedad</button>
+            <button class="s-chip s-chip-sm" data-val="sueno">Dormir</button>
+            <button class="s-chip s-chip-sm" data-val="claridad">Enfoque</button>
+            <button class="s-chip s-chip-sm" data-val="liberacion">Calma</button>
           </div>
         </div>
 
         <div id="lib-list" class="med-list"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PERFIL
+       ══════════════════════════════════════════ -->
+  <div id="screen-profile" class="screen">
+    <div class="profile-wrap">
+
+      <div class="profile-header-row">
+        <p class="s-eyebrow">perfil</p>
+        <button class="profile-settings-btn" onclick="signOut()" aria-label="Cerrar sesión" title="Cerrar sesión">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M13 3h4v14h-4M8 13l4-3-4-3M2 10h10"/></svg>
+        </button>
+      </div>
+
+      <!-- Guest: invite to sign in -->
+      <div id="profile-guest" style="display:none" class="profile-guest">
+        <div class="profile-guest-avatar">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="10" r="5" stroke="var(--muted)" stroke-width="1.4"/><path d="M4 26c0-5.5 4.5-10 10-10s10 4.5 10 10" stroke="var(--muted)" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        <p class="profile-guest-title">Inicia sesión para ver tu perfil</p>
+        <p class="s-body profile-guest-sub">Tu racha, nivel y estadísticas te esperan.</p>
+        <button class="s-btn s-btn-primary" onclick="openAuth()" style="margin-top:20px">Crear cuenta gratis</button>
+      </div>
+
+      <!-- User profile -->
+      <div id="profile-user" style="display:none">
+
+        <!-- Avatar + nombre -->
+        <div class="profile-identity">
+          <div class="profile-avatar" id="profile-avatar">A</div>
+          <div>
+            <p class="profile-name" id="profile-name">—</p>
+            <p class="profile-plan-info" id="profile-plan-info">Gratis · Stillova</p>
+          </div>
+        </div>
+
+        <!-- Level card ink -->
+        <div class="profile-level-card" id="profile-level-card">
+          <p class="s-eyebrow profile-level-eyebrow" id="profile-level-eyebrow">nivel 1</p>
+          <p class="profile-level-name" id="profile-level-name"><em>Principiante</em></p>
+          <div class="profile-level-bar-wrap">
+            <div class="profile-level-bar" id="profile-level-bar" style="width:10%"></div>
+          </div>
+          <p class="profile-level-meta" id="profile-level-meta">0 / 100 → nivel 2 · Contemplativo</p>
+        </div>
+
+        <!-- Stats 2×2 -->
+        <div class="profile-stats-grid">
+          <div class="stat-card">
+            <p class="s-eyebrow stat-label">racha actual</p>
+            <div class="stat-value-row">
+              <span class="stat-number" id="profile-stat-streak">0</span>
+              <span class="stat-unit">días</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <p class="s-eyebrow stat-label">total meditado</p>
+            <div class="stat-value-row">
+              <span class="stat-number" id="profile-stat-total">0</span>
+              <span class="stat-unit">min</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <p class="s-eyebrow stat-label">sesiones</p>
+            <div class="stat-value-row">
+              <span class="stat-number" id="profile-stat-sessions">0</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <p class="s-eyebrow stat-label">duración media</p>
+            <div class="stat-value-row">
+              <span class="stat-number" id="profile-stat-avg">0</span>
+              <span class="stat-unit">min</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sign out (bottom) -->
+        <button class="profile-signout-btn" onclick="signOut()">Cerrar sesión</button>
 
       </div>
 
@@ -578,116 +818,114 @@
        ══════════════════════════════════════════ -->
   <div id="paywall-modal" class="paywall-overlay">
     <div class="paywall-card">
-      <p class="paywall-title">Cada sesión, creada<br>solo para ti.</p>
-      <p class="paywall-subtitle">Elige cuántas quieres al mes.</p>
-
-      <!-- Toggle mensual / anual -->
-      <div class="pw-billing-toggle">
-        <button class="pw-billing-btn pw-billing-active" id="pw-btn-monthly" onclick="pwSetBilling('monthly')">Mensual</button>
-        <button class="pw-billing-btn" id="pw-btn-annual" onclick="pwSetBilling('annual')">
-          Anual
-          <span class="pw-save-badge">−33%</span>
+      <div class="paywall-close-row">
+        <button class="paywall-close-btn" onclick="closePaywall()">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
         </button>
       </div>
 
-      <!-- 3 planes verticales -->
+      <p class="s-eyebrow pw-eyebrow">un plan para ti</p>
+      <h2 class="pw-headline">Sigue en <em>tu ritmo</em>.</h2>
+      <p class="s-body pw-subhead">Todas las sesiones, únicas. Elige cuánto quieres meditar.</p>
+
+      <!-- Toggle mensual / anual -->
+      <div class="pw-toggle-wrap">
+        <div class="pw-toggle-slider" id="pw-toggle-slider"></div>
+        <button class="pw-toggle-btn pw-toggle-active" id="pw-btn-monthly" onclick="pwSetBilling('monthly')">Mensual</button>
+        <button class="pw-toggle-btn" id="pw-btn-annual" onclick="pwSetBilling('annual')">
+          Anual <span class="pw-save-badge">−20%</span>
+        </button>
+      </div>
+
+      <!-- Plan cards -->
       <div class="pw-plans-list">
 
-        <!-- Gratis -->
-        <div class="pw-plan-row pw-plan-free-row">
-          <div class="pw-plan-header-row">
-            <span class="pw-plan-label">Gratis</span>
-            <div class="pw-plan-right">
-              <span class="pw-price-main">€0</span>
-              <span class="pw-current-tag">Tu plan actual</span>
-            </div>
-          </div>
-          <ul class="pw-feat-list pw-feat-list-free">
-            <li>1 meditación de 5 min para probar</li>
-          </ul>
-        </div>
-
         <!-- Essential -->
-        <div class="pw-plan-row">
-          <span class="pw-plan-label">Essential</span>
-          <ul class="pw-feat-list">
-            <li>10 meditaciones únicas al mes</li>
-            <li>Sesiones de 5, 10 y 15 minutos</li>
-            <li>Guarda hasta 20 sesiones</li>
-            <li>Voz y fondo musical a elegir</li>
-          </ul>
-          <div class="pw-bottom-row">
-            <div class="pw-price-col">
-              <div class="pw-price-wrap">
-                <span class="pw-price-was" id="pw-ess-was">€9.99</span>
-                <span class="pw-price-main" id="pw-ess-price">€6.99</span>
-                <span class="pw-price-period" id="pw-ess-period">/mes</span>
-              </div>
-              <span class="pw-first-month" id="pw-ess-extra">primer mes · luego €9.99</span>
-            </div>
-            <button class="pw-cta-btn" onclick="upgradePlan(pwGetPlan('essential'))">Elegir</button>
+        <div class="pw-plan-card pw-plan-selected" id="pw-card-essential" onclick="pwSelectPlan('essential')">
+          <div class="pw-plan-name-row">
+            <span class="pw-plan-name">Essential</span>
+            <span class="pw-plan-price-sm" id="pw-price-essential">€9,99 / mes</span>
+          </div>
+          <div class="pw-plan-meta">para empezar</div>
+          <div class="pw-plan-features">
+            <div class="pw-feat">10 créditos · 50 min / mes</div>
+            <div class="pw-feat">Meditaciones hasta 15 min</div>
+            <div class="pw-feat">Guarda 20 sesiones</div>
           </div>
         </div>
 
         <!-- Premium -->
-        <div class="pw-plan-row pw-plan-featured-row">
-          <div class="pw-plan-feat-badge">★ Más popular</div>
-          <span class="pw-plan-label">Premium</span>
-          <ul class="pw-feat-list">
-            <li>25 meditaciones únicas al mes</li>
-            <li>Sesiones de hasta 20 minutos</li>
-            <li>Biblioteca ilimitada</li>
-            <li>Voz y fondo musical a elegir</li>
-            <li class="pw-feat-gold">Acceso prioritario a novedades</li>
-          </ul>
-          <div class="pw-bottom-row">
-            <div class="pw-price-col">
-              <div class="pw-price-wrap">
-                <span class="pw-price-was" id="pw-prem-was">€19.99</span>
-                <span class="pw-price-main" id="pw-prem-price">€13.99</span>
-                <span class="pw-price-period" id="pw-prem-period">/mes</span>
-              </div>
-              <span class="pw-first-month" id="pw-prem-extra">primer mes · luego €19.99</span>
-            </div>
-            <button class="pw-cta-btn pw-cta-featured-btn" onclick="upgradePlan(pwGetPlan('premium'))">Elegir</button>
+        <div class="pw-plan-card" id="pw-card-premium" onclick="pwSelectPlan('premium')">
+          <div class="pw-plan-badge-abs">recomendado</div>
+          <div class="pw-plan-name-row">
+            <span class="pw-plan-name">Premium</span>
+            <span class="pw-plan-price-sm" id="pw-price-premium">€19,99 / mes</span>
           </div>
+          <div class="pw-plan-meta">el más elegido</div>
+          <div class="pw-plan-features">
+            <div class="pw-feat">25 créditos · 125 min / mes</div>
+            <div class="pw-feat">Meditaciones hasta 20 min</div>
+            <div class="pw-feat">Biblioteca ilimitada</div>
+            <div class="pw-feat">Prioridad en nuevas técnicas</div>
+          </div>
+        </div>
+
+        <!-- Deep — coming soon -->
+        <div class="pw-plan-card pw-plan-soon" id="pw-card-deep">
+          <div class="pw-plan-name-row">
+            <span class="pw-plan-name">Deep</span>
+            <span class="pw-plan-price-sm">€39,99 / mes</span>
+          </div>
+          <div class="pw-plan-meta">práctica diaria</div>
+          <div class="pw-plan-coming-badge">Próximamente</div>
+        </div>
+
+        <!-- Infinite — coming soon -->
+        <div class="pw-plan-card pw-plan-soon" id="pw-card-infinite">
+          <div class="pw-plan-name-row">
+            <span class="pw-plan-name">Infinite</span>
+            <span class="pw-plan-price-sm">€79,99 / mes</span>
+          </div>
+          <div class="pw-plan-meta">sin límites</div>
+          <div class="pw-plan-coming-badge">Próximamente</div>
         </div>
 
       </div>
 
-      <p class="plan-footnote">† Sesiones largas consumen más créditos — 5 min = 1 · 10 min = 2 · 15 min = 3 · 20 min = 4</p>
-      <p class="paywall-guarantee">Sin permanencia · Cancela cuando quieras</p>
-      <button class="btn-ghost paywall-close" onclick="closePaywall()">Ahora no</button>
+      <button class="s-btn s-btn-primary pw-cta-main" id="pw-cta-btn" onclick="pwProceed()">Empezar con Essential</button>
+      <p class="pw-guarantee">Sin permanencia. Cancela cuando quieras.</p>
+
     </div>
   </div>
 
   <!-- ══════════════════════════════════════════
-       BOTTOM NAV
+       BOTTOM NAV — 3 tabs: Hoy · Biblioteca · Perfil
        ══════════════════════════════════════════ -->
   <nav class="bottom-nav" id="bottom-nav">
     <button class="nav-item active" id="nav-home" onclick="showHome()">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M3 9.5L10 3l7 6.5V17a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
-        <path d="M7.5 18V13h5v5" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M8 1l1.5 3.1 3.4.5-2.45 2.38.58 3.37L8 8.75l-3.03 1.6.58-3.37L3.1 4.6l3.4-.5L8 1z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
       </svg>
-      Inicio
+      <span>Hoy</span>
     </button>
-
-    <div class="nav-create-wrap">
-      <button class="nav-create-btn" onclick="showCreate()" aria-label="Crear meditación">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
-    </div>
 
     <button class="nav-item" id="nav-library" onclick="openLibrary()">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <rect x="3" y="4" width="4" height="13" rx="1" stroke="currentColor" stroke-width="1.4"/>
-        <rect x="8" y="4" width="4" height="13" rx="1" stroke="currentColor" stroke-width="1.4"/>
-        <path d="M14.5 4.5l2.8 12.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        <rect x="3" y="4" width="4" height="13" rx="1" stroke="currentColor" stroke-width="1.3"/>
+        <rect x="8" y="4" width="4" height="13" rx="1" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M14.5 4.5l2.8 12.2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
       </svg>
-      Biblioteca
+      <span>Biblioteca</span>
+    </button>
+
+    <button class="nav-item" id="nav-profile" onclick="openProfile()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <circle cx="10" cy="7.5" r="3.5" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M2 19c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+      <span>Perfil</span>
     </button>
   </nav>
 
@@ -720,12 +958,48 @@
       document.getElementById('user-dropdown').classList.toggle('open', _userMenuOpen);
     }
     document.addEventListener('click', function(e) {
-      if (_userMenuOpen && !e.target.closest('#user-status')) {
+      if (_userMenuOpen && !e.target.closest('#home-user-bar')) {
         _userMenuOpen = false;
         const d = document.getElementById('user-dropdown');
         if (d) d.classList.remove('open');
       }
     });
+
+    // ── Paywall state ─────────────────────────────────────────
+    let _pwCycle = 'monthly';
+    let _pwPlan  = 'essential';
+
+    const PW_PRICES = {
+      essential: { monthly: '€9,99', yearly: '€7,99' },
+      premium:   { monthly: '€19,99', yearly: '€15,99' },
+    };
+
+    function pwSetBilling(cycle) {
+      _pwCycle = cycle;
+      document.getElementById('pw-btn-monthly').classList.toggle('pw-toggle-active', cycle === 'monthly');
+      document.getElementById('pw-btn-annual').classList.toggle('pw-toggle-active', cycle === 'annual');
+      document.getElementById('pw-toggle-slider').style.transform = cycle === 'monthly' ? 'translateX(0)' : 'translateX(100%)';
+      // Update prices
+      document.getElementById('pw-price-essential').textContent = PW_PRICES.essential[cycle] + ' / ' + (cycle === 'monthly' ? 'mes' : 'mes anual');
+      document.getElementById('pw-price-premium').textContent   = PW_PRICES.premium[cycle]   + ' / ' + (cycle === 'monthly' ? 'mes' : 'mes anual');
+    }
+
+    function pwSelectPlan(plan) {
+      if (plan === 'deep' || plan === 'infinite') return; // coming soon
+      _pwPlan = plan;
+      document.querySelectorAll('.pw-plan-card:not(.pw-plan-soon)').forEach(c => c.classList.remove('pw-plan-selected'));
+      document.getElementById('pw-card-' + plan).classList.add('pw-plan-selected');
+      const labels = { essential: 'Essential', premium: 'Premium' };
+      document.getElementById('pw-cta-btn').textContent = 'Empezar con ' + labels[plan];
+    }
+
+    function pwProceed() {
+      closePaywall();
+      upgradePlan(pwGetPlan(_pwPlan));
+    }
+
+    // Legacy compat
+    function pwGetPlan(name) { return name; }
   </script>
   <script>
     if ('serviceWorker' in navigator) {

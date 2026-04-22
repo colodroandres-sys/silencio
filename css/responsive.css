@@ -1,51 +1,34 @@
 /* =============================================
-   RESPONSIVE
+   RESPONSIVE — paleta Mist
    ============================================= */
 
 /* iPhone SE y pantallas muy pequeñas */
 @media (max-width: 375px) {
-  .home-cta { padding: 15px 16px 15px 20px; font-size: 0.875rem; }
-  .pill { font-size: 0.72rem; padding: 6px 10px; }
-  .breathing-wrap.player-mode { width: 210px; height: 210px; }
-  .session-title { font-size: 1.05rem; }
-  .loading-title { font-size: 1.3rem; }
+  .ob-headline-xl { font-size: 38px; }
+  .ob-headline-md { font-size: 28px; }
+  .home-headline  { font-size: 30px; }
+  .create-headline { font-size: 30px; }
+  .player-title   { font-size: 22px; }
+  .loading-headline { font-size: 26px; }
 }
 
-/* Pantallas medianas cortas en altura (landscape, iPhones acostados) */
+/* Pantallas medianas cortas en altura (landscape) */
 @media (max-height: 700px) {
-  .home-body { padding-bottom: 16px; }
-  .btn-generate-wrap { margin-top: 14px; }
-  .breathing-wrap.player-mode { width: 200px; height: 200px; margin-bottom: 14px; }
-  .player-inner { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 50px); }
-  .session-title { margin-bottom: 16px; }
-  .progress-area { margin-bottom: 16px; }
+  .player-ring-wrap { margin-bottom: 14px; }
+  .player-controls { margin-top: 0; }
+  .loading-ring-wrap { margin-bottom: 20px; }
+  .loading-headline { margin-bottom: 20px; }
 }
 
-/* Pantallas muy cortas (< 600px altura) — compactar el create para que el botón siempre sea visible */
+/* Pantallas muy cortas */
 @media (max-height: 600px) {
-  .breathing-wrap.player-mode { width: 170px; height: 170px; }
-  .player-inner { padding-top: 16px; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 40px); }
+  .player-inner { gap: 0; }
+  .player-play-btn { width: 60px; height: 60px; border-radius: 30px; }
 }
 
-/* Fix: cuando el teclado está abierto en móvil (viewport cambia de tamaño) */
+/* Fix teclado abierto */
 @media (max-height: 500px) {
-  #screen-create .screen-inner { padding-bottom: 20px; }
-  .btn-generate-wrap { margin-top: 10px; }
-}
-
-/* Dashboard — iPhone SE y pantallas muy pequeñas */
-@media (max-width: 375px) {
-  .dash-headline { font-size: 1.5rem; }
-  .stat-value { font-size: 1.35rem; }
-  .stat-card { padding: 14px 6px; }
-  .med-card { padding: 14px 16px; }
-  .med-card-meta { gap: 6px; font-size: 0.68rem; }
-}
-
-/* Dashboard — pantallas cortas */
-@media (max-height: 700px) {
-  .dash-header { padding-bottom: 24px; }
-  .dash-stats { margin-bottom: 24px; }
+  .btn-generate-wrap { position: static; padding: 16px 0 0; background: none; }
 }
 
 /* Desktop / tablet */
@@ -61,31 +44,13 @@
   .paywall-overlay { align-items: center; }
 }
 
-/* Desktop — vignettes laterales para enfocar contenido centrado */
+/* Desktop > 768 — centrar app */
 @media (min-width: 768px) {
-  .bg-overlay {
-    background:
-      linear-gradient(to right,
-        rgba(5, 8, 4, 0.78) 0%,
-        transparent 22%,
-        transparent 78%,
-        rgba(5, 8, 4, 0.78) 100%
-      ),
-      linear-gradient(to bottom,
-        rgba(5, 8, 4, 0.65) 0%,
-        rgba(5, 8, 4, 0.28) 30%,
-        rgba(5, 8, 4, 0.28) 60%,
-        rgba(5, 8, 4, 0.85) 100%
-      );
+  .screen-inner {
+    padding-left: 32px;
+    padding-right: 32px;
   }
-
-  /* Create screen: espacio suficiente para el botón fijo (88px nav + 74px btn + 20px margen) */
-  #screen-create .screen-inner {
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 180px);
-  }
-
-  /* Onboarding centrado con más espacio */
-  .ob-wrap {
+  .ob-inner {
     padding-left: 40px;
     padding-right: 40px;
   }
