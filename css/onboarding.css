@@ -288,3 +288,25 @@
   font-size: 12px;
   color: var(--muted);
 }
+
+/* Upsell section inside features card */
+.ob-upsell-divider {
+  height: 1px;
+  background: var(--faint);
+  margin: 16px 0 14px;
+}
+.ob-upsell-eyebrow {
+  color: var(--accent) !important;
+  margin-bottom: 10px;
+  display: block;
+}
+.ob-upsell-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.4;
+}
+.ob-upsell-row svg { flex-shrink: 0; margin-top: 2px; }

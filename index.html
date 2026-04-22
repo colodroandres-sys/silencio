@@ -180,18 +180,34 @@
             <div class="ob-feature-divider"></div>
             <div class="ob-feature-row">
               <div class="ob-feature-info">
-                <div class="ob-feature-title">Voz automática</div>
-                <div class="ob-feature-desc">Elegida según tu estado</div>
+                <div class="ob-feature-title">Voz y tono neutros</div>
+                <div class="ob-feature-desc">No eliges quién te habla</div>
               </div>
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9l3.5 3.5L14 5.5" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
             <div class="ob-feature-divider"></div>
             <div class="ob-feature-row">
               <div class="ob-feature-info">
-                <div class="ob-feature-title">No se guarda</div>
-                <div class="ob-feature-desc">Crea cuenta después para conservarla</div>
+                <div class="ob-feature-title">Sin cuenta ni tarjeta</div>
+                <div class="ob-feature-desc">Solo escribe cómo te sientes</div>
               </div>
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9l3.5 3.5L14 5.5" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+
+            <!-- Upsell: con plan -->
+            <div class="ob-upsell-divider"></div>
+            <p class="s-eyebrow ob-upsell-eyebrow">con un plan también podrás</p>
+            <div class="ob-upsell-row">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l2.5 2.5L11.5 4" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Meditaciones de hasta 20 minutos</span>
+            </div>
+            <div class="ob-upsell-row">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l2.5 2.5L11.5 4" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Elegir voz masculina o femenina</span>
+            </div>
+            <div class="ob-upsell-row">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l2.5 2.5L11.5 4" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Que se dirijan a ti como hombre, mujer o neutro</span>
             </div>
           </div>
           <div class="ob-ctas">
@@ -249,31 +265,32 @@
       <div id="home-guest-content" class="home-body" style="display:none">
         <p class="s-eyebrow home-time-eyebrow" id="home-time-eyebrow">—</p>
         <h1 class="home-headline">Hola. <em>¿Cómo estás hoy?</em></h1>
-        <p class="s-body home-sub">Tu primera meditación es gratis. Cuéntame qué sientes y la genero ahora.</p>
 
-        <!-- CTA card ink -->
-        <div class="home-cta-card" onclick="showCreate()">
-          <p class="s-eyebrow home-cta-eyebrow">gratis · sin tarjeta</p>
-          <p class="home-cta-title">Empieza tu <em>primera</em><br>sesión de 5 min</p>
-          <button class="s-btn s-btn-dark s-btn-sm home-cta-btn" tabindex="-1">Generar meditación</button>
-        </div>
-
-        <!-- Coming soon grid -->
-        <div class="home-coming-grid">
-          <div class="home-coming-card">
-            <p class="s-eyebrow home-coming-eyebrow">próximamente</p>
-            <p class="home-coming-title">Respiración guiada</p>
-          </div>
-          <div class="home-coming-card">
-            <p class="s-eyebrow home-coming-eyebrow">próximamente</p>
-            <p class="home-coming-title">Body scan</p>
+        <!-- Inline textarea card -->
+        <div class="home-guest-input-card">
+          <textarea
+            id="home-guest-textarea"
+            class="home-guest-textarea"
+            placeholder="Hoy me siento…"
+            oninput="homeGuestInputChange()"
+            rows="3"
+          ></textarea>
+          <div class="home-guest-chips">
+            <button class="s-chip s-chip-sm" onclick="homeGuestChip('ansioso/a')">ansioso/a</button>
+            <button class="s-chip s-chip-sm" onclick="homeGuestChip('no puedo dormir')">no puedo dormir</button>
+            <button class="s-chip s-chip-sm" onclick="homeGuestChip('necesito enfocarme')">necesito enfocarme</button>
+            <button class="s-chip s-chip-sm" onclick="homeGuestChip('antes de una reunión')">antes de reunión</button>
           </div>
         </div>
 
-        <!-- Editorial -->
-        <div class="home-editorial">
-          <p class="s-eyebrow" style="margin-bottom:8px">Por qué Stillova</p>
-          <p class="home-editorial-text">Cada sesión se <em>compone en el momento</em> según tu estado. Nada se repite.</p>
+        <button class="s-btn s-btn-primary" id="home-guest-gen-btn" onclick="homeGuestGenerate()" disabled>
+          Generar mi primera meditación
+        </button>
+
+        <!-- Info strip -->
+        <div class="home-guest-info-strip">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="var(--accent)" stroke-width="1.2"/><path d="M7 6.5v3M7 5v.5" stroke="var(--accent)" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <span>Sin tarjeta. Sin cuenta. Una sesión gratis.</span>
         </div>
       </div>
 
@@ -447,7 +464,7 @@
 
         <div class="convo-prefs-split">
           <div class="convo-pref-group">
-            <span class="pref-label">Voz</span>
+            <span class="pref-label">Voz de quien te habla</span>
             <div id="grp-voice" class="pill-row">
               <button class="s-chip active" data-value="auto"      onclick="selectPill(this,'grp-voice','voice')">Auto</button>
               <button class="s-chip"        data-value="feminine"  onclick="selectPill(this,'grp-voice','voice')">Femenina</button>
@@ -455,10 +472,10 @@
             </div>
           </div>
           <div class="convo-pref-group">
-            <span class="pref-label">Género</span>
+            <span class="pref-label">Qué se dirijan a ti como</span>
             <div id="grp-gender" class="pill-row">
-              <button class="s-chip"        data-value="femenino"  onclick="selectPill(this,'grp-gender','gender')">Fem.</button>
-              <button class="s-chip"        data-value="masculino" onclick="selectPill(this,'grp-gender','gender')">Masc.</button>
+              <button class="s-chip"        data-value="femenino"  onclick="selectPill(this,'grp-gender','gender')">Mujer</button>
+              <button class="s-chip"        data-value="masculino" onclick="selectPill(this,'grp-gender','gender')">Hombre</button>
               <button class="s-chip active" data-value="neutro"    onclick="selectPill(this,'grp-gender','gender')">Neutro</button>
             </div>
           </div>
@@ -674,7 +691,8 @@
             <span>Te conocemos mejor con cada sesión</span>
           </div>
         </div>
-        <button class="s-btn s-btn-dark" style="width:100%;margin-top:16px" onclick="openAuth()">Crear cuenta gratis</button>
+        <button class="s-btn s-btn-dark" style="width:100%;margin-top:16px" onclick="showPaywall()">Ver planes</button>
+        <button class="end-link-btn end-link-btn-dark" onclick="openAuth()">Crear cuenta gratis</button>
         <button class="end-link-btn end-link-btn-dark" onclick="newMeditation()">Ahora no</button>
       </div>
 
@@ -1118,6 +1136,31 @@
         if (d) d.classList.remove('open');
       }
     });
+
+    // ── Home Guest Textarea ───────────────────────────────────
+    function homeGuestInputChange() {
+      const val = document.getElementById('home-guest-textarea')?.value.trim() || '';
+      const btn = document.getElementById('home-guest-gen-btn');
+      if (btn) btn.disabled = val.length < 3;
+    }
+
+    function homeGuestChip(label) {
+      const ta = document.getElementById('home-guest-textarea');
+      if (!ta) return;
+      ta.value = label;
+      homeGuestInputChange();
+      ta.focus();
+    }
+
+    function homeGuestGenerate() {
+      const val = document.getElementById('home-guest-textarea')?.value.trim() || '';
+      if (val.length < 3) return;
+      const inputFree = document.getElementById('input-free');
+      if (inputFree) inputFree.value = val;
+      state.userInput = val;
+      state.userName = '';
+      generateMeditation();
+    }
 
     // ── Paywall state ─────────────────────────────────────────
     let _pwCycle = 'monthly';
