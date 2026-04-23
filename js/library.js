@@ -19,10 +19,10 @@ function loadLibrary() {
   document.getElementById('lib-error').style.display   = 'none';
   document.getElementById('lib-content').style.display = 'none';
 
-  document.querySelectorAll('#lib-filter-emotion .filter-pill, #lib-filter-duration .filter-pill')
+  document.querySelectorAll('#lib-filter-emotion .s-chip, #lib-filter-duration .s-chip')
     .forEach(p => p.classList.remove('active'));
-  document.querySelector('#lib-filter-emotion .filter-pill[data-val=""]')?.classList.add('active');
-  document.querySelector('#lib-filter-duration .filter-pill[data-val=""]')?.classList.add('active');
+  document.querySelector('#lib-filter-emotion .s-chip[data-val=""]')?.classList.add('active');
+  document.querySelector('#lib-filter-duration .s-chip[data-val=""]')?.classList.add('active');
 
   fetchLibraryData();
 }
@@ -87,9 +87,9 @@ function initLibFilters() {
   emotionEl.parentNode.replaceChild(newEmo, emotionEl);
 
   newEmo.addEventListener('click', e => {
-    const pill = e.target.closest('.filter-pill');
+    const pill = e.target.closest('.s-chip');
     if (!pill) return;
-    newEmo.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    newEmo.querySelectorAll('.s-chip').forEach(p => p.classList.remove('active'));
     pill.classList.add('active');
     libActiveEmotion = pill.dataset.val;
     applyLibFilters();
