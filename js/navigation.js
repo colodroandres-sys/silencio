@@ -316,7 +316,7 @@ function _updateTimeGreeting() {
     const user = clerk?.user;
     const name = user ? (user.firstName || '') : '';
     const nameStr = name ? ', ' + name + '.' : '.';
-    greetingSerifEl.innerHTML = 'Hola' + nameStr + ' ¿Cómo estás?<br><em>De verdad.</em>';
+    greetingSerifEl.innerHTML = 'Hola' + nameStr + ' <em>¿Cómo estás?</em> <span class="faded">De verdad.</span>';
   }
 }
 

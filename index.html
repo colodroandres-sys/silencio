@@ -75,11 +75,11 @@
             </svg>
             <p class="s-eyebrow ob-eyebrow-brand">Meditación · Compuesta para ti</p>
           </div>
-          <h1 class="ob-headline-xl">Una meditación hecha para este momento exacto.</h1>
+          <h1 class="ob-headline-xl">Una meditación <span class="normal">hecha para este</span> momento exacto.</h1>
           <p class="s-body ob-body-muted">Nada pregrabado. Nada genérico. Escribe cómo te sientes y se compone una sesión única, ahora.</p>
           <div class="ob-ctas">
             <button class="s-btn s-btn-primary" onclick="obNext(2)">Empezar</button>
-            <button class="s-btn s-btn-ghost" onclick="openAuth()">Ya tengo cuenta</button>
+            <button class="ob-link-btn" onclick="openAuth()">Ya tengo cuenta</button>
           </div>
         </div>
       </div>
@@ -89,6 +89,7 @@
         <div class="ob-inner">
           <p class="s-eyebrow ob-step-eyebrow">01 · Por qué meditas</p>
           <h2 class="ob-headline-md">¿Qué te trae <em>aquí</em>?</h2>
+
           <p class="s-body ob-body-sub">Elige una o varias. Puedes cambiarlo cuando quieras.</p>
           <div class="ob-option-cards" id="ob-topics">
             <button class="ob-option-card" data-value="ansiedad" onclick="obCardToggle(this)">
@@ -210,7 +211,7 @@
               <span>Que se dirijan a ti como hombre, mujer o neutro</span>
             </div>
           </div>
-          <div class="ob-ctas">
+          <div class="ob-ctas" style="margin-top: 16px;">
             <button class="s-btn s-btn-primary" onclick="obSkipToFree()">Empezar mi primera sesión</button>
             <button class="ob-link-btn" onclick="openAuth()">Crear cuenta ahora</button>
           </div>
@@ -245,7 +246,7 @@
         <div id="home-user-bar" class="home-topbar-inner" style="display:none">
           <div>
             <p class="s-eyebrow home-date-eyebrow" id="home-date-eyebrow">—</p>
-            <p class="home-greeting-serif" id="home-greeting-serif">Buenas tardes</p>
+            <p class="home-greeting-serif" id="home-greeting-serif">Hola. <em>¿Cómo estás?</em> <span class="faded">De verdad.</span></p>
           </div>
           <button class="home-avatar-btn" id="home-avatar-btn" onclick="toggleUserMenu()" aria-label="Menú de usuario">
             <span id="home-avatar-initial">A</span>
@@ -263,8 +264,9 @@
 
       <!-- HOME GUEST CONTENT -->
       <div id="home-guest-content" class="home-body" style="display:none">
-        <p class="s-eyebrow home-time-eyebrow" id="home-time-eyebrow">—</p>
-        <h1 class="home-headline">Hola. <em>¿Cómo estás hoy?</em></h1>
+        <p class="s-eyebrow">meditación gratis · 5 min</p>
+        <h1 class="home-headline">Hola. <em>¿Cómo estás?</em> <span class="home-headline-faded">De verdad.</span></h1>
+        <p class="s-body home-sub">Escribe una palabra, una frase o un párrafo. Tu meditación se compone al momento.</p>
 
         <!-- Inline textarea card -->
         <div class="home-guest-input-card">
@@ -319,6 +321,13 @@
 
         <!-- CTA generar -->
         <div class="home-cta-card home-cta-account" onclick="showCreate()">
+          <div class="home-cta-orb" aria-hidden="true">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+              <circle cx="50" cy="50" r="46" stroke="currentColor" stroke-opacity="0.15" stroke-width="1"/>
+              <circle cx="50" cy="50" r="28" stroke="currentColor" stroke-opacity="0.08" stroke-width="1"/>
+              <circle cx="50" cy="50" r="10" fill="currentColor" fill-opacity="0.05"/>
+            </svg>
+          </div>
           <p class="s-eyebrow home-cta-eyebrow">nueva sesión · <span id="home-cta-plan"></span></p>
           <p class="home-cta-title">¿Cómo te <em>sientes</em> ahora?</p>
           <button class="s-btn s-btn-dark s-btn-sm home-cta-btn" tabindex="-1">
@@ -713,7 +722,7 @@
           </div>
         </div>
         <button class="s-btn s-btn-dark" style="width:100%;margin-top:16px" onclick="showPaywall()">Ver planes</button>
-        <button class="end-link-btn end-link-btn-dark" onclick="newMeditation()">Escuchar de nuevo</button>
+        <button class="end-link-btn end-link-btn-dark" onclick="newMeditation()">Salir</button>
       </div>
 
     </div>

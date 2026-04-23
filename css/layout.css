@@ -67,13 +67,15 @@
 .home-date-eyebrow { margin-bottom: 4px; }
 .home-greeting-serif {
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 400;
   color: var(--ink);
-  letter-spacing: -0.02em;
-  line-height: 1.25;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-top: 4px;
 }
 .home-greeting-serif em { font-style: italic; font-weight: 300; }
+.home-greeting-serif .faded { font-style: italic; font-weight: 300; opacity: 0.55; }
 
 /* User dropdown */
 .user-menu-wrap { position: relative; }
@@ -155,6 +157,7 @@
   margin-bottom: 8px;
 }
 .home-headline em { font-style: italic; font-weight: 300; }
+.home-headline-faded { font-style: italic; font-weight: 300; opacity: 0.65; }
 
 .home-sub {
   color: var(--muted);
@@ -237,9 +240,9 @@
   flex: 1;
 }
 .streak-day-circle {
-  width: 32px;
-  height: 32px;
-  border-radius: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -332,6 +335,7 @@
   border: none;
   outline: none;
   font-family: var(--font-display);
+  font-weight: 400;
   font-size: 22px;
   letter-spacing: -0.02em;
   line-height: 1.35;
@@ -549,9 +553,8 @@
   border: none;
   outline: none;
   font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 300;
-  font-size: 21px;
+  font-weight: 400;
+  font-size: 22px;
   color: var(--ink);
   line-height: 1.35;
   letter-spacing: -0.02em;
@@ -560,7 +563,7 @@
 }
 .create-textarea::placeholder {
   color: var(--muted);
-  opacity: 0.55;
+  opacity: 0.5;
 }
 
 /* Quick prompts */
