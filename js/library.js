@@ -72,10 +72,6 @@ function renderLibraryData(data) {
     ? `${limit - usage} crédito${(limit - usage) !== 1 ? 's' : ''} este mes`
     : '';
 
-  document.getElementById('lib-stat-streak').textContent   = streak || 0;
-  document.getElementById('lib-stat-minutes').textContent  = totalMinutes || 0;
-  document.getElementById('lib-stat-sessions').textContent = totalSessions || 0;
-
   libAllMeditations = meditations || [];
   renderLibraryList(libAllMeditations);
   initLibFilters();
@@ -86,11 +82,9 @@ function renderLibraryData(data) {
 
 function initLibFilters() {
   const emotionEl  = document.getElementById('lib-filter-emotion');
-  const durationEl = document.getElementById('lib-filter-duration');
+  if (!emotionEl) return;
   const newEmo = emotionEl.cloneNode(true);
-  const newDur = durationEl.cloneNode(true);
   emotionEl.parentNode.replaceChild(newEmo, emotionEl);
-  durationEl.parentNode.replaceChild(newDur, durationEl);
 
   newEmo.addEventListener('click', e => {
     const pill = e.target.closest('.filter-pill');
@@ -98,14 +92,6 @@ function initLibFilters() {
     newEmo.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
     pill.classList.add('active');
     libActiveEmotion = pill.dataset.val;
-    applyLibFilters();
-  });
-  newDur.addEventListener('click', e => {
-    const pill = e.target.closest('.filter-pill');
-    if (!pill) return;
-    newDur.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-    pill.classList.add('active');
-    libActiveDuration = pill.dataset.val;
     applyLibFilters();
   });
 }
