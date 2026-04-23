@@ -18,7 +18,11 @@ async function saveMeditation() {
       btn.disabled = false;
       btn.textContent = 'Guardar meditación';
       if (reason === 'save_limit') {
-        showToast('Has alcanzado el límite de Essential. Pasa a Premium para guardar sin límite.');
+        const plan = state.userPlan;
+        const msg = plan === 'premium'
+          ? 'Has alcanzado el límite de Premium (20). Pasa a Studio para guardar sin límite.'
+          : 'Has alcanzado el límite de tu plan. Mejora tu suscripción para guardar más.';
+        showToast(msg);
         setTimeout(() => showPaywall(), 800);
       }
       return;

@@ -117,7 +117,7 @@ function showCreate(skipToConfig = false) {
     document.querySelector(`#grp-gender .s-chip[data-value="${obPrefs.gender}"]`)?.classList.add('active');
   }
   if (obPrefs.duration && obPrefs.duration !== '5') {
-    const allowed = state.userPlan === 'premium' || (state.userPlan === 'essential' && obPrefs.duration !== '20');
+    const allowed = state.userPlan === 'premium' || state.userPlan === 'studio' || (state.userPlan === 'essential' && obPrefs.duration !== '20');
     if (allowed) {
       state.duration = obPrefs.duration;
       document.querySelectorAll('#grp-duration .s-chip').forEach(p => p.classList.remove('active'));

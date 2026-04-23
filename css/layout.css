@@ -131,6 +131,7 @@
 .plan-free      { background: var(--surface); color: var(--muted); border: 1px solid var(--faint); }
 .plan-essential { background: var(--accent-soft); color: var(--accent); }
 .plan-premium   { background: var(--accent); color: var(--canvas); }
+.plan-studio    { background: var(--ink); color: var(--canvas); }
 
 /* =============================================
    HOME — BODY

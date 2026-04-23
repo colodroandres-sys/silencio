@@ -63,7 +63,7 @@ function renderLibraryData(data) {
   const { plan, usage, limit, totalMinutes, streak, totalSessions, meditations } = data;
 
   const badge = document.getElementById('lib-plan-badge');
-  const planNames = { free: 'Gratis', essential: 'Essential', premium: 'Premium' };
+  const planNames = { free: 'Gratis', essential: 'Essential', premium: 'Premium', studio: 'Studio' };
   badge.textContent = planNames[plan] || plan;
   badge.className   = `plan-badge plan-${plan}`;
 

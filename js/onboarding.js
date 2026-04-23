@@ -20,8 +20,8 @@ function obGoToStep(n) {
   const step = document.getElementById(`ob-${n}`);
   if (step) step.classList.add('active');
 
-  // Actualizar dots (flujo: 1→2→4, mapped a dots 0→1→2)
-  const dotIndex = n <= 2 ? n - 1 : 2;
+  // Actualizar dots (flujo: 1→2→3→4, mapped a dots 0→1→2→3)
+  const dotIndex = n - 1;
   document.querySelectorAll('.ob-dot').forEach((dot, i) => {
     dot.classList.toggle('active', i === dotIndex);
   });
