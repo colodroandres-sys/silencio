@@ -27,18 +27,28 @@ module.exports = async (req, res) => {
   const email = req.headers['x-user-email'] || '';
   const db = getSupabase();
 
-  const [user, limitData, allMeds] = await Promise.all([
+  const [user, limitData, allMeds, savedResult] = await Promise.all([
     getOrCreateUser(clerkId, email),
     checkUsageLimit(clerkId),
     db
       .from('meditations')
       .select('duration, created_at')
       .eq('clerk_id', clerkId)
-      .order('created_at', { ascending: false })
+      .order('created_at', { ascending: false }),
+    db
+      .from('meditations')
+      .select('id', { count: 'exact', head: true })
+      .eq('clerk_id', clerkId)
+      .eq('is_saved', true)
   ]);
 
   const meds = allMeds.data || [];
   const totalSessions = meds.length;
+  const savedCount = savedResult.count || 0;
+
+  const SAVE_LIMITS = { free: 0, essential: 5, premium: 20, studio: null };
+  const plan = (user?.plan || 'free');
+  const saveLimit = SAVE_LIMITS[plan] ?? null;
 
   // Minutos esta semana
   const weekAgo = new Date(Date.now() - 7 * 86400000);
@@ -83,6 +93,8 @@ module.exports = async (req, res) => {
     totalMinutes,
     totalSessions,
     level,
-    achievements
+    achievements,
+    savedCount,
+    saveLimit
   });
 };

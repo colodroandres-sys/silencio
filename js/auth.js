@@ -185,7 +185,8 @@ async function fetchUserStatus() {
     }
 
     const { plan, usage, limit, canGenerate, profileCompleted,
-            streak, minutesThisWeek, totalSessions, level } = await res.json();
+            streak, minutesThisWeek, totalSessions, level,
+            savedCount, saveLimit } = await res.json();
 
     const planEl  = document.getElementById('plan-badge');
     const usageEl = document.getElementById('usage-info');
@@ -195,10 +196,12 @@ async function fetchUserStatus() {
     state.profileCompleted   = !!profileCompleted;
     state.creditsRemaining   = Math.max(0, limit - usage);
     state.creditsLimit       = limit;
+    state.savedCount         = savedCount ?? 0;
+    state.saveLimit          = saveLimit ?? null;
     localStorage.setItem('stillova_plan', plan);
 
     if (planEl) {
-      const planNames = { free: 'Gratis', essential: 'Essential', premium: 'Premium' };
+      const planNames = { free: 'Gratis', essential: 'Essential', premium: 'Premium', studio: 'Studio' };
       planEl.textContent = planNames[plan] || plan;
       planEl.className   = `plan-badge plan-${plan}`;
     }

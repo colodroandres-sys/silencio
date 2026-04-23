@@ -165,8 +165,22 @@ function handleEnd() {
         document.getElementById('screen-player').classList.add('end-active');
       }
     } else if (state.userPlan !== 'free' && state.currentMeditationId) {
-      document.getElementById('end-save').style.display = 'flex';
-      document.getElementById('screen-player').classList.add('end-active');
+      const atLimit = state.saveLimit !== null && state.savedCount >= state.saveLimit;
+      if (atLimit) {
+        document.getElementById('btn-new-meditation').style.display = 'block';
+      } else {
+        const slotsEl = document.getElementById('end-save-slots-info');
+        if (slotsEl && state.saveLimit !== null) {
+          const used = state.savedCount;
+          const remaining = state.saveLimit - used;
+          slotsEl.textContent = `${used} de ${state.saveLimit} guardadas · te quedan ${remaining}`;
+          slotsEl.style.display = 'block';
+        } else if (slotsEl) {
+          slotsEl.style.display = 'none';
+        }
+        document.getElementById('end-save').style.display = 'flex';
+        document.getElementById('screen-player').classList.add('end-active');
+      }
     } else {
       document.getElementById('btn-new-meditation').style.display = 'block';
     }

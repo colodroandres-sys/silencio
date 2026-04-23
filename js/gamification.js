@@ -39,7 +39,7 @@ function renderHomeRecents(meditations) {
     const dateStr = formatRelativeDate(m.created_at);
     const tag = m.emotion_tag ? (EMOTION_LABELS[m.emotion_tag] || m.emotion_tag) : null;
     return `
-      <div class="med-card" onclick="showCreate()">
+      <div class="med-card" onclick="openLibrary()">
         <div class="med-info">
           <div class="med-title">${escapeHtml(m.title)}</div>
           <div class="med-meta">${dateStr} · ${m.duration} min${tag ? ' · ' + tag : ''}</div>

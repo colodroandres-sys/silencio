@@ -231,6 +231,15 @@ svg defs { display: none; }
   padding: 8px 0;
   text-align: center;
 }
+.end-save-slots-info {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--night-fg);
+  opacity: 0.5;
+  text-align: center;
+  margin-top: 6px;
+  letter-spacing: 0.3px;
+}
 .end-link-btn-dark {
   color: var(--night-fg);
   opacity: 0.6;
