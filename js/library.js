@@ -29,7 +29,7 @@ function loadLibrary() {
 
 async function fetchLibraryData() {
   try {
-    const token = await clerk.session.getToken();
+    const token = await clerk.session.getToken({ skipCache: true });
     const email = clerk.user?.primaryEmailAddress?.emailAddress || '';
     const res = await fetch('/api/dashboard', {
       headers: { 'Authorization': `Bearer ${token}`, 'x-user-email': email }

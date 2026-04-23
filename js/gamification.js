@@ -7,19 +7,12 @@ function calculateLevel(totalSessions) {
 }
 
 function updateHomeGamification(data) {
-  const { streak, minutesThisWeek, totalSessions, level } = data;
+  const { streak, minutesThisWeek, totalSessions, level, weekHistory } = data;
   state.streak          = streak   || 0;
   state.minutesThisWeek = minutesThisWeek || 0;
   state.totalSessions   = totalSessions   || 0;
   state.level           = level || calculateLevel(totalSessions);
-
-  const gamEl = document.getElementById('home-gam');
-  if (!gamEl) return;
-
-  document.getElementById('gam-streak').textContent  = state.streak;
-  document.getElementById('gam-minutes').textContent = state.minutesThisWeek;
-  document.getElementById('gam-level').textContent   = state.level;
-  gamEl.style.display = 'flex';
+  state.weekHistory     = weekHistory || [0,0,0,0,0,0,0];
 }
 
 function renderHomeRecents(meditations) {

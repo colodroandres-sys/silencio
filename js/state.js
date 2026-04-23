@@ -27,7 +27,8 @@ const state = {
   streak:          0,
   minutesThisWeek: 0,
   totalSessions:   0,
-  level:           'Inquieto'
+  level:           'Inquieto',
+  weekHistory:     [0,0,0,0,0,0,0]
 };
 
 const obPrefs = {

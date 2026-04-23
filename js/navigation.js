@@ -210,9 +210,9 @@ function updateProfileScreen() {
   }
 
   // Estadísticas de gamificación
-  const streak   = typeof gamData !== 'undefined' ? (gamData.streak || 0) : 0;
-  const totalMin = typeof gamData !== 'undefined' ? (gamData.totalMinutes || 0) : 0;
-  const sessions = typeof gamData !== 'undefined' ? (gamData.sessions || 0) : 0;
+  const streak   = state.streak          || 0;
+  const totalMin = state.minutesThisWeek || 0;
+  const sessions = state.totalSessions   || 0;
   const avg      = sessions > 0 ? Math.round(totalMin / sessions) : 0;
   setEl('profile-stat-streak',   streak);
   setEl('profile-stat-total',    totalMin);
@@ -383,16 +383,16 @@ function _updateUserHomeContent() {
   if (ctaPlan) ctaPlan.textContent = planLabels[state.userPlan] || '';
 
   // Streak
-  const streak = typeof gamData !== 'undefined' ? (gamData.streak || 0) : 0;
+  const streak = state.streak || 0;
   const streakStrip = document.getElementById('home-streak-strip');
   if (streakStrip) {
-    streakStrip.style.display = streak > 0 ? '' : 'none';
+    streakStrip.style.display = '';
     setEl('home-streak-num', streak);
 
     // Círculos por día
     const barsEl = document.getElementById('home-streak-bars');
     if (barsEl) {
-      const history = (typeof gamData !== 'undefined' && gamData.weekHistory) || [0,0,0,0,0,0,0];
+      const history = state.weekHistory || [0,0,0,0,0,0,0];
       const dayLabels = ['L','M','X','J','V','S','D'];
       barsEl.innerHTML = history.map((on, i) => `
         <div class="streak-day-col">
@@ -408,9 +408,9 @@ function _updateUserHomeContent() {
   // Stats
   const statsGrid = document.getElementById('home-stats-grid');
   if (statsGrid) statsGrid.style.display = '';
-  const weekMin  = typeof gamData !== 'undefined' ? (gamData.weekMinutes || 0) : 0;
-  const levelNum  = typeof gamData !== 'undefined' ? (gamData.level || 1) : 1;
-  const levelName = typeof gamData !== 'undefined' ? (gamData.levelName || 'Principiante') : 'Principiante';
+  const weekMin  = state.minutesThisWeek || 0;
+  const levelNum  = 1;
+  const levelName = state.level || 'Principiante';
   setEl('home-stat-minutes',    weekMin);
   setEl('home-stat-level',      levelNum);
   setEl('home-stat-level-name', levelName);

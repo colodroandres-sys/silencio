@@ -733,8 +733,8 @@
       <div id="lib-loading" class="dash-loading">Cargando tu biblioteca...</div>
 
       <div id="lib-error" class="dash-error" style="display:none">
-        <p>Inicia sesión para ver<br>tus meditaciones guardadas.</p>
-        <button onclick="clerk?.openSignIn()" class="s-btn s-btn-primary" style="margin-top:20px;width:auto;padding:0 28px">Iniciar sesión</button>
+        <p id="lib-error-msg">Error al cargar la biblioteca.</p>
+        <button onclick="clerk?.user ? loadLibrary() : clerk?.openSignIn()" class="s-btn s-btn-primary" style="margin-top:20px;width:auto;padding:0 28px">Reintentar</button>
       </div>
 
       <div id="lib-content" style="display:none">
