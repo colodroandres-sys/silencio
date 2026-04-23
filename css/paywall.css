@@ -220,6 +220,19 @@
 .pw-col-header.pw-col-featured.pw-col-selected {
   outline: 2px solid var(--accent);
 }
+#pw-col-studio.pw-col-selected {
+  outline: 2px solid var(--accent);
+  background: var(--ink);
+  color: var(--canvas);
+}
+.pw-table.pw-studio-selected tbody td:nth-child(4) {
+  background: var(--ink);
+  color: var(--canvas);
+}
+.pw-table.pw-studio-selected tbody td:nth-child(4) svg path { stroke: var(--canvas); }
+.pw-table.pw-studio-selected tbody tr:last-child td:nth-child(4) {
+  border-radius: 0 0 14px 14px;
+}
 
 /* Column header cursor */
 .pw-col-header { cursor: pointer; }

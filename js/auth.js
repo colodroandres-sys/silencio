@@ -23,6 +23,38 @@ async function initClerk() {
 
     clerk = window.Clerk;
     await clerk.load({
+      localization: {
+        locale: 'es-ES',
+        signIn: {
+          start: {
+            title: 'Entra en Stillova',
+            subtitle: 'Bienvenido/a de nuevo',
+            actionText: '¿No tienes cuenta?',
+            actionLink: 'Regístrate'
+          },
+          password: { title: 'Introduce tu contraseña', subtitle: 'Bienvenido/a de nuevo' },
+          forgotPasswordAlternativeMethods: { blockButton__resetPassword: 'Restablecer contraseña' },
+          emailCode: { title: 'Revisa tu email', subtitle: 'Introduce el código que te hemos enviado' }
+        },
+        signUp: {
+          start: {
+            title: 'Crea tu cuenta',
+            subtitle: 'Empieza a meditar con Stillova',
+            actionText: '¿Ya tienes cuenta?',
+            actionLink: 'Inicia sesión'
+          },
+          emailCode: { title: 'Verifica tu email', subtitle: 'Introduce el código que te hemos enviado' }
+        },
+        userButton: {
+          action__signOut: 'Cerrar sesión',
+          action__manageAccount: 'Gestionar cuenta'
+        },
+        formFieldLabel__emailAddress: 'Email',
+        formFieldLabel__password: 'Contraseña',
+        formButtonPrimary: 'Continuar',
+        dividerText: 'o',
+        socialButtonsBlockButton: 'Continuar con {{provider|titleize}}'
+      },
       appearance: {
         variables: {
           colorPrimary:         '#c9a96e',

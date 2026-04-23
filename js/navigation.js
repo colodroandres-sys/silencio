@@ -23,6 +23,7 @@ function showScreen(id) {
   // Actualizar tab activo
   document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
   if (id === 'screen-home')    document.getElementById('nav-home')?.classList.add('active');
+  if (id === 'screen-create')  document.getElementById('nav-home')?.classList.add('active');
   if (id === 'screen-library') document.getElementById('nav-library')?.classList.add('active');
   if (id === 'screen-profile') document.getElementById('nav-profile')?.classList.add('active');
 }
@@ -82,7 +83,17 @@ function endAccountFeel(btn) {
 
 function openLibrary() {
   if (!clerk?.user) {
-    clerk?.openSignIn();
+    // Mostrar biblioteca con estado guest en vez de abrir sign-in directo
+    const loading = document.getElementById('lib-loading');
+    const libContent = document.getElementById('lib-content');
+    const libError = document.getElementById('lib-error');
+    if (loading) loading.style.display = 'none';
+    if (libContent) libContent.style.display = 'none';
+    if (libError) {
+      libError.style.display = '';
+      document.getElementById('lib-error-msg').textContent = 'Crea una cuenta para guardar tus meditaciones y reescucharlas cuando quieras.';
+    }
+    showScreen('screen-library');
     return;
   }
   loadLibrary();

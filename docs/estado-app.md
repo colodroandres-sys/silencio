@@ -133,12 +133,13 @@ La selección automática ("Auto") en la config elige según el objetivo del usu
 
 ## Planes actuales (producción)
 
-| Plan | Precio | Créditos | Duración máx | Biblioteca |
-|------|--------|----------|--------------|------------|
-| Gratis | €0 | 1 (para probar) | 5 min | — |
-| Essential | €9.99/mes | 10/mes | 15 min | 20 guardadas |
-| Premium | €19.99/mes | 25/mes | 20 min | Ilimitada |
+| Plan | Precio mensual | Precio anual | Créditos | Duración máx | Biblioteca |
+|------|---------------|-------------|----------|--------------|------------|
+| Gratis | €0 | — | 1 (para probar) | 5 min | — |
+| Essential | €9,99/mes | €7,99/mes (€95,88/año) | 10/mes | 15 min | 5 guardadas |
+| Premium | €19,99/mes | €15,99/mes (€191,88/año) | 25/mes | 20 min | 20 guardadas |
+| Studio | €39,99/mes | €31,99/mes (€383,88/año) | 60/mes | 20 min | Ilimitada |
 
 Conversión de créditos: 5 min = 1 cr · 10 min = 2 cr · 15 min = 3 cr · 20 min = 4 cr
 
-Descuento primer mes activo: Essential €6.99 · Premium €13.99
+Descuento primer mes: Essential €6,99 · Premium €13,99 · Studio €33,99 (solo planes mensuales)

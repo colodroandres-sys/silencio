@@ -54,7 +54,6 @@
         <div class="ob-dot active" id="ob-dot-1"></div>
         <div class="ob-dot" id="ob-dot-2"></div>
         <div class="ob-dot" id="ob-dot-3"></div>
-        <div class="ob-dot" id="ob-dot-4"></div>
       </div>
 
       <!-- Back button -->
@@ -128,11 +127,11 @@
               <div class="ob-option-check"><div class="ob-check-dot"></div></div>
             </button>
           </div>
-          <button class="s-btn s-btn-primary ob-cta" onclick="obNext(3)">Continuar</button>
+          <button class="s-btn s-btn-primary ob-cta" onclick="obNext(4)">Continuar</button>
         </div>
       </div>
 
-      <!-- ── Paso 3 — Cómo funciona ── -->
+      <!-- ── Paso 3 — Cómo funciona (eliminado del flujo, se salta) ── -->
       <div class="ob-step" id="ob-3">
         <div class="ob-inner">
           <p class="s-eyebrow ob-step-eyebrow">02 · Cómo funciona</p>
@@ -278,7 +277,7 @@
           ></textarea>
         </div>
 
-        <button class="s-btn s-btn-primary" id="home-guest-gen-btn" onclick="homeGuestGenerate()" disabled>
+        <button class="s-btn s-btn-primary" id="home-guest-gen-btn" onclick="homeGuestGenerate()" style="opacity:0.45;pointer-events:auto">
           <svg width="14" height="14" viewBox="0 0 22 22" fill="none" style="margin-right:6px;flex-shrink:0"><path d="M11 2l1.8 5.2L18 9l-5.2 1.8L11 16l-1.8-5.2L4 9l5.2-1.8L11 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M17 14l0.8 2.2L20 17l-2.2 0.8L17 20l-0.8-2.2L14 17l2.2-0.8L17 14z" fill="currentColor"/></svg>
           Generar mi primera meditación
         </button>
@@ -1142,7 +1141,7 @@
     function homeGuestInputChange() {
       const val = document.getElementById('home-guest-textarea')?.value.trim() || '';
       const btn = document.getElementById('home-guest-gen-btn');
-      if (btn) btn.disabled = val.length < 3;
+      if (btn) btn.style.opacity = val.length >= 3 ? '1' : '0.45';
     }
 
     function homeGuestChip(label) {
@@ -1155,7 +1154,11 @@
 
     function homeGuestGenerate() {
       const val = document.getElementById('home-guest-textarea')?.value.trim() || '';
-      if (val.length < 3) return;
+      if (val.length < 3) {
+        const ta = document.getElementById('home-guest-textarea');
+        if (ta) { ta.focus(); if (typeof shake === 'function') shake(ta); }
+        return;
+      }
       const inputFree = document.getElementById('input-free');
       if (inputFree) inputFree.value = val;
       state.userInput = val;
@@ -1196,6 +1199,11 @@
         const col = document.getElementById('pw-col-' + p);
         if (col) col.classList.toggle('pw-col-selected', p === plan);
       });
+      const table = document.querySelector('.pw-table');
+      if (table) {
+        table.classList.toggle('pw-studio-selected', plan === 'studio');
+        table.classList.toggle('pw-essential-selected', plan === 'essential');
+      }
     }
 
     function pwProceed() {

@@ -115,17 +115,19 @@ function setPillLock(pill, locked) {
 function applyAllLocks() {
   const isFree      = !clerk?.user || state.userPlan === 'free';
   const isPremium   = state.userPlan === 'premium';
+  const isStudio    = state.userPlan === 'studio';
+  const canUse20    = isPremium || isStudio;
 
   document.querySelectorAll('#grp-duration .s-chip').forEach(pill => {
     const val = pill.dataset.value;
     if (val === '20') {
-      setPillLock(pill, !isPremium);
+      setPillLock(pill, !canUse20);
     } else {
       setPillLock(pill, isFree && val !== '5');
     }
   });
 
-  if (!isPremium && state.duration === '20') {
+  if (!canUse20 && state.duration === '20') {
     document.querySelectorAll('#grp-duration .s-chip').forEach(p => p.classList.remove('active'));
     document.querySelector('#grp-duration .s-chip[data-value="15"]')?.classList.add('active');
     state.duration = '15';

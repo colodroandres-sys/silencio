@@ -20,9 +20,10 @@ function obGoToStep(n) {
   const step = document.getElementById(`ob-${n}`);
   if (step) step.classList.add('active');
 
-  // Actualizar dots
+  // Actualizar dots (flujo: 1→2→4, mapped a dots 0→1→2)
+  const dotIndex = n <= 2 ? n - 1 : 2;
   document.querySelectorAll('.ob-dot').forEach((dot, i) => {
-    dot.classList.toggle('active', i === n - 1);
+    dot.classList.toggle('active', i === dotIndex);
   });
 
   // Back button
@@ -37,8 +38,15 @@ function obGoToStep(n) {
 function obNext(nextStep) {
   // Guardar selección del paso actual
   if (obCurrentStep === 2) {
+    const cards = document.querySelectorAll('#ob-topics .ob-option-card');
     const selected = [...document.querySelectorAll('#ob-topics .ob-option-card.active')]
       .map(c => c.dataset.value);
+    // Auto-seleccionar "Aún no lo sé" si el usuario no eligió nada
+    if (selected.length === 0 && cards.length > 0) {
+      const lastCard = cards[cards.length - 1];
+      lastCard.classList.add('active');
+      selected.push(lastCard.dataset.value || 'otro');
+    }
     obPrefs.topics = selected;
     localStorage.setItem('ob_topics', JSON.stringify(selected));
   }
