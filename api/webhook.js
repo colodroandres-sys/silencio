@@ -1,6 +1,18 @@
 const Stripe = require('stripe');
 const { getSupabase } = require('./_supabase');
 
+async function trackEvent(event, props = {}) {
+  const key = process.env.POSTHOG_SERVER_KEY || process.env.POSTHOG_KEY;
+  if (!key) return;
+  try {
+    await fetch('https://eu.i.posthog.com/capture/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ api_key: key, event, distinct_id: props.clerkId || 'webhook', properties: { ...props, source: 'webhook' } })
+    });
+  } catch (e) { /* no bloquear el webhook por fallo de analytics */ }
+}
+
 // Disable Vercel's automatic body parsing so we can access raw body for Stripe signature verification
 module.exports.config = { api: { bodyParser: false } };
 
@@ -75,6 +87,7 @@ module.exports = async (req, res) => {
           stripe_subscription_id: session.subscription
         }).eq('clerk_id', clerkId);
         console.log(`[webhook] Usuario ${clerkId} → plan ${plan}`);
+        await trackEvent('plan_upgraded', { clerkId, plan, billing: session.mode });
       }
     }
 
@@ -89,6 +102,7 @@ module.exports = async (req, res) => {
           stripe_subscription_id: null
         }).eq('clerk_id', clerkId);
         console.log(`[webhook] Suscripción cancelada (status: ${sub.status}) → ${clerkId} vuelve a free`);
+        await trackEvent('plan_cancelled', { clerkId, status: sub.status });
       } else if (clerkId) {
         console.warn(`[webhook] subscription.deleted recibido pero status es '${sub.status}' — ignorado para ${clerkId}`);
       }
