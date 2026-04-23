@@ -261,9 +261,18 @@ module.exports = async (req, res) => {
   let limitCheck = { allowed: true, plan: 'guest' };
 
   if (isGuest) {
-    // Guests: rate limit estricto — máx 2 generaciones por IP por 24h
-    const guestAllowed = await checkRateLimit(req, res, 'guest_generation', 2, '24 h');
-    if (!guestAllowed) return;
+    // Guests: 1 meditación para siempre — Supabase es la fuente de verdad
+    const { getSupabase } = require('./_supabase');
+    const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
+    try {
+      const { data } = await getSupabase().from('guest_usage').select('id').eq('ip', ip).limit(1);
+      if (data && data.length > 0) {
+        return res.status(402).json({
+          error: 'Has completado tu meditación de prueba. Crea una cuenta para continuar.',
+          guestBlocked: true
+        });
+      }
+    } catch (_) { /* silencioso — si falla la consulta, permitir */ }
   } else {
     // Usuario con cuenta: verificar token y plan
     const { verifyToken } = require('@clerk/backend');

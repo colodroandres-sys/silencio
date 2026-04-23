@@ -63,6 +63,7 @@
 
 .ob-inner {
   flex: 1;
+  overflow-y: auto;
   padding: 80px 28px calc(env(safe-area-inset-bottom, 0px) + 40px);
   display: flex;
   flex-direction: column;

@@ -118,7 +118,14 @@ async function generateMeditation() {
         showToast('Sesión expirada. Inicia sesión de nuevo.');
         setTimeout(() => openAuth(), 800);
       } else if (err.status === 429) {
-        setLoadingState('error', 'Límite alcanzado', 'Has alcanzado el límite de meditaciones por hora. Vuelve en un momento.');
+        if (!clerk?.user) {
+          showScreen('screen-create');
+          showToast('Has completado tu meditación de prueba. Crea una cuenta para seguir.');
+          setTimeout(() => showPaywall(), 1000);
+          track('paywall_shown', { trigger: 'guest_limit_429' });
+        } else {
+          setLoadingState('error', 'Límite alcanzado', 'Has alcanzado el límite de meditaciones por hora. Vuelve en un momento.');
+        }
       } else {
         setLoadingState('error', 'Algo salió mal', err.message || 'Revisa los datos e inténtalo de nuevo.');
       }

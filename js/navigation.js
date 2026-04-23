@@ -106,6 +106,12 @@ function openProfile() {
 }
 
 function showCreate(skipToConfig = false) {
+  if (!skipToConfig) {
+    state.userInput = '';
+    const ta = document.getElementById('input-free');
+    if (ta) ta.value = '';
+  }
+
   if (obPrefs.voice !== 'auto' && state.userPlan !== 'free') {
     state.voice = obPrefs.voice;
     document.querySelectorAll('#grp-voice .s-chip').forEach(p => p.classList.remove('active'));
