@@ -16,10 +16,16 @@ function updateHomeGamification(data) {
 }
 
 function renderHomeRecents(meditations) {
-  if (!meditations || meditations.length === 0) return;
   const container = document.getElementById('home-recents');
   const list      = document.getElementById('home-recents-list');
   if (!container || !list) return;
+
+  container.style.display = 'block';
+
+  if (!meditations || meditations.length === 0) {
+    list.innerHTML = '<p class="home-recents-empty">Tu primera sesión aparecerá aquí.</p>';
+    return;
+  }
 
   const EMOTION_LABELS = {
     ansiedad:   'Ansiedad',

@@ -414,4 +414,12 @@ function _updateUserHomeContent() {
   setEl('home-stat-minutes',    weekMin);
   setEl('home-stat-level',      levelNum);
   setEl('home-stat-level-name', levelName);
+
+  // Mostrar recents de inmediato con estado vacío (se reemplaza si llegan datos)
+  const recentsContainer = document.getElementById('home-recents');
+  const recentsList      = document.getElementById('home-recents-list');
+  if (recentsContainer && recentsList && recentsContainer.style.display === 'none') {
+    recentsList.innerHTML = '<p class="home-recents-empty">Tu primera sesión aparecerá aquí.</p>';
+    recentsContainer.style.display = 'block';
+  }
 }

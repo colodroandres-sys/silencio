@@ -29,13 +29,22 @@ function loadLibrary() {
 
 async function fetchLibraryData() {
   try {
-    const token = await clerk.session.getToken({ skipCache: true });
+    const token = await clerk.session?.getToken({ skipCache: true });
+    if (!token) {
+      clerk?.openSignIn();
+      return;
+    }
     const email = clerk.user?.primaryEmailAddress?.emailAddress || '';
     const res = await fetch('/api/dashboard', {
       headers: { 'Authorization': `Bearer ${token}`, 'x-user-email': email }
     });
-    if (res.status === 401) { showLibError('Sesión expirada. Inicia sesión de nuevo.'); return; }
-    if (!res.ok)            { showLibError('Error al cargar la biblioteca. Inténtalo de nuevo.'); return; }
+    if (res.status === 401) {
+      // Token válido en Clerk pero rechazado por el servidor — la sesión caducó del todo
+      document.getElementById('lib-loading').style.display = 'none';
+      clerk?.openSignIn();
+      return;
+    }
+    if (!res.ok) { showLibError('Error al cargar la biblioteca. Inténtalo de nuevo.'); return; }
     renderLibraryData(await res.json());
   } catch (e) {
     console.error('[library]', e);
