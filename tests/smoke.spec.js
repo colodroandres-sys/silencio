@@ -115,28 +115,36 @@ test('4. Create: scroll hasta abajo — pills de duración visibles (no tapadas 
 
   await page.waitForTimeout(350); // esperar reflow tras scroll
 
-  // Verificar que el locked card no queda tapado por el botón sticky
+  // El texto clave del locked card (hint "elegir duración y voz requiere plan")
+  // debe estar por encima de la zona sólida del botón sticky.
+  // El btn-generate-wrap tiene un gradiente transparente en la parte superior (≈40% altura).
+  // Comparamos el hint text contra la zona sólida (60% inferior del wrapper).
   const result = await page.evaluate(() => {
-    const card = document.getElementById('create-locked-card');
+    const hint = document.querySelector('.create-locked-hint');
     const btn  = document.querySelector('.btn-generate-wrap');
-    if (!card || !btn) return { ok: false, reason: 'elementos no encontrados' };
+    if (!hint || !btn) return { ok: false, reason: 'elementos no encontrados' };
 
-    const cardRect = card.getBoundingClientRect();
+    const hintRect = hint.getBoundingClientRect();
     const btnRect  = btn.getBoundingClientRect();
 
-    // El fondo del locked card debe estar por encima del inicio del botón fijo
-    const cardBottomAboveBtn = cardRect.bottom <= btnRect.top + 4; // ±4px tolerancia
+    // Zona sólida: empieza al 60% desde la base del wrapper (gradient: solid hasta 60%)
+    const btnHeight   = btnRect.bottom - btnRect.top;
+    const solidStart  = btnRect.bottom - btnHeight * 0.6;
+
+    // El hint text debe terminar antes de la zona sólida opaca
+    const hintAboveSolid = hintRect.bottom <= solidStart + 4; // +4px tolerancia
 
     return {
-      ok: cardBottomAboveBtn,
-      cardBottom: Math.round(cardRect.bottom),
-      btnTop: Math.round(btnRect.top),
+      ok: hintAboveSolid,
+      hintBottom:   Math.round(hintRect.bottom),
+      solidStart:   Math.round(solidStart),
+      btnTop:       Math.round(btnRect.top),
     };
   });
 
   expect(
     result.ok,
-    `Card bottom (${result.cardBottom}px) debe ser ≤ btn top (${result.btnTop}px)`
+    `Hint (${result.hintBottom}px) debe ser ≤ zona sólida del botón (${result.solidStart}px)`
   ).toBe(true);
 });
 
