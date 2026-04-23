@@ -8,8 +8,10 @@ function getPlanByPrice(priceId) {
   if (!priceId) return null;
   if (priceId === process.env.STRIPE_ESSENTIAL_PRICE_ID) return 'essential';
   if (priceId === process.env.STRIPE_PREMIUM_PRICE_ID) return 'premium';
+  if (priceId === process.env.STRIPE_STUDIO_PRICE_ID) return 'studio';
   if (priceId === process.env.STRIPE_ESSENTIAL_ANNUAL_PRICE_ID) return 'essential';
   if (priceId === process.env.STRIPE_PREMIUM_ANNUAL_PRICE_ID) return 'premium';
+  if (priceId === process.env.STRIPE_STUDIO_ANNUAL_PRICE_ID) return 'studio';
   console.error(`[webhook] priceId desconocido: ${priceId}`);
   return null;
 }

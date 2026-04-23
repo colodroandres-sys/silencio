@@ -245,7 +245,7 @@ function updateProfileScreen() {
   // Barra de créditos
   const creditBar = document.getElementById('profile-plan-credit-bar');
   const creditInfo = document.getElementById('profile-plan-credit-info');
-  const totalCr = { essential: 10, premium: 25, studio: 999 };
+  const totalCr = { essential: 10, premium: 25, studio: 60 };
   const total = totalCr[plan] || 0;
   const used  = state.creditsUsed || (total - (state.creditsRemaining || 0));
   if (creditBar && total > 0) creditBar.style.width = Math.min(100, (used / total) * 100) + '%';

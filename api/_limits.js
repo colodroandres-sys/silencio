@@ -4,7 +4,8 @@ const { getSupabase } = require('./_supabase');
 const PLAN_LIMITS = {
   free: 1,         // 1 crédito one-time (solo 5 min)
   essential: 10,   // 10 créditos por mes
-  premium: 25      // 25 créditos por mes
+  premium: 25,     // 25 créditos por mes
+  studio: 60       // 60 créditos por mes
 };
 
 // Créditos que cuesta cada duración

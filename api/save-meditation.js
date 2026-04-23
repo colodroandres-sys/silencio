@@ -4,8 +4,9 @@ const { getSupabase } = require('./_supabase');
 // Límite de meditaciones guardadas por plan (null = ilimitado)
 const SAVE_LIMITS = {
   free: 0,
-  essential: 20,
-  premium: null
+  essential: 5,
+  premium: 20,
+  studio: null
 };
 
 module.exports = async (req, res) => {
