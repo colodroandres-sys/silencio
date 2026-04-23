@@ -92,6 +92,8 @@ function openLibrary() {
     if (libError) {
       libError.style.display = '';
       document.getElementById('lib-error-msg').textContent = 'Crea una cuenta para guardar tus meditaciones y reescucharlas cuando quieras.';
+      const libBtn = libError.querySelector('button');
+      if (libBtn) libBtn.textContent = 'Crear cuenta gratis';
     }
     showScreen('screen-library');
     return;

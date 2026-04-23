@@ -41,11 +41,17 @@ function obNext(nextStep) {
     const cards = document.querySelectorAll('#ob-topics .ob-option-card');
     const selected = [...document.querySelectorAll('#ob-topics .ob-option-card.active')]
       .map(c => c.dataset.value);
-    // Auto-seleccionar "Aún no lo sé" si el usuario no eligió nada
+    // Si no eligió nada: mostrar hint, resaltar "Aún no lo sé" y avanzar tras breve pausa
     if (selected.length === 0 && cards.length > 0) {
+      const hint = document.getElementById('ob-2-hint');
+      if (hint) hint.style.display = '';
       const lastCard = cards[cards.length - 1];
       lastCard.classList.add('active');
       selected.push(lastCard.dataset.value || 'otro');
+      obPrefs.topics = selected;
+      localStorage.setItem('ob_topics', JSON.stringify(selected));
+      setTimeout(() => obGoToStep(nextStep), 700);
+      return;
     }
     obPrefs.topics = selected;
     localStorage.setItem('ob_topics', JSON.stringify(selected));

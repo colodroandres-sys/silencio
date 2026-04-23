@@ -246,7 +246,7 @@ body {
    ============================================= */
 .toast {
   position: fixed;
-  bottom: 100px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 96px);
   left: 50%;
   transform: translateX(-50%) translateY(16px);
   background: var(--ink);
@@ -258,7 +258,9 @@ body {
   opacity: 0;
   z-index: 999;
   transition: all 0.3s;
-  white-space: nowrap;
+  white-space: normal;
+  max-width: calc(100vw - 48px);
+  text-align: center;
 }
 .toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
 

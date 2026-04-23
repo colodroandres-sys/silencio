@@ -272,6 +272,8 @@ function showPaywall() {
   if (typeof pwSelectPlan === 'function') pwSelectPlan('premium');
   const modal = document.getElementById('paywall-modal');
   if (modal) modal.classList.add('active');
+  const toast = document.querySelector('.toast');
+  if (toast) toast.classList.remove('visible');
 }
 
 function closeEndUpsell() {

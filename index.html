@@ -128,6 +128,7 @@
               <div class="ob-option-check"><div class="ob-check-dot"></div></div>
             </button>
           </div>
+          <p id="ob-2-hint" style="display:none;font-size:13px;color:var(--muted);text-align:center;margin-top:4px;transition:opacity 0.3s">Si no eliges, lo descubriremos contigo.</p>
           <button class="s-btn s-btn-primary ob-cta" onclick="obNext(3)">Continuar</button>
         </div>
       </div>
@@ -1011,7 +1012,7 @@
   <!-- ══════════════════════════════════════════
        MODAL — Paywall
        ══════════════════════════════════════════ -->
-  <div id="paywall-modal" class="paywall-overlay">
+  <div id="paywall-modal" class="paywall-overlay" onclick="if(event.target===this)closePaywall()">
     <div class="paywall-card">
       <div class="paywall-close-row">
         <button class="paywall-close-btn" onclick="closePaywall()">
