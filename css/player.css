@@ -499,3 +499,155 @@ svg defs { display: none; }
 /* =============================================
    RING GRADIENT DEF — injected by JS
    ============================================= */
+
+/* =============================================
+   END ACCOUNT SCREEN (light bg)
+   ============================================= */
+#screen-end-account {
+  background: var(--canvas);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.end-account-wrap {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: calc(env(safe-area-inset-top, 0px) + 16px) 24px calc(env(safe-area-inset-bottom, 0px) + 40px);
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.end-account-top-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 24px;
+}
+
+.end-account-ring-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  opacity: 0.75;
+}
+
+.end-account-eyebrow {
+  text-align: center;
+  margin-bottom: 10px;
+  color: var(--muted);
+}
+
+.end-account-display {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 400;
+  letter-spacing: -0.022em;
+  line-height: 1.15;
+  color: var(--ink);
+  text-align: center;
+  margin-bottom: 24px;
+}
+.end-account-display em { font-style: italic; font-weight: 300; }
+
+.end-account-session-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+.end-account-session-card .s-eyebrow { margin-bottom: 6px; }
+.end-account-session-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+.end-account-session-meta {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.end-account-save-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.end-account-save-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+.end-account-save-title em { font-style: italic; font-weight: 300; }
+.end-account-save-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+.end-account-save-actions {
+  display: flex;
+  gap: 10px;
+}
+.end-account-yes-btn {
+  flex: 1;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--ink);
+  border: none;
+  color: var(--canvas);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: opacity 0.2s;
+}
+.end-account-yes-btn:hover { opacity: 0.85; }
+.end-account-no-btn {
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 999px;
+  background: transparent;
+  border: 1.5px solid var(--faint);
+  color: var(--muted);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.end-account-no-btn:hover { border-color: var(--ink); }
+
+.end-account-saved-msg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--ink);
+  padding: 12px 0;
+  margin-bottom: 8px;
+}
+
+.end-account-feel-eyebrow {
+  margin-top: 8px;
+  margin-bottom: 10px;
+}
+
+.end-account-feel-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.end-account-footer {
+  margin-top: auto;
+}

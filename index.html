@@ -279,6 +279,7 @@
         </div>
 
         <button class="s-btn s-btn-primary" id="home-guest-gen-btn" onclick="homeGuestGenerate()" disabled>
+          <svg width="14" height="14" viewBox="0 0 22 22" fill="none" style="margin-right:6px;flex-shrink:0"><path d="M11 2l1.8 5.2L18 9l-5.2 1.8L11 16l-1.8-5.2L4 9l5.2-1.8L11 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M17 14l0.8 2.2L20 17l-2.2 0.8L17 20l-0.8-2.2L14 17l2.2-0.8L17 14z" fill="currentColor"/></svg>
           Generar mi primera meditación
         </button>
 
@@ -296,7 +297,7 @@
 
         <!-- Info strip -->
         <div class="home-guest-info-strip">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="var(--accent)" stroke-width="1.2"/><path d="M7 6.5v3M7 5v.5" stroke="var(--accent)" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <svg width="14" height="14" viewBox="0 0 22 22" fill="none" style="color:var(--accent);flex-shrink:0"><path d="M11 2l1.8 5.2L18 9l-5.2 1.8L11 16l-1.8-5.2L4 9l5.2-1.8L11 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M17 14l0.8 2.2L20 17l-2.2 0.8L17 20l-0.8-2.2L14 17l2.2-0.8L17 14z" fill="currentColor"/></svg>
           <span><strong>Sin tarjeta.</strong> Después de tu primera meditación podrás elegir un plan para seguir.</span>
         </div>
       </div>
@@ -336,34 +337,6 @@
           </button>
         </div>
 
-        <!-- Stats -->
-        <div class="home-stats-grid" id="home-stats-grid" style="display:none">
-          <div class="stat-card">
-            <p class="s-eyebrow stat-label">esta semana</p>
-            <div class="stat-value-row">
-              <span class="stat-number" id="home-stat-minutes">0</span>
-              <span class="stat-unit">min</span>
-            </div>
-          </div>
-          <div class="stat-card">
-            <p class="s-eyebrow stat-label">nivel</p>
-            <div class="stat-value-row">
-              <span class="stat-number" id="home-stat-level">1</span>
-              <span class="stat-unit">·</span>
-            </div>
-            <div class="stat-sublabel" id="home-stat-level-name">Principiante</div>
-          </div>
-        </div>
-
-        <!-- Insight card -->
-        <div class="home-insight-card" id="home-insight-card" style="display:none">
-          <div class="home-insight-header">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1l1.5 3.1 3.4.5-2.45 2.38.58 3.37L8 8.75l-3.03 1.6.58-3.37L3.1 4.6l3.4-.5L8 1z" stroke="var(--accent)" stroke-width="1.2" stroke-linejoin="round"/></svg>
-            <p class="s-eyebrow" style="color:var(--accent)">insight personal</p>
-          </div>
-          <p class="home-insight-text" id="home-insight-text">Sueles meditar cuando tienes <em>ansiedad</em>. Tu sesión más efectiva fue de 10 min por la mañana.</p>
-        </div>
-
         <!-- Recientes -->
         <div id="home-recents" style="display:none">
           <div class="home-recents-header">
@@ -373,14 +346,6 @@
           <div id="home-recents-list" class="home-recents-list"></div>
         </div>
 
-        <!-- Gamificación legacy (oculto) -->
-        <div class="home-gam" id="home-gam" style="display:none">
-          <div class="gam-stat"><div class="gam-value" id="gam-streak">0</div><div class="gam-label">Racha</div></div>
-          <div class="gam-divider"></div>
-          <div class="gam-stat"><div class="gam-value" id="gam-minutes">0</div><div class="gam-label">Min esta semana</div></div>
-          <div class="gam-divider"></div>
-          <div class="gam-stat"><div class="gam-value gam-level" id="gam-level">—</div><div class="gam-label">Nivel</div></div>
-        </div>
 
       </div>
     </div>
@@ -600,9 +565,9 @@
         </button>
       </div>
 
-      <!-- Ring 260px -->
+      <!-- Ring 240px -->
       <div class="player-ring-wrap">
-        <svg class="player-ring-svg" viewBox="0 0 100 100" style="width:260px;height:260px" aria-hidden="true">
+        <svg class="player-ring-svg" viewBox="0 0 100 100" style="width:240px;height:240px" aria-hidden="true">
           <circle class="ring-track" cx="50" cy="50" r="46"/>
           <circle class="ring-progress" id="player-ring-fill" cx="50" cy="50" r="46" stroke-dasharray="289.03" stroke-dashoffset="289.03"/>
           <circle class="ring-breath-dot" id="player-dot" cx="50" cy="50" r="3"/>
@@ -667,64 +632,90 @@
         <button class="end-link-btn" onclick="skipSave()">Cerrar sin guardar</button>
       </div>
 
-      <!-- END: perfil bonus -->
-      <div id="end-profile" style="display:none" class="end-profile">
-        <p class="end-upsell-eyebrow">Una pregunta rápida</p>
-        <p class="end-profile-title">Gana 1 meditación<br>extra gratis.</p>
-        <p class="end-profile-sub">Una respuesta para personalizarte mejor.</p>
-        <div class="profile-questions">
-          <div class="profile-q">
-            <p class="profile-q-label">¿Qué buscas con la meditación?</p>
-            <div class="profile-pills" id="profile-goal">
-              <button class="s-chip s-chip-sm" data-value="ansiedad" onclick="profilePillSelect('profile-goal',this)">Reducir ansiedad</button>
-              <button class="s-chip s-chip-sm" data-value="sueno"    onclick="profilePillSelect('profile-goal',this)">Dormir mejor</button>
-              <button class="s-chip s-chip-sm" data-value="claridad" onclick="profilePillSelect('profile-goal',this)">Claridad mental</button>
-              <button class="s-chip s-chip-sm" data-value="estres"   onclick="profilePillSelect('profile-goal',this)">Calmarme</button>
-            </div>
-          </div>
-        </div>
-        <button class="s-btn s-btn-primary" id="btn-profile-submit" onclick="submitProfile()" disabled style="width:100%;margin-top:8px">Recibir meditación gratis</button>
-        <button class="end-link-btn" onclick="skipProfile()">Ahora no</button>
-      </div>
-
-      <!-- END: upsell (free que completó sesión) -->
-      <div id="end-upsell" style="display:none" class="end-upsell-card">
-        <p class="s-eyebrow end-card-eyebrow">Primera meditación completada</p>
-        <p class="end-card-title">Así de bien puedes<br>sentirte cada día.</p>
-        <ul class="end-benefits-list">
-          <li>Música de fondo adaptada a tu sesión</li>
-          <li>Silencios estratégicos en el momento exacto</li>
-          <li>Meditaciones de hasta 20 minutos</li>
-          <li>Guarda tus favoritas para volver a escucharlas</li>
-        </ul>
-        <button class="s-btn s-btn-primary" style="width:100%" onclick="closeEndUpsell(); showPaywall()">Quiero acceso completo</button>
-        <button class="end-link-btn" onclick="closeEndUpsell(); newMeditation()">Ahora no</button>
-      </div>
-
       <!-- END: guest (sin cuenta) — dark style -->
       <div id="end-guest" style="display:none" class="end-guest-card">
-        <p class="s-eyebrow end-guest-eyebrow">5:00 · completado</p>
+        <div style="display:flex;justify-content:center;margin-bottom:20px;opacity:0.55">
+          <svg viewBox="0 0 100 100" style="width:130px;height:130px;transform:rotate(-90deg);display:block" aria-hidden="true">
+            <circle cx="50" cy="50" r="46" fill="none" stroke="var(--night-fg)" stroke-opacity="0.12" stroke-width="1.2"/>
+            <circle cx="50" cy="50" r="46" fill="none" stroke="var(--night-fg)" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="289.03" stroke-dashoffset="144.52"/>
+            <circle cx="50" cy="50" r="3" fill="var(--night-fg)" fill-opacity="0.5"/>
+          </svg>
+        </div>
+        <p class="s-eyebrow end-guest-eyebrow" id="end-guest-eyebrow">5:00 · completado</p>
         <p class="end-guest-title">Esa sesión <em>no volverá</em>.</p>
-        <p class="end-guest-body">Fue única, como cada meditación aquí. Crea una cuenta para guardarla y seguir el hilo.</p>
+        <p class="end-guest-body">Fue única, como cada meditación aquí. Un plan te da duración, voz y la biblioteca.</p>
         <div class="end-guest-benefits">
-          <p class="s-eyebrow" style="color:var(--night-fg);opacity:0.5;margin-bottom:8px">con cuenta</p>
+          <p class="s-eyebrow" style="color:var(--night-fg);opacity:0.5;margin-bottom:8px">lo que obtienes</p>
           <div class="end-guest-benefit-row">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span>Guarda las sesiones que te funcionen</span>
+            <span>Elige duración: 5, 10, 15 o 20 minutos</span>
           </div>
           <div class="end-guest-benefit-row">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span>Tu racha y tu nivel empiezan a crecer</span>
+            <span>Elige voz y cómo dirigirse a ti</span>
           </div>
           <div class="end-guest-benefit-row">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span>Te conocemos mejor con cada sesión</span>
+            <span>Guarda y reescucha tus sesiones</span>
           </div>
         </div>
         <button class="s-btn s-btn-dark" style="width:100%;margin-top:16px" onclick="showPaywall()">Ver planes</button>
         <button class="end-link-btn end-link-btn-dark" onclick="newMeditation()">Salir</button>
       </div>
 
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       END ACCOUNT — pantalla propia (light bg)
+       ══════════════════════════════════════════ -->
+  <div id="screen-end-account" class="screen">
+    <div class="end-account-wrap">
+      <div class="end-account-top-row">
+        <button class="create-close-btn" onclick="showHome()" aria-label="Cerrar">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M13 5L5 13M5 5l8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="end-account-ring-wrap">
+        <svg viewBox="0 0 100 100" style="width:110px;height:110px;transform:rotate(-90deg);display:block" aria-hidden="true">
+          <circle cx="50" cy="50" r="46" fill="none" stroke="var(--ink)" stroke-opacity="0.12" stroke-width="1.2"/>
+          <circle cx="50" cy="50" r="46" fill="none" stroke="var(--ink)" stroke-width="1.2" stroke-linecap="round" stroke-dasharray="289.03" stroke-dashoffset="144.52"/>
+          <circle cx="50" cy="50" r="3" fill="var(--ink)" fill-opacity="0.5"/>
+        </svg>
+      </div>
+      <p class="s-eyebrow end-account-eyebrow" id="end-account-eyebrow">— · completado</p>
+      <h1 class="end-account-display" id="end-account-display">Buen trabajo, <em>tú</em>.</h1>
+      <div class="end-account-session-card">
+        <p class="s-eyebrow" id="end-account-card-eyebrow">esta sesión</p>
+        <p class="end-account-session-title" id="end-account-session-title">—</p>
+        <p class="end-account-session-meta" id="end-account-session-meta">—</p>
+      </div>
+      <div class="end-account-save-card" id="end-account-save-card">
+        <p class="end-account-save-title">¿Quieres <em>guardarla</em>?</p>
+        <p class="end-account-save-desc">Reescucharla <strong>no cuesta créditos</strong>. Te quedan <span id="end-account-slots">—</span> en tu biblioteca.</p>
+        <div class="end-account-save-actions">
+          <button class="end-account-yes-btn" onclick="endAccountSave()">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2h10v10.5l-5-2.5L2 12.5V2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+            Sí, guardar
+          </button>
+          <button class="end-account-no-btn" onclick="endAccountDiscard()">No</button>
+        </div>
+      </div>
+      <div class="end-account-saved-msg" id="end-account-saved-msg" style="display:none">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-7" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Guardada. Reescucharla no te costará créditos.
+      </div>
+      <p class="s-eyebrow end-account-feel-eyebrow">¿te ayudó?</p>
+      <div class="end-account-feel-chips">
+        <button class="s-chip s-chip-sm" onclick="endAccountFeel(this)">Mucho</button>
+        <button class="s-chip s-chip-sm" onclick="endAccountFeel(this)">Un poco</button>
+        <button class="s-chip s-chip-sm" onclick="endAccountFeel(this)">No</button>
+      </div>
+      <div class="end-account-footer">
+        <button class="s-btn s-btn-primary" style="width:100%" onclick="showHome()">Cerrar</button>
+      </div>
     </div>
   </div>
 
@@ -806,16 +797,6 @@
             <p class="profile-name" id="profile-name">—</p>
             <p class="profile-plan-info" id="profile-plan-info">desde —</p>
           </div>
-        </div>
-
-        <!-- Level card -->
-        <div class="profile-level-card" id="profile-level-card" style="display:none">
-          <span class="profile-level-eyebrow s-eyebrow" id="profile-level-eyebrow">nivel 1</span>
-          <div class="profile-level-name"><em id="profile-level-name-text">Explorador</em></div>
-          <div class="profile-level-bar-wrap">
-            <div class="profile-level-bar" id="profile-level-bar" style="width:0%"></div>
-          </div>
-          <div class="profile-level-meta" id="profile-level-meta">0 / 1 → siguiente nivel</div>
         </div>
 
         <!-- Stats 2×2 -->
@@ -962,7 +943,7 @@
         </div>
 
         <div class="buzon-privacy-note">
-          <svg class="buzon-privacy-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="var(--accent)" stroke-width="1.2"/><path d="M8 7v4M8 5.5v.5" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg>
+          <svg class="buzon-privacy-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2L2.5 4.5v4c0 3 2.5 5.5 5.5 6 3-0.5 5.5-3 5.5-6v-4L8 2z" stroke="var(--accent)" stroke-width="1.2" stroke-linejoin="round"/></svg>
           <span class="buzon-privacy-text">Tu mensaje es privado. Solo yo lo veo y te responderé por email si lo necesitas.</span>
         </div>
 
@@ -971,10 +952,10 @@
 
       <div id="buzon-success" style="display:none" class="buzon-success">
         <div class="buzon-success-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4L19 7" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 12l4 4L19 7" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
-        <div class="buzon-success-title">Mensaje enviado</div>
-        <div class="buzon-success-sub">Lo leeré pronto. Gracias por tomarte el tiempo.</div>
+        <div class="buzon-success-title">Lo leeré, de verdad.</div>
+        <div class="buzon-success-sub">Cada mensaje llega a mi buzón personal. Stillova es pequeña y lo que me dices moldea lo que viene.</div>
       </div>
 
     </div>
@@ -1041,10 +1022,16 @@
         </thead>
         <tbody>
           <tr>
-            <td>Meditaciones / mes</td>
+            <td>Créditos / mes</td>
             <td>10</td>
             <td class="pw-cell-featured">30</td>
-            <td>Ilimitadas</td>
+            <td>65</td>
+          </tr>
+          <tr>
+            <td>1 crédito</td>
+            <td>5 min</td>
+            <td class="pw-cell-featured">5 min</td>
+            <td>5 min</td>
           </tr>
           <tr>
             <td>Duración máx.</td>
@@ -1065,9 +1052,9 @@
             <td style="font-size:11px">H/M/neutro</td>
           </tr>
           <tr>
-            <td>Guardar sesiones</td>
-            <td>30</td>
-            <td class="pw-cell-featured">150</td>
+            <td>Guardar meditaciones</td>
+            <td>10</td>
+            <td class="pw-cell-featured">30</td>
             <td>Ilimitado</td>
           </tr>
           <tr>
@@ -1090,8 +1077,9 @@
        ══════════════════════════════════════════ -->
   <nav class="bottom-nav" id="bottom-nav">
     <button class="nav-item active" id="nav-home" onclick="showHome()">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M8 1l1.5 3.1 3.4.5-2.45 2.38.58 3.37L8 8.75l-3.03 1.6.58-3.37L3.1 4.6l3.4-.5L8 1z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+      <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
+        <path d="M11 2l1.8 5.2L18 9l-5.2 1.8L11 16l-1.8-5.2L4 9l5.2-1.8L11 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+        <path d="M17 14l0.8 2.2L20 17l-2.2 0.8L17 20l-0.8-2.2L14 17l2.2-0.8L17 14z" fill="currentColor"/>
       </svg>
       <span>Hoy</span>
     </button>
@@ -1180,9 +1168,9 @@
     let _pwPlan  = 'premium';
 
     const PW_PRICES = {
-      essential: { monthly: '€9,99',  annual: '€6,49'  },
-      premium:   { monthly: '€19,99', annual: '€12,99' },
-      studio:    { monthly: '€39,99', annual: '€25,99' },
+      essential: { monthly: '€9,99',  annual: '€5,99'  },
+      premium:   { monthly: '€19,99', annual: '€11,99' },
+      studio:    { monthly: '€39,99', annual: '€23,99' },
     };
 
     function pwSetBilling(cycle) {

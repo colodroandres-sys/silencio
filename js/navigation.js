@@ -13,7 +13,7 @@ function showScreen(id) {
 
   const nav = document.getElementById('bottom-nav');
   if (nav) {
-    const hideNav = id === 'screen-loading' || id === 'screen-player' || id === 'screen-onboarding';
+    const hideNav = id === 'screen-loading' || id === 'screen-player' || id === 'screen-onboarding' || id === 'screen-end-account';
     nav.classList.toggle('hidden', hideNav);
   }
 
@@ -32,6 +32,52 @@ function showHome() {
   showScreen('screen-home');
   // Actualizar home al entrar
   if (typeof updateHomeDisplay === 'function') updateHomeDisplay();
+}
+
+function showEndAccount(opts = {}) {
+  const { duration = 0, title = '', technique = '', slotsLeft = 0, streak = 0 } = opts;
+
+  const mins = duration ? Math.round(duration / 60) : 0;
+  const eyebrow = document.getElementById('end-account-eyebrow');
+  if (eyebrow) eyebrow.textContent = `${mins > 0 ? mins + ':00' : '—'} · completado${streak > 0 ? ' · racha +1' : ''}`;
+
+  const display = document.getElementById('end-account-display');
+  if (display) display.innerHTML = 'Buen trabajo, <em>tú</em>.';
+
+  const sessionTitle = document.getElementById('end-account-session-title');
+  if (sessionTitle) sessionTitle.textContent = title || '—';
+  const sessionMeta = document.getElementById('end-account-session-meta');
+  if (sessionMeta) sessionMeta.textContent = technique || '—';
+
+  const slots = document.getElementById('end-account-slots');
+  if (slots) slots.textContent = slotsLeft;
+
+  const saveCard = document.getElementById('end-account-save-card');
+  if (saveCard) saveCard.style.display = '';
+  const savedMsg = document.getElementById('end-account-saved-msg');
+  if (savedMsg) savedMsg.style.display = 'none';
+
+  document.querySelectorAll('.end-account-feel-chips .s-chip').forEach(c => c.classList.remove('active'));
+
+  showScreen('screen-end-account');
+}
+
+function endAccountSave() {
+  if (typeof saveCurrentMeditation === 'function') saveCurrentMeditation();
+  const saveCard = document.getElementById('end-account-save-card');
+  if (saveCard) saveCard.style.display = 'none';
+  const savedMsg = document.getElementById('end-account-saved-msg');
+  if (savedMsg) savedMsg.style.display = 'flex';
+}
+
+function endAccountDiscard() {
+  const saveCard = document.getElementById('end-account-save-card');
+  if (saveCard) saveCard.style.display = 'none';
+}
+
+function endAccountFeel(btn) {
+  document.querySelectorAll('.end-account-feel-chips .s-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
 }
 
 function openLibrary() {

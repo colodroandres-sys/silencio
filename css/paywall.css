@@ -601,9 +601,9 @@
   padding: 40px 0;
 }
 .buzon-success-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 28px;
+  width: 72px;
+  height: 72px;
+  border-radius: 36px;
   background: var(--accent-soft);
   display: flex;
   align-items: center;
