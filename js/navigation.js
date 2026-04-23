@@ -126,8 +126,11 @@ function showCreate(skipToConfig = false) {
   }
 
   if (skipToConfig) {
-    // No pre-llenamos el textarea — el usuario escribe su propia situación
-    // Revelamos el config directamente sin validar input
+    // Si hay texto en state.userInput (del onboarding), pre-llenarlo en el textarea
+    if (state.userInput) {
+      const ta = document.getElementById('input-free');
+      if (ta) ta.value = state.userInput;
+    }
     const section = document.getElementById('cs-config');
     if (section && !section.classList.contains('convo-revealed')) {
       section.classList.add('convo-revealed');
@@ -168,8 +171,8 @@ function showCreate(skipToConfig = false) {
       section.classList.add('convo-revealed');
     }
     if (btnGen) { btnGen.style.opacity = '1'; btnGen.style.pointerEvents = 'auto'; }
-  } else if (!isUser) {
-    // Para invitados: sticky btn visible pero desactivado hasta que escriban
+  } else if (!isUser && !skipToConfig) {
+    // Para invitados: sticky btn desactivado hasta que escriban (salvo que vengan del onboarding con texto pre-llenado)
     if (btnGen) { btnGen.style.opacity = '0.45'; btnGen.style.pointerEvents = 'none'; }
   }
 
