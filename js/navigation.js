@@ -129,7 +129,11 @@ function showCreate(skipToConfig = false) {
     // Si hay texto en state.userInput (del onboarding), pre-llenarlo en el textarea
     if (state.userInput) {
       const ta = document.getElementById('input-free');
-      if (ta) ta.value = state.userInput;
+      if (ta) {
+        ta.value = state.userInput;
+        const counter = document.getElementById('char-count');
+        if (counter) counter.textContent = state.userInput.length + '/500';
+      }
     }
     const section = document.getElementById('cs-config');
     if (section && !section.classList.contains('convo-revealed')) {
