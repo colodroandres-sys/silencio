@@ -966,6 +966,47 @@
 }
 .trail-step.trail-step-active .trail-label { opacity: 0.9; }
 
+/* Loading animations */
+@keyframes loadingArc {
+  0%   { stroke-dasharray: 0 289.03; stroke-dashoffset: 0; }
+  50%  { stroke-dasharray: 120 289.03; stroke-dashoffset: -60; }
+  100% { stroke-dasharray: 0 289.03; stroke-dashoffset: -289.03; }
+}
+@keyframes trailActivePulse {
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
+}
+
+.loading-ring-wrap #loading-ring {
+  animation: loadingArc 2s ease-in-out infinite;
+}
+.trail-active {
+  animation: trailActivePulse 1.2s ease-in-out infinite;
+}
+
+.loading-sub {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--night-fg);
+  opacity: 0.5;
+  text-align: center;
+  max-width: 260px;
+  line-height: 1.5;
+  margin-top: -24px;
+  margin-bottom: 36px;
+}
+
+.char-counter {
+  display: block;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-muted, #999);
+  margin-top: 4px;
+  padding-right: 2px;
+  opacity: 0.6;
+}
+
 .btn-ghost-dark {
   padding: 11px 24px;
   background: transparent;

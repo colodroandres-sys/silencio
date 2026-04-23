@@ -9,11 +9,45 @@ const _QUICK_PROMPT_MAP = {
   'no puedo dormir':      { tag: 'sueno',    text: 'No puedo dormir, mi mente no para.' },
   'antes de una reunión': { tag: 'enfoque',  text: 'Tengo una reunión importante y quiero centrarme.' },
   'necesito enfocarme':   { tag: 'enfoque',  text: 'Necesito enfocarme y no logro concentrarme.' },
-  'pausa de 5 min':       { tag: null,       text: 'Necesito una pausa de 5 minutos para despejarme.' }
+  'pausa de 5 min':       { tag: null,       text: 'Necesito una pausa de 5 minutos para despejarme.' },
+  'primera meditación':   { tag: null,       text: 'Es mi primera meditación guiada. No sé muy bien qué esperar, pero quiero estar presente y tranquilo/a.' }
 };
 function quickPrompt(label) {
   const m = _QUICK_PROMPT_MAP[label] || { tag: null, text: label };
-  quickAccess(m.tag, m.text);
+  state.emotionTag = m.tag;
+  state.userInput  = m.text;
+  const ta = document.getElementById('input-free');
+  if (ta) {
+    ta.value = m.text;
+    ta.focus();
+    onInputChange();
+  }
+}
+
+function homeGuestChip(label) {
+  const m = _QUICK_PROMPT_MAP[label] || { tag: null, text: label };
+  state.emotionTag = m.tag;
+  const ta = document.getElementById('home-guest-textarea');
+  if (ta) {
+    ta.value = m.text;
+    ta.focus();
+    homeGuestInputChange();
+  }
+}
+
+function homeGuestInputChange() {
+  const val = document.getElementById('home-guest-textarea')?.value || '';
+  const btn = document.getElementById('home-guest-gen-btn');
+  if (btn) btn.style.opacity = val.trim().length >= 3 ? '1' : '0.45';
+  const counter = document.getElementById('home-guest-char-count');
+  if (counter) counter.textContent = val.length + '/500';
+}
+
+function homeGuestGenerate() {
+  const val = document.getElementById('home-guest-textarea')?.value.trim() || '';
+  if (val.length < 3) return;
+  state.userInput = val;
+  generateMeditation();
 }
 
 function selectFeedback(el) {
@@ -22,9 +56,12 @@ function selectFeedback(el) {
 }
 
 function onInputChange() {
-  const val = document.getElementById('input-free')?.value.trim() || '';
+  const raw = document.getElementById('input-free')?.value || '';
+  const val = raw.trim();
   const btn = document.getElementById('btn-continue-input');
   if (btn) btn.disabled = val.length < 3;
+  const counter = document.getElementById('char-count');
+  if (counter) counter.textContent = raw.length + '/500';
 
   // Para invitados: activar/desactivar sticky button directamente
   if (!clerk?.user) {

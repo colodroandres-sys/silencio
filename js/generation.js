@@ -7,17 +7,31 @@ const LOADING_MESSAGES = [
 let loadingMsgIndex = 0;
 let loadingInterval = null;
 
+function _setLoadingText(title, sub) {
+  const t = document.getElementById('loading-title');
+  const s = document.getElementById('loading-sub');
+  if (t) t.textContent = title;
+  if (s) s.textContent = sub;
+}
+
+function setTrailStep(step) {
+  for (let i = 1; i <= 3; i++) {
+    const dot = document.querySelector(`#trail-${i} .trail-dot`);
+    if (!dot) continue;
+    dot.className = 'trail-dot ' + (i < step ? 'trail-done' : i === step ? 'trail-active' : 'trail-pending');
+  }
+}
+
 function startLoadingMessages() {
   loadingMsgIndex = 0;
   if (loadingInterval) clearInterval(loadingInterval);
   const m = LOADING_MESSAGES[0];
-  document.getElementById('loading-title').textContent = m.title;
-  document.getElementById('loading-sub').textContent   = m.sub;
+  _setLoadingText(m.title, m.sub);
+  setTrailStep(1);
   loadingInterval = setInterval(() => {
     loadingMsgIndex = (loadingMsgIndex + 1) % LOADING_MESSAGES.length;
     const msg = LOADING_MESSAGES[loadingMsgIndex];
-    document.getElementById('loading-title').textContent = msg.title;
-    document.getElementById('loading-sub').textContent   = msg.sub;
+    _setLoadingText(msg.title, msg.sub);
   }, 4500);
 }
 
@@ -134,6 +148,7 @@ async function attemptGeneration(signal) {
     ? { 'Authorization': `Bearer ${token}`, 'x-user-email': email }
     : {};
 
+  setTrailStep(1);
   const meditationRes = await fetch('/api/meditation', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeaders },
@@ -160,6 +175,7 @@ async function attemptGeneration(signal) {
   document.getElementById('session-title').textContent = title;
 
   stopLoadingMessages();
+  setTrailStep(2);
   setLoadingState('normal', 'Dando voz a tu meditación', 'Tu guía está tomando vida. Ya casi.');
 
   const audioRes = await fetch('/api/audio', {
@@ -186,6 +202,7 @@ async function attemptGeneration(signal) {
   }
 
   const audioData = await audioRes.json();
+  setTrailStep(3);
 
   if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
   abortController = null;
@@ -221,8 +238,7 @@ async function attemptGeneration(signal) {
 
 function setLoadingState(type, title, sub) {
   if (type === 'error') stopLoadingMessages();
-  document.getElementById('loading-title').textContent = title;
-  document.getElementById('loading-sub').textContent   = sub;
+  _setLoadingText(title, sub);
   const isError = type === 'error';
   document.getElementById('btn-retry').style.display      = isError ? 'block' : 'none';
   document.getElementById('btn-back-input').style.display = isError ? 'block' : 'none';

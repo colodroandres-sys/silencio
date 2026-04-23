@@ -275,7 +275,9 @@
             class="home-guest-textarea"
             placeholder="Hoy me siento…"
             oninput="homeGuestInputChange()"
+            maxlength="500"
           ></textarea>
+          <span id="home-guest-char-count" class="char-counter">0/500</span>
         </div>
 
         <button class="s-btn s-btn-primary" id="home-guest-gen-btn" onclick="homeGuestGenerate()" style="opacity:0.45;pointer-events:auto">
@@ -292,6 +294,7 @@
             <button class="s-chip s-chip-sm" onclick="homeGuestChip('antes de una reunión')">antes de una reunión</button>
             <button class="s-chip s-chip-sm" onclick="homeGuestChip('necesito enfocarme')">necesito enfocarme</button>
             <button class="s-chip s-chip-sm" onclick="homeGuestChip('pausa de 5 min')">pausa de 5 min</button>
+            <button class="s-chip s-chip-sm" onclick="homeGuestChip('primera meditación')">Es mi primera meditación guiada 🧘</button>
           </div>
         </div>
 
@@ -376,7 +379,7 @@
         </div>
 
         <h2 class="create-headline">¿Cómo te <em>sientes</em>?</h2>
-        <p class="s-body create-body-muted">Una palabra, una frase, un párrafo. La IA te entiende.</p>
+        <p class="s-body create-body-muted">Una palabra, una frase, un párrafo. O lo que quieras.</p>
 
         <!-- Textarea card -->
         <div class="create-input-card">
@@ -385,7 +388,9 @@
             class="create-textarea"
             placeholder="Hoy me siento…"
             oninput="onInputChange()"
+            maxlength="500"
           ></textarea>
+          <span id="char-count" class="char-counter">0/500</span>
         </div>
 
         <!-- Quick prompts -->
@@ -397,6 +402,7 @@
             <button class="s-chip s-chip-sm" onclick="quickPrompt('antes de una reunión')">antes de una reunión</button>
             <button class="s-chip s-chip-sm" onclick="quickPrompt('necesito enfocarme')">necesito enfocarme</button>
             <button class="s-chip s-chip-sm" onclick="quickPrompt('pausa de 5 min')">pausa de 5 min</button>
+            <button class="s-chip s-chip-sm" onclick="quickPrompt('primera meditación')">Es mi primera meditación guiada 🧘</button>
           </div>
         </div>
 
@@ -519,7 +525,8 @@
       </div>
 
       <p class="s-eyebrow loading-eyebrow">componiendo</p>
-      <p class="loading-headline"><em>Escuchándote de verdad…</em></p>
+      <p id="loading-title" class="loading-headline">Escuchándote de verdad…</p>
+      <p id="loading-sub" class="loading-sub">Leyendo lo que sientes en este momento exacto.</p>
 
       <!-- Progress trail -->
       <div class="loading-trail" id="loading-trail">
