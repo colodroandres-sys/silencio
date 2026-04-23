@@ -307,6 +307,11 @@ module.exports = async (req, res) => {
     return res.status(403).json({ error: 'Solo se permiten meditaciones de 5 minutos sin cuenta.' });
   }
 
+  // Essential: máximo 15 minutos
+  if (limitCheck.plan === 'essential' && duration === '20') {
+    return res.status(403).json({ error: 'Tu plan Essential permite meditaciones de hasta 15 minutos.' });
+  }
+
   // Log guest en Supabase (fail silently — la tabla puede no existir aún)
   if (isGuest) {
     try {
