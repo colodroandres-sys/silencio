@@ -166,21 +166,17 @@ function handleEnd() {
       }
     } else if (state.userPlan !== 'free' && state.currentMeditationId) {
       const atLimit = state.saveLimit !== null && state.savedCount >= state.saveLimit;
-      if (atLimit) {
-        document.getElementById('btn-new-meditation').style.display = 'block';
-      } else {
-        const slotsEl = document.getElementById('end-save-slots-info');
-        if (slotsEl && state.saveLimit !== null) {
-          const used = state.savedCount;
-          const remaining = state.saveLimit - used;
-          slotsEl.textContent = `${used} de ${state.saveLimit} guardadas · te quedan ${remaining}`;
-          slotsEl.style.display = 'block';
-        } else if (slotsEl) {
-          slotsEl.style.display = 'none';
-        }
-        document.getElementById('end-save').style.display = 'flex';
-        document.getElementById('screen-player').classList.add('end-active');
-      }
+      const slotsLeft = state.saveLimit !== null ? state.saveLimit - state.savedCount : '∞';
+      const title = document.getElementById('session-title')?.textContent || '';
+      const technique = document.getElementById('player-technique-label')?.textContent || '';
+      showEndAccount({
+        duration: state.totalSec,
+        title,
+        technique,
+        slotsLeft: atLimit ? 0 : slotsLeft,
+        streak: state.streak,
+        showSave: !atLimit
+      });
     } else {
       document.getElementById('btn-new-meditation').style.display = 'block';
     }

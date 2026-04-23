@@ -36,7 +36,7 @@ function showHome() {
 }
 
 function showEndAccount(opts = {}) {
-  const { duration = 0, title = '', technique = '', slotsLeft = 0, streak = 0 } = opts;
+  const { duration = 0, title = '', technique = '', slotsLeft = 0, streak = 0, showSave = true } = opts;
 
   const mins = duration ? Math.round(duration / 60) : 0;
   const eyebrow = document.getElementById('end-account-eyebrow');
@@ -54,7 +54,7 @@ function showEndAccount(opts = {}) {
   if (slots) slots.textContent = slotsLeft;
 
   const saveCard = document.getElementById('end-account-save-card');
-  if (saveCard) saveCard.style.display = '';
+  if (saveCard) saveCard.style.display = showSave ? '' : 'none';
   const savedMsg = document.getElementById('end-account-saved-msg');
   if (savedMsg) savedMsg.style.display = 'none';
 
@@ -64,7 +64,7 @@ function showEndAccount(opts = {}) {
 }
 
 function endAccountSave() {
-  if (typeof saveCurrentMeditation === 'function') saveCurrentMeditation();
+  if (typeof saveMeditation === 'function') saveMeditation();
   const saveCard = document.getElementById('end-account-save-card');
   if (saveCard) saveCard.style.display = 'none';
   const savedMsg = document.getElementById('end-account-saved-msg');
