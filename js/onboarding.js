@@ -106,21 +106,8 @@ function obSkipToFree() {
   localStorage.setItem('stillova_ob_done', '1');
   applyObPrefsToState();
 
-  const topics = obPrefs.topics || [];
-  if (topics.length > 0) {
-    const topicPhrases = {
-      ansiedad:   'ansiedad',
-      sueno:      'dificultades para dormir',
-      enfoque:    'falta de enfoque',
-      reconectar: 'necesidad de reconectarme',
-      otro:       'algo que quiero explorar'
-    };
-    const parts = topics.slice(0, 2).map(t => topicPhrases[t] || t).join(' y ');
-    state.userInput = `Últimamente he tenido en mente ${parts}.`;
-    showCreate(true);
-  } else {
-    showCreate();
-  }
+  state.userInput = '';
+  showCreate();
 
   if (clerk?.user) {
     updateUserStatus();
