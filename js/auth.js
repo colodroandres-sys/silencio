@@ -271,6 +271,7 @@ function checkUrlParams() {
 function showPaywall() {
   pwBillingMode = 'monthly';
   pwSetBilling('monthly');
+  if (typeof pwSelectPlan === 'function') pwSelectPlan('premium');
   const modal = document.getElementById('paywall-modal');
   if (modal) modal.classList.add('active');
 }
