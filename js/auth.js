@@ -1,6 +1,5 @@
 let clerk = null;
 let pendingGeneration = false;
-let pwBillingMode = 'monthly';
 
 async function openAuth() {
   if (clerk) {
@@ -269,54 +268,10 @@ function checkUrlParams() {
 }
 
 function showPaywall() {
-  pwBillingMode = 'monthly';
   pwSetBilling('monthly');
   if (typeof pwSelectPlan === 'function') pwSelectPlan('premium');
   const modal = document.getElementById('paywall-modal');
   if (modal) modal.classList.add('active');
-}
-
-function pwSetBilling(mode) {
-  pwBillingMode = mode;
-
-  const btnM = document.getElementById('pw-btn-monthly');
-  const btnA = document.getElementById('pw-btn-annual');
-  if (btnM) btnM.classList.toggle('pw-billing-active', mode === 'monthly');
-  if (btnA) btnA.classList.toggle('pw-billing-active', mode === 'annual');
-
-  const essWas    = document.getElementById('pw-ess-was');
-  const essPrice  = document.getElementById('pw-ess-price');
-  const essPeriod = document.getElementById('pw-ess-period');
-  const essExtra  = document.getElementById('pw-ess-extra');
-  const premWas   = document.getElementById('pw-prem-was');
-  const premPrice  = document.getElementById('pw-prem-price');
-  const premPeriod = document.getElementById('pw-prem-period');
-  const premExtra  = document.getElementById('pw-prem-extra');
-
-  if (mode === 'monthly') {
-    if (essWas)    essWas.textContent    = '€9.99';
-    if (essPrice)  essPrice.textContent  = '€6.99';
-    if (essPeriod) essPeriod.textContent = '/mes';
-    if (essExtra)  essExtra.textContent  = 'primer mes · luego €9.99';
-    if (premWas)   premWas.textContent   = '€19.99';
-    if (premPrice)  premPrice.textContent  = '€13.99';
-    if (premPeriod) premPeriod.textContent = '/mes';
-    if (premExtra)  premExtra.textContent  = 'primer mes · luego €19.99';
-  } else {
-    // Anual: mostrar precio total anual para que el ahorro sea obvio
-    if (essWas)    essWas.textContent    = '€119';
-    if (essPrice)  essPrice.textContent  = '€80';
-    if (essPeriod) essPeriod.textContent = '/año';
-    if (essExtra)  essExtra.textContent  = 'ahorras €40 · equivale a €6.67/mes';
-    if (premWas)   premWas.textContent   = '€240';
-    if (premPrice)  premPrice.textContent  = '€160';
-    if (premPeriod) premPeriod.textContent = '/año';
-    if (premExtra)  premExtra.textContent  = 'ahorras €80 · equivale a €13.33/mes';
-  }
-}
-
-function pwGetPlan(base) {
-  return pwBillingMode === 'annual' ? `${base}-annual` : base;
 }
 
 function closeEndUpsell() {

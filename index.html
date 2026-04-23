@@ -1250,7 +1250,8 @@
 
     function pwProceed() {
       closePaywall();
-      upgradePlan(_pwPlan);
+      const finalPlan = _pwCycle === 'annual' ? _pwPlan + '-annual' : _pwPlan;
+      upgradePlan(finalPlan);
     }
 
     // Legacy compat
