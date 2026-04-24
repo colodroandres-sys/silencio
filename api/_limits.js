@@ -130,47 +130,55 @@ async function checkUsageLimit(clerkId) {
 
 /**
  * Incrementa los créditos usados tras una generación exitosa.
+ * Best-effort: si falla el incremento, se loguea pero no se propaga el error
+ * al caller — preferimos no perder el audio ya generado (coste ElevenLabs
+ * + Claude + 60-90s de espera del usuario) por un fallo de contabilidad.
  * @param {string} clerkId
  * @param {string} duration - '5', '10', '15' o '20'
  */
 async function incrementUsage(clerkId, duration) {
-  const db = getSupabase();
+  try {
+    const db = getSupabase();
 
-  const { data: user } = await db
-    .from('users')
-    .select('plan')
-    .eq('clerk_id', clerkId)
-    .single();
-
-  if (!user) return;
-
-  const plan = user.plan || 'free';
-
-  if (plan === 'free') {
-    // Verificar cuál crédito está usando
-    const { data: freeUser } = await db
+    const { data: user } = await db
       .from('users')
-      .select('free_used, profile_completed, bonus_credit_used')
+      .select('plan')
       .eq('clerk_id', clerkId)
       .single();
 
-    if (!freeUser?.free_used) {
-      await db.from('users').update({ free_used: true }).eq('clerk_id', clerkId);
-    } else if (freeUser?.profile_completed && !freeUser?.bonus_credit_used) {
-      await db.from('users').update({ bonus_credit_used: true }).eq('clerk_id', clerkId);
+    if (!user) return;
+
+    const plan = user.plan || 'free';
+
+    if (plan === 'free') {
+      const { data: freeUser } = await db
+        .from('users')
+        .select('free_used, profile_completed, bonus_credit_used')
+        .eq('clerk_id', clerkId)
+        .single();
+
+      if (!freeUser?.free_used) {
+        await db.from('users').update({ free_used: true }).eq('clerk_id', clerkId);
+      } else if (freeUser?.profile_completed && !freeUser?.bonus_credit_used) {
+        await db.from('users').update({ bonus_credit_used: true }).eq('clerk_id', clerkId);
+      }
+      return;
     }
-    return;
+
+    const credits = DURATION_CREDITS[duration] || 1;
+    const month = getCurrentMonth();
+
+    const { error } = await db.rpc('increment_usage_atomic', {
+      p_clerk_id: clerkId,
+      p_month: month,
+      p_credits: credits
+    });
+    if (error) throw error;
+  } catch (e) {
+    console.error('[incrementUsage] fallo de contabilidad (audio se sirve igual):', {
+      clerkId, duration, message: e?.message || e
+    });
   }
-
-  const credits = DURATION_CREDITS[duration] || 1;
-  const month = getCurrentMonth();
-
-  // Incremento atómico via RPC — evita race condition si dos requests concurrentes
-  await db.rpc('increment_usage_atomic', {
-    p_clerk_id: clerkId,
-    p_month: month,
-    p_credits: credits
-  });
 }
 
 module.exports = { getOrCreateUser, checkUsageLimit, incrementUsage, PLAN_LIMITS, DURATION_CREDITS };
