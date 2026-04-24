@@ -73,7 +73,7 @@ module.exports = async (req, res) => {
 
     res.json({ url: session.url });
   } catch (e) {
-    console.error('[checkout] Error:', e.message, e.code, e.type);
-    res.status(500).json({ error: 'Error al crear la sesión de pago.', _debug: e.message });
+    console.error('[checkout] Error:', e.message);
+    res.status(500).json({ error: 'Error al crear la sesión de pago.' });
   }
 };
