@@ -291,6 +291,7 @@ module.exports = async (req, res) => {
     await getOrCreateUser(clerkId, email);
 
     limitCheck = await checkUsageLimit(clerkId);
+    console.log('[meditation][limit-check]', JSON.stringify({ clerkId, limitCheck }));
     if (!limitCheck.allowed) {
       const msg = limitCheck.reason === 'free_limit'
         ? 'Has usado tu meditación gratuita. Elige un plan para continuar.'
