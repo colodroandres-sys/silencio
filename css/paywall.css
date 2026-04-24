@@ -134,9 +134,9 @@
   border-radius: 14px 14px 0 0;
   position: relative;
 }
+/* pw-col-featured: solo marca que Premium tiene el badge TOP, sin fondo permanente */
 .pw-col-header.pw-col-featured {
-  background: var(--ink);
-  color: var(--canvas);
+  position: relative;
 }
 
 .pw-col-top-badge {
@@ -192,12 +192,8 @@
   font-size: 12px;
 }
 
-/* Featured column cells */
-.pw-cell-featured {
-  background: var(--ink);
-  color: var(--canvas) !important;
-}
-.pw-cell-featured svg path { stroke: var(--canvas); }
+/* pw-cell-featured: clase legacy, ya no da fondo oscuro permanente */
+.pw-cell-featured { }
 
 /* Checkmark SVG in table */
 .pw-check {
@@ -206,33 +202,29 @@
   justify-content: center;
 }
 
-/* Bottom row cells get rounded corners */
-.pw-table tbody tr:last-child td.pw-cell-featured {
-  border-radius: 0 0 14px 14px;
-}
+/* Bottom row cells get rounded corners — handled per plan below */
 
-/* Selected column highlight */
+/* Selected column highlight — el plan seleccionado se pone oscuro */
 .pw-col-header.pw-col-selected {
-  outline: 2px solid var(--ink);
-  outline-offset: -2px;
+  background: var(--ink);
+  color: var(--canvas);
   border-radius: 14px 14px 0 0;
 }
-.pw-col-header.pw-col-featured.pw-col-selected {
-  outline: 2px solid var(--accent);
-}
-#pw-col-studio.pw-col-selected {
-  outline: 2px solid var(--accent);
-  background: var(--ink);
-  color: var(--canvas);
-}
-.pw-table.pw-studio-selected tbody td:nth-child(4) {
-  background: var(--ink);
-  color: var(--canvas);
-}
+
+/* Essential seleccionado */
+.pw-table.pw-essential-selected tbody td:nth-child(2) { background: var(--ink); color: var(--canvas); }
+.pw-table.pw-essential-selected tbody td:nth-child(2) svg path { stroke: var(--canvas); }
+.pw-table.pw-essential-selected tbody tr:last-child td:nth-child(2) { border-radius: 0 0 14px 14px; }
+
+/* Premium seleccionado */
+.pw-table.pw-premium-selected tbody td:nth-child(3) { background: var(--ink); color: var(--canvas); }
+.pw-table.pw-premium-selected tbody td:nth-child(3) svg path { stroke: var(--canvas); }
+.pw-table.pw-premium-selected tbody tr:last-child td:nth-child(3) { border-radius: 0 0 14px 14px; }
+
+/* Studio seleccionado */
+.pw-table.pw-studio-selected tbody td:nth-child(4) { background: var(--ink); color: var(--canvas); }
 .pw-table.pw-studio-selected tbody td:nth-child(4) svg path { stroke: var(--canvas); }
-.pw-table.pw-studio-selected tbody tr:last-child td:nth-child(4) {
-  border-radius: 0 0 14px 14px;
-}
+.pw-table.pw-studio-selected tbody tr:last-child td:nth-child(4) { border-radius: 0 0 14px 14px; }
 
 /* Column header cursor */
 .pw-col-header { cursor: pointer; }
