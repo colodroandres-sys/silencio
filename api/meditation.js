@@ -277,7 +277,10 @@ module.exports = async (req, res) => {
     // Usuario con cuenta: verificar token y plan
     const { verifyToken } = require('@clerk/backend');
     try {
-      const payload = await verifyToken(token, { secretKey: process.env.CLERK_SECRET_KEY });
+      const payload = await verifyToken(token, {
+        secretKey: process.env.CLERK_SECRET_KEY,
+        publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+      });
       clerkId = payload.sub;
     } catch (e) {
       console.error('[auth] Token inválido:', e.message);

@@ -16,6 +16,7 @@ async function verifyAuth(req, res) {
   try {
     const payload = await verifyToken(token, {
       secretKey: process.env.CLERK_SECRET_KEY,
+      publishableKey: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     });
     return payload.sub; // clerk user ID
   } catch (e) {
