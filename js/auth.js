@@ -185,7 +185,7 @@ async function fetchUserStatus() {
 
     const { plan, usage, limit, canGenerate, profileCompleted,
             streak, minutesThisWeek, totalSessions, level,
-            savedCount, saveLimit } = await res.json();
+            savedCount, saveLimit, durationCredits } = await res.json();
 
     const planEl  = document.getElementById('plan-badge');
     const usageEl = document.getElementById('usage-info');
@@ -197,6 +197,7 @@ async function fetchUserStatus() {
     state.creditsLimit       = limit;
     state.savedCount         = savedCount ?? 0;
     state.saveLimit          = saveLimit ?? null;
+    if (durationCredits) state.durationCredits = durationCredits;
     localStorage.setItem('stillova_plan', plan);
 
     if (planEl) {

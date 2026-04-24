@@ -204,12 +204,10 @@ function applyAllLocks() {
 
 function applyDurationLocks() { applyAllLocks(); }
 
-const DURATION_CREDITS_UI = { '5': 1, '10': 2, '15': 3, '20': 4 };
-
 function updateCreditsCostDisplay() {
   const remText = document.getElementById('credits-remaining-text');
   if (!remText || state.userPlan === 'free') return;
-  const cost = DURATION_CREDITS_UI[state.duration] || 1;
+  const cost = state.durationCredits[state.duration] || 1;
   const rem  = state.creditsRemaining;
   const after = Math.max(0, rem - cost);
   remText.textContent = `Esta sesión usará ${cost} crédito${cost !== 1 ? 's' : ''} · Te quedan ${rem} (${after} tras esta sesión)`;

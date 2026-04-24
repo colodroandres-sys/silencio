@@ -1,5 +1,5 @@
 const { verifyAuth } = require('./_auth');
-const { getOrCreateUser, checkUsageLimit } = require('./_limits');
+const { getOrCreateUser, checkUsageLimit, DURATION_CREDITS } = require('./_limits');
 const { getSupabase } = require('./_supabase');
 
 const LEVELS = [
@@ -99,7 +99,8 @@ module.exports = async (req, res) => {
     level,
     achievements,
     savedCount,
-    saveLimit
+    saveLimit,
+    durationCredits: DURATION_CREDITS
   });
 };
 
