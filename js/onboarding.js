@@ -12,7 +12,8 @@ function showOnboarding() {
   obGoToStep(1);
 }
 
-function obGoToStep(n) {
+function obGoToStep(n, skipHistory = false) {
+  const prevStep = obCurrentStep;
   obCurrentStep = n;
 
   // Ocultar todos los steps
@@ -33,7 +34,22 @@ function obGoToStep(n) {
   // Scroll to top
   const screen = document.getElementById('screen-onboarding');
   if (screen) requestAnimationFrame(() => { screen.scrollTop = 0; });
+
+  // Browser history: push state al avanzar para soportar botón back del browser
+  if (!skipHistory && n > prevStep && n > 1) {
+    try { history.pushState({ ob: n }, '', location.href); } catch (_) {}
+  }
 }
+
+// Back del browser dentro del onboarding → ir al paso anterior en lugar de salir
+window.addEventListener('popstate', function(e) {
+  const ob = document.getElementById('screen-onboarding');
+  if (!ob || !ob.classList.contains('active')) return;
+  const targetStep = (e.state && e.state.ob) || 1;
+  if (targetStep !== obCurrentStep) {
+    obGoToStep(targetStep, true);
+  }
+});
 
 function obNext(nextStep) {
   // Guardar selección del paso actual
@@ -103,6 +119,9 @@ function obStopPreview() {
 
 // Completar onboarding y ir a crear (paso gratis)
 function obSkipToFree() {
+  // Limpiar history del onboarding para que back desde create no vuelva a ob-4
+  try { history.replaceState(null, '', location.href); } catch (_) {}
+
   localStorage.setItem('stillova_ob_done', '1');
   applyObPrefsToState();
 

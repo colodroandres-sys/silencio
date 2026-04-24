@@ -21,19 +21,22 @@ Páginas auxiliares independientes: `dashboard.html`, `privacy.html`, `terms.htm
 
 ### Flujo principal
 ```
-Onboarding (ob-1 → ob-3 → ob-6/paywall o skip)
+Onboarding (ob-1 → ob-2 → ob-3 → ob-4 → obSkipToFree → Create)
   ↓
 Home → Create → Loading → Player → End states
-                                     ├── end-save (usuario con cuenta)
+                                     ├── end-save (usuario con cuenta, studio)
                                      ├── end-profile (bonus meditación)
                                      ├── end-upsell (free que completó su 1 sesión)
                                      └── end-guest (sin cuenta)
 ```
 
-### Pasos del onboarding
-- `ob-1` → ¿Qué ocupa tu mente? (chips multiselect) → llama `obNext(3)`
-- `ob-3` → ¿Para qué quieres meditar? (goal cards) → llama `obNext(6)`
-- `ob-6` → Paywall onboarding (planes Essential / Premium) o skip a free
+### Pasos del onboarding (actualizado 2026-04-24)
+- `ob-1` → Pantalla intro con CTA "Empezar" → llama `obNext(2)`
+- `ob-2` → ¿Qué te trae? (cards multiselect: ansiedad, sueño, enfoque, reconectar, otro) → `obNext(3)`
+- `ob-3` → Cómo funciona (3 pasos explicativos) → `obNext(4)`
+- `ob-4` → Primera sesión, CTA "Empezar mi primera sesión" → llama `obSkipToFree()` → `showCreate()`
+- El botón back del browser navega entre pasos (history.pushState en obGoToStep)
+- Paywall ya NO es parte del onboarding — aparece solo cuando user free agota su crédito o pide explícitamente "Ver planes"
 
 ---
 
