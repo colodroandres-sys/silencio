@@ -828,11 +828,12 @@
       <!-- User profile -->
       <div id="profile-user" style="display:none">
 
-        <!-- Avatar + nombre -->
+        <!-- Avatar + nombre + email -->
         <div class="profile-identity">
           <div class="profile-avatar" id="profile-avatar">A</div>
-          <div>
+          <div class="profile-identity-info">
             <p class="profile-name" id="profile-name">—</p>
+            <p class="profile-email" id="profile-email"></p>
             <p class="profile-plan-info" id="profile-plan-info">desde —</p>
           </div>
         </div>
@@ -875,7 +876,7 @@
               <div class="profile-plan-name-display" id="profile-plan-name-display">Essential</div>
               <div class="profile-plan-price-display" id="profile-plan-price-display">€9,99/mes</div>
             </div>
-            <button class="profile-manage-plan-btn" onclick="showPaywall()">gestionar plan →</button>
+            <button class="profile-manage-plan-btn" id="profile-manage-plan-btn" onclick="showPaywall()">gestionar plan →</button>
           </div>
           <div class="profile-plan-credit-bar-wrap">
             <div class="profile-plan-credit-bar" id="profile-plan-credit-bar" style="width:0%"></div>
@@ -915,12 +916,20 @@
               <span class="profile-setting-label">Duración favorita</span>
               <span class="profile-setting-value" id="profile-setting-duration">5 min</span>
             </div>
+            <div class="profile-setting-row" onclick="openClerkUserProfile()">
+              <span class="profile-setting-label">Gestionar cuenta</span>
+              <span class="profile-setting-value profile-setting-hint">nombre · email · contraseña · foto</span>
+            </div>
             <div class="profile-setting-row profile-setting-highlight" onclick="openBuzon()">
               <span class="profile-setting-label">Buzón · hablar con el creador</span>
               <span class="profile-setting-value">→</span>
             </div>
             <div class="profile-setting-row profile-setting-nosuffix" onclick="signOut()">
               <span class="profile-setting-label">Cerrar sesión</span>
+              <span class="profile-setting-value"></span>
+            </div>
+            <div class="profile-setting-row profile-setting-danger" onclick="confirmDeleteAccount()">
+              <span class="profile-setting-label">Eliminar cuenta</span>
               <span class="profile-setting-value"></span>
             </div>
           </div>

@@ -256,6 +256,10 @@
   font-weight: 400;
   flex-shrink: 0;
 }
+.profile-identity-info {
+  min-width: 0;
+  flex: 1;
+}
 .profile-name {
   font-family: var(--font-display);
   font-size: 26px;
@@ -263,10 +267,25 @@
   color: var(--ink);
   letter-spacing: -0.02em;
   margin-bottom: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.profile-email {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.profile-email:empty {
+  display: none;
 }
 .profile-plan-info {
   font-size: 12px;
   color: var(--muted);
+  opacity: 0.7;
 }
 
 /* Level card */
@@ -433,6 +452,18 @@
 .profile-setting-locked:hover { background: transparent; }
 .profile-setting-highlight .profile-setting-label { color: var(--accent); }
 .profile-setting-nosuffix .profile-setting-value::after { display: none; }
+.profile-setting-danger .profile-setting-label {
+  color: #b12a2a;
+  font-size: 13px;
+}
+.profile-setting-danger:hover { background: rgba(177, 42, 42, 0.05); }
+.profile-setting-danger .profile-setting-value::after { display: none; }
+.profile-setting-hint {
+  font-size: 11px !important;
+  opacity: 0.55;
+  max-width: 60%;
+  text-align: right;
+}
 
 /* Buzón row in profile */
 .profile-buzon-row {

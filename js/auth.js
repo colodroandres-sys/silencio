@@ -377,3 +377,64 @@ function signOut() {
     });
   }
 }
+
+// Abre el modal prebuilt de Clerk: nombre, email, foto, contraseña, sesiones activas
+function openClerkUserProfile() {
+  if (!clerk?.user) {
+    showToast('Inicia sesión para gestionar tu cuenta');
+    return;
+  }
+  try {
+    clerk.openUserProfile();
+    track('account_profile_opened');
+  } catch (e) {
+    console.error('[openUserProfile]', e);
+    showToast('No se pudo abrir la gestión de cuenta');
+  }
+}
+
+// Eliminar cuenta — GDPR derecho al olvido
+async function confirmDeleteAccount() {
+  if (!clerk?.user) return;
+  const email = clerk.user.primaryEmailAddress?.emailAddress || 'tu cuenta';
+  const confirm1 = window.confirm(
+    `¿Seguro que quieres eliminar tu cuenta?\n\n` +
+    `Esto borrará PARA SIEMPRE:\n` +
+    `• Tu perfil (${email})\n` +
+    `• Todas tus meditaciones guardadas\n` +
+    `• Tu historial y estadísticas\n\n` +
+    `Esta acción NO se puede deshacer.`
+  );
+  if (!confirm1) return;
+
+  const confirm2 = window.prompt(
+    `Para confirmar, escribe BORRAR en mayúsculas:`
+  );
+  if (confirm2 !== 'BORRAR') {
+    showToast('Cancelado');
+    return;
+  }
+
+  try {
+    const token = await clerk.session.getToken();
+    const res = await fetch('/api/delete-account', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || `Error ${res.status}`);
+    }
+    track('account_deleted');
+    showToast('Cuenta eliminada. Adiós.');
+    // Clerk signOut y redirect
+    setTimeout(async () => {
+      try { await clerk.signOut(); } catch {}
+      localStorage.clear();
+      window.location.href = '/';
+    }, 1500);
+  } catch (e) {
+    console.error('[deleteAccount]', e);
+    showToast(e.message || 'Error al eliminar cuenta. Contacta soporte.');
+  }
+}

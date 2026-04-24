@@ -220,11 +220,21 @@ function updateProfileScreen() {
 
   const setEl = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
 
-  // Nombre e inicial
-  const name = user.firstName || user.username || 'Tú';
+  // Nombre, inicial y email
+  const email = user.primaryEmailAddress?.emailAddress || '';
+  const emailPrefix = email.split('@')[0];
+  const name = user.firstName || user.username || emailPrefix || 'Tú';
   setEl('profile-name', name);
+  setEl('profile-email', email);
   const avatarEl = document.getElementById('profile-avatar');
-  if (avatarEl) avatarEl.textContent = name[0].toUpperCase();
+  if (avatarEl) {
+    // Si el user tiene imageUrl de Clerk, usarla. Si no, inicial.
+    if (user.imageUrl) {
+      avatarEl.innerHTML = `<img src="${user.imageUrl}" alt="${name}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    } else {
+      avatarEl.textContent = name[0].toUpperCase();
+    }
+  }
 
   // "Plan · desde mes año"
   const planInfo = document.getElementById('profile-plan-info');
@@ -267,6 +277,10 @@ function updateProfileScreen() {
   const plan = state.userPlan || 'free';
   setEl('profile-plan-name-display',  planNames[plan]  || plan);
   setEl('profile-plan-price-display', planPrices[plan] || '—');
+
+  // Texto del botón cambia según plan: free dice "ver planes", pagos dicen "gestionar plan"
+  const manageBtn = document.getElementById('profile-manage-plan-btn');
+  if (manageBtn) manageBtn.textContent = plan === 'free' ? 'ver planes →' : 'gestionar plan →';
 
   // Barra de créditos
   const creditBar = document.getElementById('profile-plan-credit-bar');
@@ -408,12 +422,23 @@ function _updateUserHomeContent() {
   const ctaPlan = document.getElementById('home-cta-plan');
   if (ctaPlan) ctaPlan.textContent = planLabels[state.userPlan] || '';
 
-  // Streak
+  // Streak — copy compasivo cuando es 0 (no castigar al usuario nuevo)
   const streak = state.streak || 0;
   const streakStrip = document.getElementById('home-streak-strip');
   if (streakStrip) {
     streakStrip.style.display = '';
-    setEl('home-streak-num', streak);
+    const numEl = document.getElementById('home-streak-num');
+    const unitEl = streakStrip.querySelector('.streak-unit');
+    const subEl  = streakStrip.querySelector('.streak-sublabel');
+    if (streak === 0) {
+      if (numEl)  numEl.textContent = '';
+      if (unitEl) unitEl.textContent = 'Empieza tu racha';
+      if (subEl)  subEl.textContent = 'una sesión hoy y arranca';
+    } else {
+      if (numEl)  numEl.textContent = streak;
+      if (unitEl) unitEl.textContent = streak === 1 ? 'día' : 'días';
+      if (subEl)  subEl.textContent = 'racha actual';
+    }
 
     // Círculos por día
     const barsEl = document.getElementById('home-streak-bars');
