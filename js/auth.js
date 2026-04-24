@@ -373,10 +373,7 @@ function signOut() {
     state.userCanGenerate  = true;
     state.profileCompleted = false;
     clerk.signOut().then(() => {
-      const el = document.getElementById('user-status');
-      if (el) el.style.display = 'none';
-      applyDurationLocks();
-      updateUserStatus();
+      window.location.href = '/';
     });
   }
 }
