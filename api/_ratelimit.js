@@ -46,6 +46,10 @@ function getLimiter(endpoint, requests, window) {
  * Si Upstash no está disponible, siempre devuelve true (fail-open).
  */
 module.exports = async function checkRateLimit(req, res, endpoint, requests, window) {
+  // Bypass para tests automáticos con header secreto
+  const bypassSecret = process.env.TEST_BYPASS_SECRET;
+  if (bypassSecret && req.headers['x-test-bypass'] === bypassSecret) return true;
+
   // Sin paquete, sin variables, o cualquier error — dejamos pasar sin romper nada
   if (!Ratelimit || !Redis) return true;
   if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) return true;

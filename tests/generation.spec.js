@@ -44,6 +44,7 @@ loadEnv();
 
 const CLERK_SECRET_KEY  = process.env.CLERK_SECRET_KEY;
 const CLERK_SESSION_ID  = process.env.CLERK_TEST_SESSION_ID || 'sess_3Co04BV8k1lhPIRhTX2RC5JSEsP';
+const TEST_BYPASS_SECRET = process.env.TEST_BYPASS_SECRET || '';
 const hasConfig         = !!CLERK_SECRET_KEY;
 
 // ─── Helper: obtiene un JWT fresco de Clerk (caduca en ~60s) ─────────────────
@@ -75,7 +76,8 @@ async function injectAuthInterceptor(page) {
     try {
       const jwt = await getFreshJwt();
       const headers = await route.request().allHeaders();
-      await route.continue({ headers: { ...headers, 'Authorization': `Bearer ${jwt}` } });
+      const extra = TEST_BYPASS_SECRET ? { 'x-test-bypass': TEST_BYPASS_SECRET } : {};
+      await route.continue({ headers: { ...headers, 'Authorization': `Bearer ${jwt}`, ...extra } });
     } catch (e) {
       console.error('[interceptor] Error al obtener JWT:', e.message);
       await route.continue(); // fallback: dejar pasar sin token
@@ -102,10 +104,12 @@ test.describe('Generación real: Clerk + Claude + ElevenLabs + Player', () => {
     expect(jwt, 'No se pudo obtener JWT de Clerk').toBeTruthy();
 
     // Llamar al API de meditación con el JWT real
+    const bypassHeaders = TEST_BYPASS_SECRET ? { 'x-test-bypass': TEST_BYPASS_SECRET } : {};
     const res = await request.post('https://www.stillova.com/api/meditation', {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${jwt}`
+        'Authorization': `Bearer ${jwt}`,
+        ...bypassHeaders
       },
       data: {
         userInput: 'Test automático: cansado tras un día largo, quiero relajarme',
@@ -144,10 +148,12 @@ test.describe('Generación real: Clerk + Claude + ElevenLabs + Player', () => {
       'Cierra los ojos. [silencio:3s] Respira profundo. [silencio:5s] ' +
       'Siente el peso de tu cuerpo relajándose. [silencio:5s] Estás en calma.';
 
+    const bypassHeaders = TEST_BYPASS_SECRET ? { 'x-test-bypass': TEST_BYPASS_SECRET } : {};
     const res = await request.post('https://www.stillova.com/api/audio', {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${jwt}`
+        'Authorization': `Bearer ${jwt}`,
+        ...bypassHeaders
       },
       data: {
         text: SHORT_TEXT,
