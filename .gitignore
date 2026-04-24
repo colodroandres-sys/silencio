@@ -9,3 +9,4 @@ node_modules/
 design-handoff/
 docs/plan-rediseno.md
 scripts/desktop-shots.js
+tests/.auth/*.json
