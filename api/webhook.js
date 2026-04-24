@@ -43,29 +43,19 @@ module.exports = async (req, res) => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-  let event;
+  if (!webhookSecret) {
+    console.error('[webhook] STRIPE_WEBHOOK_SECRET no configurado — rechazando evento');
+    return res.status(503).json({ error: 'Webhook no configurado' });
+  }
 
-  if (webhookSecret) {
-    const sig = req.headers['stripe-signature'];
-    const rawBody = await getRawBody(req);
-    try {
-      event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
-    } catch (e) {
-      console.error('[webhook] Firma inválida:', e.message);
-      return res.status(400).json({ error: 'Firma inválida' });
-    }
-  } else {
-    // Fallback si aún no está configurado STRIPE_WEBHOOK_SECRET
-    try {
-      const chunks = [];
-      for await (const chunk of req) chunks.push(chunk);
-      event = JSON.parse(Buffer.concat(chunks).toString());
-    } catch (e) {
-      return res.status(400).json({ error: 'Evento inválido' });
-    }
-    if (!event || !event.type || !event.data) {
-      return res.status(400).json({ error: 'Evento inválido' });
-    }
+  const sig = req.headers['stripe-signature'];
+  const rawBody = await getRawBody(req);
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
+  } catch (e) {
+    console.error('[webhook] Firma inválida:', e.message);
+    return res.status(400).json({ error: 'Firma inválida' });
   }
 
   const db = getSupabase();

@@ -58,7 +58,7 @@ Home → Create → Loading → Player → End states
 | `save.js` | `saveMeditation()`, `skipSave()` — guarda en Supabase |
 | `profile.js` | `submitProfile()`, `skipProfile()` — bonus meditación post-sesión |
 | `library.js` | Carga y renderiza meditaciones guardadas, filtros por emoción y duración |
-| `init.js` | Inicialización: carga estado del usuario, muestra pantalla correcta al arrancar |
+| `init.js` | Inicialización: carga estado del usuario, muestra pantalla correcta al arrancar, registra service worker |
 
 ---
 
@@ -88,9 +88,10 @@ Home → Create → Loading → Player → End states
 | `save-meditation.js` | Guarda meditación en Supabase |
 | `profile-bonus.js` | Añade crédito extra al completar el perfil |
 | `dashboard.js` | Datos para el dashboard admin |
-| `admin.js` | Endpoints admin (solo uso interno) |
+| `admin.js` | Endpoints admin (gate: `x-admin-password` header o query `?password=`) |
 | `health.js` | Health check del servidor |
-| `logs.js` | Logs internos |
+| `logs.js` | Logs internos de meditaciones generadas (gate: `ADMIN_PASSWORD`) |
+| `buzon.js` | Recibe feedback del usuario desde el screen-buzon. Auth opcional: si viene JWT, guarda clerk_id real; si no, como guest. Rate limit 5/IP/hora. |
 | `_auth.js` | Helper interno: verificar token Clerk |
 | `_limits.js` | Helper interno: verificar límites de créditos |
 | `_ratelimit.js` | Helper interno: rate limiting con Upstash Redis |

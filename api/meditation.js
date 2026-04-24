@@ -392,8 +392,11 @@ El campo "title" debe capturar en pocas palabras la esencia de esta sesión (ej:
 El campo "text" debe contener solo el texto de la meditación, sin títulos ni explicaciones.`;
 
   try {
+    // Timeout: maxDuration de la función es 60s, cortamos el fetch a 55s para
+    // que Vercel no cierre la conexión mid-stream y se pierda la respuesta.
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
+      signal: AbortSignal.timeout(55000),
       headers: {
         'x-api-key': process.env.ANTHROPIC_API_KEY,
         'anthropic-version': '2023-06-01',
@@ -402,7 +405,11 @@ El campo "text" debe contener solo el texto de la meditación, sin títulos ni e
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
         max_tokens: 4000,
-        system: SYSTEM_PROMPT,
+        // Prompt caching: el system prompt (~3500 tokens) es idéntico entre llamadas.
+        // Claude lo cachea 5 min → ~50% menos coste de input tokens tras primer hit.
+        system: [
+          { type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }
+        ],
         messages: [{ role: 'user', content: userPrompt }]
       })
     });
@@ -462,6 +469,10 @@ El campo "text" debe contener solo el texto de la meditación, sin títulos ni e
     return res.status(200).json({ title, text, targetWords, silenceTotal: totalSilence, resolvedVoice });
 
   } catch (err) {
+    if (err?.name === 'TimeoutError' || err?.name === 'AbortError') {
+      console.error('[meditation] Timeout llamando a Claude API');
+      return res.status(504).json({ error: 'La generación tardó demasiado. Inténtalo de nuevo.' });
+    }
     console.error('Error interno en /api/meditation:', err);
     return res.status(500).json({ error: 'Error interno del servidor' });
   }

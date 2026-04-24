@@ -1,6 +1,16 @@
 {
   "headers": [
     {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains; preload" },
+        { "key": "X-Content-Type-Options",    "value": "nosniff" },
+        { "key": "X-Frame-Options",           "value": "DENY" },
+        { "key": "Referrer-Policy",           "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy",        "value": "camera=(), microphone=(), geolocation=(), payment=(self), interest-cohort=()" }
+      ]
+    },
+    {
       "source": "/(|index\\.html|dashboard\\.html|privacy\\.html|terms\\.html)",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
@@ -9,49 +19,38 @@
     {
       "source": "/css/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        { "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }
       ]
     },
     {
       "source": "/js/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        { "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" },
+        { "key": "X-Robots-Tag",  "value": "noindex, nofollow" }
       ]
     }
   ],
   "routes": [
-    { "src": "/admin", "dest": "/admin.html" }
+    { "src": "/admin", "dest": "/dashboard.html" }
   ],
   "functions": {
-    "api/meditation.js": {
-      "maxDuration": 120
-    },
-    "api/audio.js": {
-      "maxDuration": 300
-    },
-    "api/checkout.js": {
-      "maxDuration": 30
-    },
-    "api/webhook.js": {
-      "maxDuration": 30
-    },
-    "api/user.js": {
-      "maxDuration": 15
-    },
-    "api/logs.js": {
-      "maxDuration": 15
-    },
-    "api/health.js": {
-      "maxDuration": 15
-    },
-    "api/admin.js": {
-      "maxDuration": 15
-    },
-    "api/save-meditation.js": {
-      "maxDuration": 30
-    },
-    "api/dashboard.js": {
-      "maxDuration": 30
-    }
+    "api/meditation.js":     { "maxDuration": 60  },
+    "api/audio.js":          { "maxDuration": 90  },
+    "api/checkout.js":       { "maxDuration": 30  },
+    "api/webhook.js":        { "maxDuration": 30  },
+    "api/user.js":           { "maxDuration": 15  },
+    "api/logs.js":           { "maxDuration": 15  },
+    "api/health.js":         { "maxDuration": 10  },
+    "api/admin.js":          { "maxDuration": 15  },
+    "api/save-meditation.js":{ "maxDuration": 30  },
+    "api/dashboard.js":      { "maxDuration": 30  },
+    "api/buzon.js":          { "maxDuration": 15  },
+    "api/profile-bonus.js":  { "maxDuration": 15  }
   }
 }

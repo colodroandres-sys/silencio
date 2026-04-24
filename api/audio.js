@@ -144,6 +144,8 @@ module.exports = async (req, res) => {
       `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/with-timestamps`,
       {
         method: 'POST',
+        // maxDuration de la función es 90s; cortamos el fetch a 80s.
+        signal: AbortSignal.timeout(80000),
         headers: {
           'xi-api-key': process.env.ELEVENLABS_API_KEY,
           'content-type': 'application/json'
@@ -249,6 +251,10 @@ module.exports = async (req, res) => {
     return res.status(200).json({ audioBase64, silenceMap, totalDuration, meditationId });
 
   } catch (err) {
+    if (err?.name === 'TimeoutError' || err?.name === 'AbortError') {
+      console.error('[audio] Timeout llamando a ElevenLabs API');
+      return res.status(504).json({ error: 'La generación de audio tardó demasiado. Inténtalo de nuevo.' });
+    }
     console.error('Error interno en /api/audio:', err);
     return res.status(500).json({ error: 'Error interno del servidor' });
   }

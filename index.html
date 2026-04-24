@@ -1291,15 +1291,15 @@
       const btn = document.getElementById('buzon-send-btn');
       if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
       try {
+        const headers = { 'Content-Type': 'application/json' };
+        try {
+          const token = await clerk?.session?.getToken?.();
+          if (token) headers['Authorization'] = `Bearer ${token}`;
+        } catch (_) { /* guest: sin token, el backend lo marca como tal */ }
         await fetch('/api/buzon', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            category: _buzonCat,
-            message: msg,
-            user_id: clerk?.user?.id || null,
-            email: clerk?.user?.primaryEmailAddress?.emailAddress || null,
-          }),
+          headers,
+          body: JSON.stringify({ category: _buzonCat, message: msg }),
         });
       } catch(e) { /* best effort */ }
       document.getElementById('buzon-form').style.display = 'none';

@@ -1,12 +1,14 @@
 // Rate limiting compartido para todas las API functions
 // Usa Upstash Redis para mantener estado entre instancias serverless
 //
-// Límites configurados para pre-launch:
-//   /api/meditation — 10 requests por IP por hora  (Claude API cuesta dinero)
-//   /api/audio      — 10 requests por IP por hora  (ElevenLabs cuesta dinero)
+// Comportamiento:
+//   - Runtime error en Upstash         → fail-closed (503) — no quemamos APIs caras
+//   - En producción sin Redis/package  → fail-closed (503) — algo roto, no cobrar
+//   - En desarrollo local sin env vars → fail-open         — comodidad dev
 //
-// IMPORTANTE: si Upstash falla en runtime, la request es bloqueada (fail-closed).
-// Si las variables de entorno no están configuradas, se permite el paso (modo dev sin Redis).
+// "Producción" = VERCEL_ENV === 'production' OR NODE_ENV === 'production'
+
+const IS_PROD = process.env.VERCEL_ENV === 'production' || process.env.NODE_ENV === 'production';
 
 let Ratelimit, Redis;
 try {
@@ -50,9 +52,22 @@ module.exports = async function checkRateLimit(req, res, endpoint, requests, win
   const bypassSecret = process.env.TEST_BYPASS_SECRET;
   if (bypassSecret && req.headers['x-test-bypass'] === bypassSecret) return true;
 
-  // Sin paquete, sin variables, o cualquier error — dejamos pasar sin romper nada
-  if (!Ratelimit || !Redis) return true;
-  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) return true;
+  // Sin paquete o sin env vars: en prod bloqueamos (algo roto, no gastar dinero).
+  // En dev dejamos pasar para comodidad local.
+  if (!Ratelimit || !Redis) {
+    if (IS_PROD) {
+      res.status(503).json({ error: 'Servicio temporalmente no disponible.' });
+      return false;
+    }
+    return true;
+  }
+  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+    if (IS_PROD) {
+      res.status(503).json({ error: 'Servicio temporalmente no disponible.' });
+      return false;
+    }
+    return true;
+  }
 
   try {
     const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
