@@ -4,8 +4,7 @@
 .dash-wrap {
   max-width: 460px;
   margin: 0 auto;
-  padding: calc(env(safe-area-inset-top, 0px) + 52px) 24px calc(env(safe-area-inset-bottom, 0px) + 160px);
-  min-height: 100dvh;
+  padding: calc(env(safe-area-inset-top, 0px) + 52px) 24px calc(env(safe-area-inset-bottom, 0px) + 180px);
 }
 
 /* Library header */
@@ -187,8 +186,7 @@
 .profile-wrap {
   max-width: 460px;
   margin: 0 auto;
-  padding: calc(env(safe-area-inset-top, 0px) + 52px) 24px calc(env(safe-area-inset-bottom, 0px) + 160px);
-  min-height: 100dvh;
+  padding: calc(env(safe-area-inset-top, 0px) + 52px) 24px calc(env(safe-area-inset-bottom, 0px) + 180px);
 }
 
 .profile-header-row {
