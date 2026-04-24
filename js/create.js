@@ -58,49 +58,16 @@ function selectFeedback(el) {
 function onInputChange() {
   const raw = document.getElementById('input-free')?.value || '';
   const val = raw.trim();
-  const btn = document.getElementById('btn-continue-input');
-  if (btn) btn.disabled = val.length < 3;
   const counter = document.getElementById('char-count');
   if (counter) counter.textContent = raw.length + '/500';
 
-  // Para invitados: activar/desactivar sticky button directamente
-  if (!clerk?.user) {
-    const btnGen = document.getElementById('btn-generate');
-    if (btnGen) {
-      const ready = val.length >= 3;
-      btnGen.style.opacity = ready ? '1' : '0.45';
-      btnGen.style.pointerEvents = ready ? 'auto' : 'none';
-      if (ready) { btnGen.style.opacity = '1'; btnGen.style.pointerEvents = 'auto'; }
-    }
+  // Activar/desactivar sticky btn-generate según haya texto
+  const btnGen = document.getElementById('btn-generate');
+  if (btnGen) {
+    const ready = val.length >= 3;
+    btnGen.style.opacity = ready ? '1' : '0.45';
+    btnGen.style.pointerEvents = ready ? 'auto' : 'none';
   }
-}
-
-function convoRevealConfig() {
-  const el = document.getElementById('input-free');
-  const input = el?.value.trim() || '';
-  if (input.length < 3) { if (el) shake(el); return; }
-  if (input.length > 500) { showCharError(el, `Máximo 500 caracteres (tienes ${input.length})`); return; }
-  state.userInput = input;
-
-  const section = document.getElementById('cs-config');
-  if (section && section.classList.contains('convo-hidden') && !section.classList.contains('convo-revealed')) {
-    section.classList.add('convo-revealed');
-    setTimeout(() => {
-      const screen = document.getElementById('screen-create');
-      const sectionTop = section.offsetTop;
-      const btnHeight = 130;
-      const screenHeight = screen.clientHeight;
-      screen.scrollTo({ top: sectionTop - (screenHeight - btnHeight) / 2, behavior: 'smooth' });
-    }, 150);
-  }
-  document.getElementById('cstep-2')?.classList.add('active');
-
-  // Ocultar botón inline y mostrar solo el sticky
-  const bottomRow = document.querySelector('.create-bottom-row');
-  if (bottomRow) bottomRow.style.display = 'none';
-
-  const btn = document.getElementById('btn-generate');
-  if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
 }
 
 function goToGenerate() {
@@ -116,22 +83,10 @@ function resetCreateScreen() {
   const inputEl = document.getElementById('input-free');
   if (inputEl) inputEl.value = '';
 
-  const csConfig = document.getElementById('cs-config');
-  if (csConfig && !clerk?.user) {
-    csConfig.classList.remove('convo-revealed');
-    csConfig.classList.add('convo-hidden');
-  }
-
   document.getElementById('cstep-2')?.classList.remove('active');
-
-  const btnContinue = document.getElementById('btn-continue-input');
-  if (btnContinue) btnContinue.disabled = true;
 
   const btnGen = document.getElementById('btn-generate');
   if (btnGen) { btnGen.style.opacity = '0.45'; btnGen.style.pointerEvents = 'none'; }
-
-  const bottomRow = document.querySelector('.create-bottom-row');
-  if (bottomRow) bottomRow.style.display = '';
 
   state.intent     = null;
   state.emotionTag = null;

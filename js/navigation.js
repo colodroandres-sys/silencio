@@ -145,11 +145,10 @@ function showCreate(skipToConfig = false) {
     }
     const section = document.getElementById('cs-config');
     if (section && !section.classList.contains('convo-revealed')) {
+      section.classList.remove('convo-hidden');
       section.classList.add('convo-revealed');
     }
     document.getElementById('cstep-2')?.classList.add('active');
-    const bottomRow = document.querySelector('.create-bottom-row');
-    if (bottomRow) bottomRow.style.display = 'none';
     const btnGen = document.getElementById('btn-generate');
     if (btnGen) { btnGen.style.opacity = '1'; btnGen.style.pointerEvents = 'auto'; }
   }
@@ -170,22 +169,20 @@ function showCreate(skipToConfig = false) {
   const quickPrompts = document.querySelector('.create-quick-prompts');
   if (quickPrompts) quickPrompts.style.display = isUser ? 'none' : '';
 
-  // Siempre ocultar el bottom row inline (lo reemplaza el sticky btn)
-  const bottomRow = document.querySelector('.create-bottom-row');
-  if (bottomRow) bottomRow.style.display = 'none';
+  // Mostrar config inmediatamente (un solo flujo sin paso intermedio)
+  const section = document.getElementById('cs-config');
+  if (section && !section.classList.contains('convo-revealed')) {
+    section.classList.remove('convo-hidden');
+    section.classList.add('convo-revealed');
+  }
 
+  // btn-generate empieza deshabilitado; onInputChange lo activa al escribir
   const btnGen = document.getElementById('btn-generate');
-  if (isUser && !skipToConfig) {
-    // Para usuarios con cuenta: mostrar config inmediatamente y activar sticky btn
-    const section = document.getElementById('cs-config');
-    if (section && !section.classList.contains('convo-revealed')) {
-      section.classList.remove('convo-hidden');
-      section.classList.add('convo-revealed');
-    }
-    if (btnGen) { btnGen.style.opacity = '1'; btnGen.style.pointerEvents = 'auto'; }
-  } else if (!isUser && !skipToConfig) {
-    // Para invitados: sticky btn desactivado hasta que escriban (salvo que vengan del onboarding con texto pre-llenado)
-    if (btnGen) { btnGen.style.opacity = '0.45'; btnGen.style.pointerEvents = 'none'; }
+  if (btnGen && !skipToConfig) {
+    const currentInput = (document.getElementById('input-free')?.value || '').trim();
+    const ready = currentInput.length >= 3;
+    btnGen.style.opacity = ready ? '1' : '0.45';
+    btnGen.style.pointerEvents = ready ? 'auto' : 'none';
   }
 
   const banner = document.getElementById('no-credits-banner');
