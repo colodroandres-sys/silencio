@@ -417,8 +417,8 @@ async function confirmDeleteAccount() {
 
   try {
     const token = await clerk.session.getToken();
-    const res = await fetch('/api/delete-account', {
-      method: 'POST',
+    const res = await fetch('/api/user', {
+      method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
     });
     if (!res.ok) {

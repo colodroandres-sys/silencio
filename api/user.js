@@ -19,6 +19,10 @@ function calculateLevel(totalSessions) {
 }
 
 module.exports = async (req, res) => {
+  // DELETE method: eliminar cuenta completa (GDPR Art. 17)
+  if (req.method === 'DELETE') {
+    return handleDeleteAccount(req, res);
+  }
   if (req.method !== 'GET') return res.status(405).end();
 
   const clerkId = await verifyAuth(req, res);
@@ -98,3 +102,56 @@ module.exports = async (req, res) => {
     saveLimit
   });
 };
+
+// DELETE /api/user — eliminación completa de cuenta (GDPR)
+async function handleDeleteAccount(req, res) {
+  const clerkId = await verifyAuth(req, res);
+  if (!clerkId) return;
+  const db = getSupabase();
+  try {
+    const { data: user } = await db
+      .from('users')
+      .select('stripe_subscription_id')
+      .eq('clerk_id', clerkId)
+      .single();
+
+    // 1. Cancelar suscripción en Stripe (evita cobros futuros)
+    if (user?.stripe_subscription_id) {
+      try {
+        const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+        await stripe.subscriptions.cancel(user.stripe_subscription_id);
+      } catch (e) { console.error('[delete] stripe:', e.message); }
+    }
+
+    // 2. Borrar audios guardados en Storage
+    try {
+      const { data: meds } = await db
+        .from('meditations')
+        .select('id')
+        .eq('clerk_id', clerkId)
+        .eq('is_saved', true);
+      if (meds && meds.length > 0) {
+        const paths = meds.map(m => `${clerkId}/${m.id}.mp3`);
+        await db.storage.from('meditations').remove(paths);
+      }
+    } catch (e) { console.error('[delete] storage:', e.message); }
+
+    // 3. Borrar filas Supabase
+    await db.from('meditations').delete().eq('clerk_id', clerkId);
+    await db.from('users').delete().eq('clerk_id', clerkId);
+
+    // 4. Borrar user en Clerk
+    try {
+      const r = await fetch(`https://api.clerk.com/v1/users/${clerkId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${process.env.CLERK_SECRET_KEY}` }
+      });
+      if (!r.ok) console.error(`[delete] clerk ${r.status}:`, await r.text());
+    } catch (e) { console.error('[delete] clerk:', e.message); }
+
+    return res.json({ ok: true });
+  } catch (e) {
+    console.error('[delete] error:', e.message);
+    return res.status(500).json({ error: 'Error al eliminar la cuenta. Contacta soporte.' });
+  }
+}
