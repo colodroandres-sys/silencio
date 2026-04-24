@@ -165,18 +165,12 @@ async function incrementUsage(clerkId, duration) {
   const credits = DURATION_CREDITS[duration] || 1;
   const month = getCurrentMonth();
 
-  // Upsert: si ya existe la fila la actualiza sumando créditos, si no la crea
-  const { data: existing } = await db
-    .from('monthly_usage')
-    .select('count')
-    .eq('clerk_id', clerkId)
-    .eq('month', month)
-    .single();
-
-  const current = existing?.count || 0;
-  await db
-    .from('monthly_usage')
-    .upsert({ clerk_id: clerkId, month, count: current + credits }, { onConflict: 'clerk_id,month' });
+  // Incremento atómico via RPC — evita race condition si dos requests concurrentes
+  await db.rpc('increment_usage_atomic', {
+    p_clerk_id: clerkId,
+    p_month: month,
+    p_credits: credits
+  });
 }
 
 module.exports = { getOrCreateUser, checkUsageLimit, incrementUsage, PLAN_LIMITS, DURATION_CREDITS };
