@@ -49,6 +49,22 @@ Aquí están las cosas que **solo tú puedes hacer** porque yo no tengo acceso (
 - **Quién lo hace:** Yo. Te aviso cuando esté hecho. ~20 minutos de mi parte.
 - **Tu rol:** Esperar a que te lo confirme. No requiere acción tuya.
 
+### 4. Activar Supabase Connection Pooler (Transaction mode)
+
+- **Por qué:** Hoy cada función serverless abre su propia conexión directa a la DB de Supabase. Con 1.000 usuarios concurrentes esto puede saturar la DB y empezar a tirar errores. El "pooler" es como un asistente que reusa conexiones existentes en lugar de abrir nuevas. Es **gratis**, ya viene incluido en tu plan.
+- **Cuándo:** 1 día antes del marketing relámpago.
+- **Tiempo:** 5 minutos.
+- **Riesgo de hacerlo:** Bajo. Yo te ayudo a copiar la nueva URL de conexión a Vercel.
+
+**Pasos:**
+
+1. [ ] Abre [Supabase Database Settings](https://supabase.com/dashboard/project/drkfsqppgnbzkumresjr/settings/database).
+2. [ ] Busca la sección **"Connection pooling"** (o "Connection string"). Va a aparecer un toggle o un campo **"Pooler"**.
+3. [ ] Asegúrate de que esté en modo **"Transaction"** (es el más eficiente para serverless).
+4. [ ] Copia el **"Pooler connection string"** (debería empezar con `postgresql://` y contener `pooler.supabase.com:6543`).
+5. [ ] Pásamelo en el chat. Yo lo configuro en Vercel como `SUPABASE_POOLER_URL` y actualizo el código para usarlo en producción.
+6. [ ] Confirmo desde mi lado que la app sigue funcionando con el pooler activo.
+
 ---
 
 ## 🟢 Opcional preventivo — solo si en algún momento quieres hacer "limpieza grande de seguridad"
