@@ -304,10 +304,16 @@ module.exports = async (req, res) => {
     }
   }
 
-  const { userInput, userName, duration, voice, gender } = req.body || {};
+  const { userInput: rawUserInput, userName, duration, voice, gender } = req.body || {};
 
-  if (!userInput || !duration) {
+  if (!rawUserInput || !duration) {
     return res.status(400).json({ error: 'Faltan campos requeridos: userInput, duration' });
+  }
+
+  // Sanitización defensiva: strip de caracteres de control + normalizar whitespace
+  const userInput = String(rawUserInput).replace(/[\x00-\x08\x0E-\x1F\x7F]/g, '').replace(/\s+/g, ' ').trim();
+  if (!userInput) {
+    return res.status(400).json({ error: 'El texto no puede estar vacío.' });
   }
 
   if (!['5', '10', '15', '20'].includes(duration)) {

@@ -93,59 +93,67 @@ async function generateMeditation() {
   showScreen('screen-loading');
   startLoadingMessages();
 
-  abortController = new AbortController();
-  try {
-    await attemptGeneration(abortController.signal);
-  } catch (err) {
-    if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
-    stopLoadingMessages();
-    if (err.name === 'AbortError') { abortController = null; enableGenerateBtn(); return; }
-
-    if (err.status === 402) {
-      abortController = null;
-      enableGenerateBtn();
-      showScreen('screen-create');
-      showToast(err.message || 'Sin créditos disponibles. Elige un plan para continuar.');
-      setTimeout(() => showPaywall(), 900);
-      track('paywall_shown', { duration: state.duration });
-      return;
-    }
-    if (err.status && err.status < 500) {
-      abortController = null;
-      enableGenerateBtn();
-      if (err.status === 401) {
-        showScreen('screen-create');
-        showToast('Sesión expirada. Inicia sesión de nuevo.');
-        setTimeout(() => openAuth(), 800);
-      } else if (err.status === 429) {
-        if (!clerk?.user) {
-          showScreen('screen-create');
-          showToast('Has completado tu meditación de prueba. Crea una cuenta para seguir.');
-          setTimeout(() => showPaywall(), 1000);
-          track('paywall_shown', { trigger: 'guest_limit_429' });
-        } else {
-          setLoadingState('error', 'Límite alcanzado', 'Has alcanzado el límite de meditaciones por hora. Vuelve en un momento.');
-        }
-      } else {
-        setLoadingState('error', 'Algo salió mal', err.message || 'Revisa los datos e inténtalo de nuevo.');
-      }
-      return;
-    }
-
-    console.warn('Primer intento fallido, reintentando...', err);
-    setLoadingState('normal', 'Refinando tu sesión', 'Un segundo más, ya casi está lista.');
+  // Hasta 3 intentos con backoff exponencial (1s, 2s) para errores transitorios:
+  // 5xx, network, 408 timeout. Errores de cliente (4xx ≠ 408) no se reintentan.
+  const MAX_ATTEMPTS = 3;
+  let lastErr = null;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     abortController = new AbortController();
     try {
       await attemptGeneration(abortController.signal);
-    } catch (retryErr) {
-      if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
-      abortController = null;
-      if (retryErr.name === 'AbortError') { enableGenerateBtn(); return; }
-      console.error('Error generando meditación (reintento):', retryErr);
-      enableGenerateBtn();
-      setLoadingState('error', 'Algo salió mal', retryErr.message || 'Revisa tu conexión e inténtalo de nuevo.');
+      return; // éxito
+    } catch (err) {
+      lastErr = err;
+      if (err.name === 'AbortError') { abortController = null; enableGenerateBtn(); return; }
+
+      // 4xx que no son 408 → no reintentar (es responsabilidad del cliente/usuario)
+      const isTransient = !err.status || err.status >= 500 || err.status === 408;
+      if (!isTransient || attempt === MAX_ATTEMPTS) break;
+
+      console.warn(`Intento ${attempt}/${MAX_ATTEMPTS} falló, reintentando...`, err);
+      setLoadingState('normal', 'Refinando tu sesión', 'Un segundo más, ya casi está lista.');
+      await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt - 1)));
     }
   }
+
+  // Aquí si fallaron todos los intentos o fue un 4xx no-reintentable
+  if (slowTimer) { clearTimeout(slowTimer); slowTimer = null; }
+  stopLoadingMessages();
+  abortController = null;
+  const err = lastErr;
+
+  if (err.status === 402) {
+    enableGenerateBtn();
+    showScreen('screen-create');
+    showToast(err.message || 'Sin créditos disponibles. Elige un plan para continuar.');
+    setTimeout(() => showPaywall(), 900);
+    track('paywall_shown', { duration: state.duration });
+    return;
+  }
+  if (err.status && err.status < 500 && err.status !== 408) {
+    enableGenerateBtn();
+    if (err.status === 401) {
+      showScreen('screen-create');
+      showToast('Sesión expirada. Inicia sesión de nuevo.');
+      setTimeout(() => openAuth(), 800);
+    } else if (err.status === 429) {
+      if (!clerk?.user) {
+        showScreen('screen-create');
+        showToast('Has completado tu meditación de prueba. Crea una cuenta para seguir.');
+        setTimeout(() => showPaywall(), 1000);
+        track('paywall_shown', { trigger: 'guest_limit_429' });
+      } else {
+        setLoadingState('error', 'Límite alcanzado', 'Has alcanzado el límite de meditaciones por hora. Vuelve en un momento.');
+      }
+    } else {
+      setLoadingState('error', 'Algo salió mal', err.message || 'Revisa los datos e inténtalo de nuevo.');
+    }
+    return;
+  }
+
+  console.error('Error generando meditación tras todos los reintentos:', err);
+  enableGenerateBtn();
+  setLoadingState('error', 'Algo salió mal', err.message || 'Revisa tu conexión e inténtalo de nuevo.');
 }
 
 async function attemptGeneration(signal) {

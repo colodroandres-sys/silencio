@@ -5,8 +5,8 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 module.exports = async (req, res) => {
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-  // Gate admin — mismos headers/query que /api/admin
-  const auth = req.headers['x-admin-password'] || req.query.password || '';
+  // Gate admin — header only (no query param, evita leak via logs/referrers)
+  const auth = req.headers['x-admin-password'] || '';
   if (!ADMIN_PASSWORD || auth !== ADMIN_PASSWORD) {
     return res.status(401).json({ error: 'No autorizado.' });
   }

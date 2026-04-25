@@ -7,7 +7,7 @@ const PRICES = { essential: 9.99, premium: 19.99 };
 module.exports = async (req, res) => {
   if (req.method !== 'GET') return res.status(405).end();
 
-  const auth = req.headers['x-admin-password'] || req.query.password || '';
+  const auth = req.headers['x-admin-password'] || '';
   if (!ADMIN_PASSWORD || auth !== ADMIN_PASSWORD) {
     return res.status(401).json({ error: 'No autorizado.' });
   }
