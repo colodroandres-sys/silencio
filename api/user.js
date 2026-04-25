@@ -91,7 +91,6 @@ module.exports = async (req, res) => {
     usage: limitData.usage ?? 0,
     limit: limitData.limit ?? 1,
     canGenerate: limitData.allowed,
-    profileCompleted: !!user.profile_completed,
     streak,
     minutesThisWeek,
     totalMinutes,

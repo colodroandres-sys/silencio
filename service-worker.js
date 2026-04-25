@@ -1,4 +1,4 @@
-const CACHE = 'stillova-v9';
+const CACHE = 'stillova-v10';
 const PRECACHE = [
   '/',
   '/index.html',
@@ -16,11 +16,11 @@ const PRECACHE = [
   '/js/onboarding.js',
   '/js/create.js',
   '/js/generation.js',
+  '/js/post-session.js',
   '/js/player.js',
   '/js/gamification.js',
   '/js/auth.js',
   '/js/save.js',
-  '/js/profile.js',
   '/js/init.js',
   '/apple-touch-icon.png',
   '/favicon.svg'

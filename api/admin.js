@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
 
   try {
     const [usersResult, medsResult, usageResult] = await Promise.all([
-      db.from('users').select('clerk_id, email, plan, free_used, profile_completed, bonus_credit_used, stripe_subscription_id, created_at'),
+      db.from('users').select('clerk_id, email, plan, free_used, stripe_subscription_id, created_at'),
       db.from('meditations').select('clerk_id, duration, created_at'),
       db.from('monthly_usage').select('clerk_id, count').eq('month', month),
     ]);
@@ -85,7 +85,6 @@ module.exports = async (req, res) => {
         total_meds:     medsByUser[u.clerk_id] || 0,
         credits_used:   u.plan === 'free' ? (u.free_used ? 1 : 0) : (usageByUser[u.clerk_id] || 0),
         last_activity:  lastActivityByUser[u.clerk_id] || null,
-        profile_done:   !!u.profile_completed,
         has_sub:        !!u.stripe_subscription_id,
         created_at:     u.created_at,
       }));

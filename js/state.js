@@ -21,7 +21,6 @@ const state = {
   introTimeoutId:      null,
   ambientFadeInterval: null,
   inSilence:           false,
-  profileCompleted:    false,
   creditsRemaining:    0,
   creditsLimit:        0,
   savedCount:          0,

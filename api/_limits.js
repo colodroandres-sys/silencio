@@ -101,13 +101,9 @@ async function checkUsageLimit(clerkId) {
 
   if (plan === 'free') {
     if (!user.free_used) {
-      return { allowed: true, plan, usage: 0, limit: 1, profileCompleted: !!user.profile_completed };
+      return { allowed: true, plan, usage: 0, limit: 1 };
     }
-    // Primer crédito ya usado — ver si tiene crédito bonus por completar perfil
-    if (user.profile_completed && !user.bonus_credit_used) {
-      return { allowed: true, plan, usage: 1, limit: 2, profileCompleted: true, isBonusCredit: true };
-    }
-    return { allowed: false, reason: 'free_limit', usage: 1, limit: 1, plan, profileCompleted: !!user.profile_completed };
+    return { allowed: false, reason: 'free_limit', usage: 1, limit: 1, plan };
   }
 
   const month = getCurrentMonth();
@@ -151,17 +147,7 @@ async function incrementUsage(clerkId, duration) {
     const plan = user.plan || 'free';
 
     if (plan === 'free') {
-      const { data: freeUser } = await db
-        .from('users')
-        .select('free_used, profile_completed, bonus_credit_used')
-        .eq('clerk_id', clerkId)
-        .single();
-
-      if (!freeUser?.free_used) {
-        await db.from('users').update({ free_used: true }).eq('clerk_id', clerkId);
-      } else if (freeUser?.profile_completed && !freeUser?.bonus_credit_used) {
-        await db.from('users').update({ bonus_credit_used: true }).eq('clerk_id', clerkId);
-      }
+      await db.from('users').update({ free_used: true }).eq('clerk_id', clerkId);
       return;
     }
 

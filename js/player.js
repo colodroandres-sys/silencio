@@ -140,7 +140,6 @@ function handleEnd() {
   document.getElementById('btn-new-meditation').style.display = 'none';
   document.getElementById('end-save').style.display           = 'none';
   document.getElementById('end-upsell').style.display         = 'none';
-  document.getElementById('end-profile').style.display        = 'none';
   document.getElementById('end-guest').style.display          = 'none';
   document.getElementById('screen-player').classList.remove('end-active');
 
@@ -151,19 +150,16 @@ function handleEnd() {
     document.getElementById('end-message').style.display = 'none';
 
     if (!clerk?.user) {
+      renderPostSession('guest');
       document.getElementById('end-guest').style.display = 'flex';
       document.getElementById('screen-player').classList.add('end-active');
       return;
     }
 
     if (state.userPlan === 'free' && !state.userCanGenerate) {
-      if (!state.profileCompleted) {
-        document.getElementById('end-profile').style.display = 'flex';
-        document.getElementById('screen-player').classList.add('end-active');
-      } else {
-        document.getElementById('end-upsell').style.display = 'flex';
-        document.getElementById('screen-player').classList.add('end-active');
-      }
+      renderPostSession('free');
+      document.getElementById('end-upsell').style.display = 'flex';
+      document.getElementById('screen-player').classList.add('end-active');
     } else if (state.userPlan !== 'free' && state.currentMeditationId) {
       const atLimit = state.saveLimit !== null && state.savedCount >= state.saveLimit;
       const slotsLeft = state.saveLimit !== null ? state.saveLimit - state.savedCount : '∞';
@@ -215,7 +211,6 @@ function newMeditation() {
   document.getElementById('end-message').style.display        = 'none';
   document.getElementById('btn-new-meditation').style.display = 'none';
   document.getElementById('end-upsell').style.display         = 'none';
-  document.getElementById('end-profile').style.display        = 'none';
   document.getElementById('end-save').style.display           = 'none';
   document.getElementById('end-guest').style.display          = 'none';
   document.getElementById('screen-player').classList.remove('end-active');

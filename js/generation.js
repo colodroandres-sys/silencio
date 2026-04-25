@@ -1,7 +1,7 @@
 const LOADING_MESSAGES = [
   { title: 'Escuchándote',         sub: 'Leyendo lo que sientes en este momento exacto.' },
   { title: 'Encontrando palabras', sub: 'Cada frase elegida solo para este instante tuyo.' },
-  { title: 'Construyendo el ritmo',sub: 'Los silencios y la respiración tomando forma.' },
+  { title: 'Construyendo el ritmo',sub: 'Los silencios encuentran su lugar exacto.' },
   { title: 'Casi lista',           sub: 'Unos segundos más y comenzamos.' }
 ];
 let loadingMsgIndex = 0;

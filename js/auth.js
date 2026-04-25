@@ -91,6 +91,14 @@ async function initClerk() {
         return;
       }
 
+      // Conversión post-meditación: guest tras signup → checkout Essential automático
+      const pendingCheckout = sessionStorage.getItem('pendingCheckout');
+      if (user && pendingCheckout === 'essential') {
+        sessionStorage.removeItem('pendingCheckout');
+        upgradePlan('essential');
+        return;
+      }
+
       if (user && pendingGeneration) {
         pendingGeneration = false;
         generateMeditation();
@@ -183,7 +191,7 @@ async function fetchUserStatus() {
       return;
     }
 
-    const { plan, usage, limit, canGenerate, profileCompleted,
+    const { plan, usage, limit, canGenerate,
             streak, minutesThisWeek, totalSessions, level,
             savedCount, saveLimit, durationCredits } = await res.json();
 
@@ -192,7 +200,6 @@ async function fetchUserStatus() {
 
     state.userPlan           = plan;
     state.userCanGenerate    = canGenerate;
-    state.profileCompleted   = !!profileCompleted;
     state.creditsRemaining   = Math.max(0, limit - usage);
     state.creditsLimit       = limit;
     state.savedCount         = savedCount ?? 0;
@@ -372,7 +379,6 @@ function signOut() {
     localStorage.removeItem('stillova_plan');
     state.userPlan         = 'free';
     state.userCanGenerate  = true;
-    state.profileCompleted = false;
     clerk.signOut().then(() => {
       window.location.href = '/';
     });
