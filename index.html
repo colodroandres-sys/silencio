@@ -54,7 +54,6 @@
         <div class="ob-dot active" id="ob-dot-1"></div>
         <div class="ob-dot" id="ob-dot-2"></div>
         <div class="ob-dot" id="ob-dot-3"></div>
-        <div class="ob-dot" id="ob-dot-4"></div>
       </div>
 
       <!-- Back button -->
@@ -133,42 +132,10 @@
         </div>
       </div>
 
-      <!-- ── Paso 3 — Cómo funciona ── -->
+      <!-- ── Paso 3 — Primera sesión ── -->
       <div class="ob-step" id="ob-3">
         <div class="ob-inner">
-          <p class="s-eyebrow ob-step-eyebrow">02 · Cómo funciona</p>
-          <h2 class="ob-headline-md">Tres pasos. <em>Sin guión.</em></h2>
-          <div class="ob-steps-list">
-            <div class="ob-step-item">
-              <span class="ob-step-num">01</span>
-              <div class="ob-step-content">
-                <div class="ob-step-title">Escribe cómo te sientes</div>
-                <div class="ob-step-desc">Una palabra, una frase, un párrafo. Sin formato.</div>
-              </div>
-            </div>
-            <div class="ob-step-item">
-              <span class="ob-step-num">02</span>
-              <div class="ob-step-content">
-                <div class="ob-step-title">Se compone tu meditación</div>
-                <div class="ob-step-desc">Voz, ritmo y técnica se eligen para tu estado.</div>
-              </div>
-            </div>
-            <div class="ob-step-item ob-step-item-last">
-              <span class="ob-step-num">03</span>
-              <div class="ob-step-content">
-                <div class="ob-step-title">Escucha. Respira.</div>
-                <div class="ob-step-desc">Cada sesión es única. No habrá otra igual.</div>
-              </div>
-            </div>
-          </div>
-          <button class="s-btn s-btn-primary ob-cta" onclick="obNext(4)">Continuar</button>
-        </div>
-      </div>
-
-      <!-- ── Paso 4 — Primera sesión ── -->
-      <div class="ob-step" id="ob-4">
-        <div class="ob-inner">
-          <p class="s-eyebrow ob-step-eyebrow">03 · Tu primera sesión</p>
+          <p class="s-eyebrow ob-step-eyebrow">02 · Tu primera sesión</p>
           <h2 class="ob-headline-md">Una, <em>gratis</em>. Sin tarjeta.</h2>
           <p class="s-body ob-body-sub">Escribe cómo te sientes y se compone una meditación de 5 minutos. Si funciona, eliges tu plan.</p>
           <div class="ob-features-card">
@@ -468,18 +435,7 @@
           </div>
         </div>
 
-        <div class="convo-pref-group" id="grp-music-wrap" style="display:none">
-          <span class="pref-label">Sonido de fondo</span>
-          <div id="grp-music" class="pill-row">
-            <button class="s-chip active" data-value="auto"           onclick="selectPill(this,'grp-music','music')">Auto</button>
-            <button class="s-chip"        data-value="calma"          onclick="selectPill(this,'grp-music','music')">Calma</button>
-            <button class="s-chip"        data-value="transformacion" onclick="selectPill(this,'grp-music','music')">Transformación</button>
-            <button class="s-chip"        data-value="amor"           onclick="selectPill(this,'grp-music','music')">Amor</button>
-            <button class="s-chip"        data-value="espiritual"     onclick="selectPill(this,'grp-music','music')">Espiritual</button>
-          </div>
-        </div>
-
-        <div id="guest-name-block" class="guest-name-wrap" style="display:none">
+<div id="guest-name-block" class="guest-name-wrap" style="display:none">
           <input type="text" id="pref-name" class="input-text" placeholder="Tu nombre (opcional)" autocomplete="off" maxlength="50">
         </div>
       </div>
@@ -513,6 +469,7 @@
       <p class="s-eyebrow loading-eyebrow">componiendo</p>
       <p id="loading-title" class="loading-headline">Escuchándote de verdad…</p>
       <p id="loading-sub" class="loading-sub">Leyendo lo que sientes en este momento exacto.</p>
+      <p id="loading-user-quote" class="loading-user-quote" style="display:none"></p>
 
       <!-- Progress trail -->
       <div class="loading-trail" id="loading-trail">
@@ -566,7 +523,12 @@
       <!-- Session info -->
       <div class="player-info">
         <p class="s-eyebrow player-technique-eyebrow" id="player-technique-label">sesión personalizada</p>
-        <p class="player-title" id="session-title"></p>
+        <button class="player-title-btn" id="session-title-btn" onclick="showOriginalQuote()" aria-label="Ver tu frase original">
+          <span class="player-title" id="session-title"></span>
+          <svg class="player-title-icon" width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M5 1.5h-3v3M7 10.5h3v-3M2 10l3-3M10 2l-3 3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+          </svg>
+        </button>
       </div>
 
       <!-- Progress bar -->
@@ -638,10 +600,6 @@
             <p class="post-session-config-label">Voz</p>
             <div class="post-session-pills" data-group="voice"></div>
           </div>
-          <div class="post-session-config-row">
-            <p class="post-session-config-label">Sonido de fondo</p>
-            <div class="post-session-pills" data-group="music"></div>
-          </div>
         </div>
 
         <p class="post-session-pre-price">La de hoy fue por <em>nuestra cuenta</em>.</p>
@@ -667,14 +625,10 @@
             <p class="post-session-config-label">Voz</p>
             <div class="post-session-pills" data-group="voice"></div>
           </div>
-          <div class="post-session-config-row">
-            <p class="post-session-config-label">Sonido de fondo</p>
-            <div class="post-session-pills" data-group="music"></div>
-          </div>
         </div>
 
-        <p class="post-session-pre-price">La que acabas de vivir: <em>te la regalamos</em>.</p>
-        <button class="s-btn s-btn-dark post-session-cta-primary" onclick="postSessionPrimary('guest')">Desbloquear Stillova</button>
+        <p class="post-session-pre-price">Esta primera fue por <em>nuestra cuenta</em>.</p>
+        <button class="s-btn s-btn-dark post-session-cta-primary" onclick="postSessionPrimary('guest')">Desbloquear Stillova por €6,99</button>
         <p class="post-session-price-meta">primer mes €6,99 · después €9,99 · cancela cuando quieras</p>
         <button class="post-session-secondary-link" onclick="postSessionSecondary('guest')">Ver todos los planes</button>
         <button class="end-link-btn end-link-btn-dark" onclick="postSessionDismiss('guest')">Ahora no</button>
@@ -994,6 +948,21 @@
   <audio id="lib-audio" preload="none"></audio>
 
   <!-- ══════════════════════════════════════════
+       MODAL — Frase original del usuario
+       ══════════════════════════════════════════ -->
+  <div id="original-quote-modal" class="quote-modal-overlay" onclick="if(event.target===this)closeOriginalQuote()">
+    <div class="quote-modal-card">
+      <button class="quote-modal-close" onclick="closeOriginalQuote()" aria-label="Cerrar">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M11 3L3 11M3 3l8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <p class="s-eyebrow quote-modal-eyebrow">compusimos esto desde</p>
+      <p class="quote-modal-text" id="original-quote-text"></p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
        MODAL — Paywall
        ══════════════════════════════════════════ -->
   <div id="paywall-modal" class="paywall-overlay" onclick="if(event.target===this)closePaywall()">
@@ -1167,26 +1136,35 @@
       if (e.key === 'Escape') {
         const modal = document.getElementById('paywall-modal');
         if (modal && modal.classList.contains('active')) closePaywall();
+        const qm = document.getElementById('original-quote-modal');
+        if (qm && qm.classList.contains('active')) closeOriginalQuote();
       }
     });
 
     // ── Home Guest Textarea ───────────────────────────────────
+    let _homeGuestInputTracked = false;
     function homeGuestInputChange() {
       const val = document.getElementById('home-guest-textarea')?.value.trim() || '';
       const btn = document.getElementById('home-guest-gen-btn');
       if (btn) btn.style.opacity = val.length >= 3 ? '1' : '0.45';
+      if (val.length > 0 && !_homeGuestInputTracked) {
+        _homeGuestInputTracked = true;
+        try { track('home_guest_input_started', {}); } catch (_) {}
+      }
     }
 
     function homeGuestChip(label) {
       const ta = document.getElementById('home-guest-textarea');
       if (!ta) return;
       ta.value = label;
+      try { track('home_guest_chip_clicked', { chip: label }); } catch (_) {}
       homeGuestInputChange();
       ta.focus();
     }
 
     function homeGuestGenerate() {
       const val = document.getElementById('home-guest-textarea')?.value.trim() || '';
+      try { track('home_guest_cta_clicked', { hasInput: val.length >= 3, chars: val.length }); } catch (_) {}
       if (val.length < 3) {
         const ta = document.getElementById('home-guest-textarea');
         if (ta) { ta.focus(); if (typeof shake === 'function') shake(ta); }
@@ -1211,6 +1189,7 @@
 
     function pwSetBilling(cycle) {
       _pwCycle = cycle;
+      try { track('paywall_billing_changed', { cycle, plan: _pwPlan }); } catch (_) {}
       document.getElementById('pw-btn-monthly').classList.toggle('pw-toggle-active', cycle === 'monthly');
       document.getElementById('pw-btn-annual').classList.toggle('pw-toggle-active', cycle === 'annual');
       document.getElementById('pw-toggle-slider').style.transform = cycle === 'monthly' ? 'translateX(0)' : 'translateX(100%)';
@@ -1225,6 +1204,7 @@
 
     function pwSelectPlan(plan) {
       _pwPlan = plan;
+      try { track('paywall_plan_selected', { plan, cycle: _pwCycle }); } catch (_) {}
       const labels = { essential: 'Essential', premium: 'Premium', studio: 'Studio' };
       const ctaBtn = document.getElementById('pw-cta-btn');
       if (ctaBtn) ctaBtn.textContent = 'Empezar con ' + labels[plan];
@@ -1241,6 +1221,7 @@
     }
 
     function pwProceed() {
+      try { track('paywall_cta_clicked', { plan: _pwPlan, cycle: _pwCycle }); } catch (_) {}
       closePaywall();
       const finalPlan = _pwCycle === 'annual' ? _pwPlan + '-annual' : _pwPlan;
       upgradePlan(finalPlan);

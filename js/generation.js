@@ -91,6 +91,19 @@ async function generateMeditation() {
   track('meditation_started', { duration: state.duration, voice: state.voice, intent: state.intent, emotionTag: state.emotionTag });
 
   showScreen('screen-loading');
+
+  const quoteEl = document.getElementById('loading-user-quote');
+  if (quoteEl) {
+    const raw = (state.userInput || '').trim();
+    if (raw) {
+      const truncated = raw.length > 180 ? raw.slice(0, 177) + '…' : raw;
+      quoteEl.textContent = '“' + truncated + '”';
+      quoteEl.style.display = '';
+    } else {
+      quoteEl.style.display = 'none';
+    }
+  }
+
   startLoadingMessages();
 
   // Hasta 3 intentos con backoff exponencial (1s, 2s) para errores transitorios:

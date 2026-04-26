@@ -179,6 +179,22 @@ function handleEnd() {
   });
 }
 
+function showOriginalQuote() {
+  const raw = (state.userInput || '').trim();
+  if (!raw) return;
+  const textEl = document.getElementById('original-quote-text');
+  const overlay = document.getElementById('original-quote-modal');
+  if (!textEl || !overlay) return;
+  textEl.textContent = '“' + raw + '”';
+  overlay.classList.add('active');
+  try { track('player_title_quote_opened', {}); } catch (_) {}
+}
+
+function closeOriginalQuote() {
+  const overlay = document.getElementById('original-quote-modal');
+  if (overlay) overlay.classList.remove('active');
+}
+
 function newMeditation() {
   state.isPlaying           = false;
   state.inSilence           = false;

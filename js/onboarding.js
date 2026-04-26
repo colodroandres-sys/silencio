@@ -1,5 +1,5 @@
 let obCurrentStep = 1;
-const OB_TOTAL_STEPS = 4;
+const OB_TOTAL_STEPS = 3;
 
 function checkOnboarding() {
   if (!localStorage.getItem('stillova_ob_done')) {
@@ -20,6 +20,8 @@ function obGoToStep(n, skipHistory = false) {
   document.querySelectorAll('.ob-step').forEach(s => s.classList.remove('active'));
   const step = document.getElementById(`ob-${n}`);
   if (step) step.classList.add('active');
+
+  try { track('onboarding_step_viewed', { step: n, total: OB_TOTAL_STEPS }); } catch (_) {}
 
   // Actualizar dots (flujo: 1→2→3→4, mapped a dots 0→1→2→3)
   const dotIndex = n - 1;
@@ -119,8 +121,10 @@ function obStopPreview() {
 
 // Completar onboarding y ir a crear (paso gratis)
 function obSkipToFree() {
-  // Limpiar history del onboarding para que back desde create no vuelva a ob-4
+  // Limpiar history del onboarding para que back desde create no vuelva al último paso
   try { history.replaceState(null, '', location.href); } catch (_) {}
+
+  try { track('onboarding_completed', { topics: obPrefs.topics || [] }); } catch (_) {}
 
   localStorage.setItem('stillova_ob_done', '1');
   applyObPrefsToState();

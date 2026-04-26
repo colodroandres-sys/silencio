@@ -996,6 +996,20 @@
   margin-bottom: 36px;
 }
 
+.loading-user-quote {
+  font-family: var(--font-serif, 'Fraunces', serif);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--night-fg);
+  opacity: 0.55;
+  text-align: center;
+  max-width: 280px;
+  line-height: 1.5;
+  margin-top: -24px;
+  margin-bottom: 32px;
+  padding: 0 12px;
+}
+
 .char-counter {
   display: block;
   text-align: right;

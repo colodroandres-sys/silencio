@@ -169,11 +169,17 @@ function showCreate(skipToConfig = false) {
   const quickPrompts = document.querySelector('.create-quick-prompts');
   if (quickPrompts) quickPrompts.style.display = isUser ? 'none' : '';
 
-  // Mostrar config inmediatamente (un solo flujo sin paso intermedio)
+  // Config: solo para usuarios con cuenta. En guest se oculta para evitar
+  // duplicación visual con create-locked-card (que ya cuenta la historia).
   const section = document.getElementById('cs-config');
-  if (section && !section.classList.contains('convo-revealed')) {
-    section.classList.remove('convo-hidden');
-    section.classList.add('convo-revealed');
+  if (section) {
+    if (isUser) {
+      section.classList.remove('convo-hidden');
+      section.classList.add('convo-revealed');
+      section.style.display = '';
+    } else {
+      section.style.display = 'none';
+    }
   }
 
   // btn-generate empieza deshabilitado; onInputChange lo activa al escribir
@@ -368,6 +374,7 @@ function updateHomeDisplay() {
     if (userBar)   userBar.style.display   = 'none';
     if (guestBody) guestBody.style.display = '';
     if (userBody)  userBody.style.display  = 'none';
+    try { track('home_guest_viewed', { hasUsedFree: !!localStorage.getItem('stillova_guest_used') }); } catch (_) {}
   } else {
     if (guestBar)  guestBar.style.display  = 'none';
     if (userBar)   userBar.style.display   = '';

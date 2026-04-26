@@ -136,9 +136,6 @@ function applyAllLocks() {
   document.querySelectorAll('#grp-gender .s-chip').forEach(pill => {
     setPillLock(pill, isFree && pill.dataset.value !== 'neutro');
   });
-  document.querySelectorAll('#grp-music .s-chip').forEach(pill => {
-    setPillLock(pill, isFree && pill.dataset.value !== 'auto');
-  });
 
   if (isFree) {
     if (state.voice !== 'auto') {
@@ -149,12 +146,8 @@ function applyAllLocks() {
       document.querySelector('#grp-gender .s-chip[data-value="neutro"]')?.classList.add('active');
       state.gender = 'neutro';
     }
-    if (state.music !== 'auto') {
-      document.querySelectorAll('#grp-music .s-chip').forEach(p => p.classList.remove('active'));
-      document.querySelector('#grp-music .s-chip[data-value="auto"]')?.classList.add('active');
-      state.music = 'auto';
-    }
   }
+  if (state.music !== 'auto') state.music = 'auto';
 }
 
 function applyDurationLocks() { applyAllLocks(); }

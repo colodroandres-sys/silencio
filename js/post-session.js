@@ -11,12 +11,6 @@ const POST_SESSION_PILLS = {
   voice: [
     { value: 'feminine',  label: 'Femenina' },
     { value: 'masculine', label: 'Masculina' }
-  ],
-  music: [
-    { value: 'calma',          label: 'Calma' },
-    { value: 'transformacion', label: 'Transformación' },
-    { value: 'amor',           label: 'Amor' },
-    { value: 'espiritual',     label: 'Espiritual' }
   ]
 };
 
@@ -29,11 +23,8 @@ function _postSessionUsedConfig() {
   return {
     duration: String(state.duration || ''),
     // state.voice puede venir como 'auto' antes de generar; tras generar el backend
-    // resuelve a 'feminine'/'masculine' y se asigna a state.voice. Si sigue siendo
-    // 'auto' (caso raro), no marcamos ninguna como usada.
-    voice: (state.voice && state.voice !== 'auto') ? state.voice : null,
-    // Música: si es 'auto' no marcamos — la app no expone hoy una música resuelta.
-    music: (state.music && state.music !== 'auto') ? state.music : null
+    // resuelve a 'feminine'/'masculine' y se asigna a state.voice.
+    voice: (state.voice && state.voice !== 'auto') ? state.voice : null
   };
 }
 
