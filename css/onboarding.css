@@ -274,6 +274,23 @@
   justify-content: space-between;
   align-items: center;
 }
+/* Variant con cifra grande a la izquierda (5 / 1 / 0) */
+.ob-feature-row.ob-feature-row-num {
+  justify-content: flex-start;
+  gap: 18px;
+  align-items: baseline;
+}
+.ob-feature-num {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 44px;
+  line-height: 1;
+  color: var(--accent);
+  width: 44px;
+  flex-shrink: 0;
+  text-align: center;
+}
 .ob-feature-divider {
   height: 1px;
   background: var(--faint);

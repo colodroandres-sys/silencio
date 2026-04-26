@@ -8,8 +8,10 @@
   --ink:         #2A1C14;   /* texto principal, botones */
   --muted:       #8A6F5C;   /* texto secundario */
   --faint:       #D6C3AC;   /* divisores, bordes */
-  --accent:      #B5553A;   /* terracotta */
+  --accent:      #A85A3D;   /* terracotta apagado (burnt sienna) */
   --accent-soft: #E8CBB8;   /* fondos insight, chips badge */
+  --gold:        #B08C4D;   /* color de marca para "esto importa" — badges destacados */
+  --gold-ink:    #1A130F;   /* texto sobre gold */
   --contrast:    #2D1D14;   /* cards oscuras sobre canvas */
   --night:       #1E120C;   /* fondo dark (player, loading) */
   --night-fg:    #F3E4D1;   /* texto sobre night */

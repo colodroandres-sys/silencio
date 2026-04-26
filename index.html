@@ -87,46 +87,30 @@
         <div class="ob-inner">
           <p class="s-eyebrow ob-step-eyebrow">01 · Tu primera sesión</p>
           <h2 class="ob-headline-md">Una, <em>gratis</em>. Sin tarjeta.</h2>
-          <p class="s-body ob-body-sub">Escribe cómo te sientes y se compone una meditación de 5 minutos. Si funciona, eliges tu plan.</p>
+          <p class="s-body ob-body-sub">Escribe cómo te sientes. Se compone una meditación, en este momento, para este momento.</p>
           <div class="ob-features-card">
-            <div class="ob-feature-row">
+            <div class="ob-feature-row ob-feature-row-num">
+              <span class="ob-feature-num">5</span>
               <div class="ob-feature-info">
-                <div class="ob-feature-title">5 minutos</div>
-                <div class="ob-feature-desc">Duración fija en la gratuita</div>
+                <div class="ob-feature-title">minutos</div>
+                <div class="ob-feature-desc">duración fija en la gratuita</div>
               </div>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9l3.5 3.5L14 5.5" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
             <div class="ob-feature-divider"></div>
-            <div class="ob-feature-row">
+            <div class="ob-feature-row ob-feature-row-num">
+              <span class="ob-feature-num">1</span>
               <div class="ob-feature-info">
-                <div class="ob-feature-title">Voz y tono neutros</div>
-                <div class="ob-feature-desc">No eliges quién te habla</div>
+                <div class="ob-feature-title">voz neutra</div>
+                <div class="ob-feature-desc">no eliges quién te habla</div>
               </div>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9l3.5 3.5L14 5.5" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
             <div class="ob-feature-divider"></div>
-            <div class="ob-feature-row">
+            <div class="ob-feature-row ob-feature-row-num">
+              <span class="ob-feature-num">0</span>
               <div class="ob-feature-info">
-                <div class="ob-feature-title">Sin cuenta ni tarjeta</div>
-                <div class="ob-feature-desc">Solo escribe cómo te sientes</div>
+                <div class="ob-feature-title">tarjetas</div>
+                <div class="ob-feature-desc">cuenta opcional al final</div>
               </div>
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9l3.5 3.5L14 5.5" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-
-            <!-- Upsell: con plan -->
-            <div class="ob-upsell-divider"></div>
-            <p class="s-eyebrow ob-upsell-eyebrow">con un plan también podrás</p>
-            <div class="ob-upsell-row">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l2.5 2.5L11.5 4" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span>Meditaciones de hasta 20 minutos</span>
-            </div>
-            <div class="ob-upsell-row">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l2.5 2.5L11.5 4" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span>Elegir voz masculina o femenina</span>
-            </div>
-            <div class="ob-upsell-row">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7l2.5 2.5L11.5 4" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span>Que se dirijan a ti como hombre, mujer o neutro</span>
             </div>
           </div>
           <div class="ob-ctas" style="margin-top: 16px;">
@@ -538,24 +522,12 @@
         <p class="s-eyebrow post-session-eyebrow">SESIÓN COMPLETADA</p>
         <h2 class="post-session-headline">Ya sabes cómo se <em>siente</em>.</h2>
         <p class="post-session-sub">Escribiste una frase y Stillova la convirtió en algo pensado para ti.</p>
-        <p class="post-session-sub">Las próximas pueden ser más largas, con otras voces, con sonidos que encajen con lo que necesites en ese momento. Lo que tu día pida.</p>
-
-        <div class="post-session-config">
-          <div class="post-session-config-row">
-            <p class="post-session-config-label">Duración</p>
-            <div class="post-session-pills" data-group="duration"></div>
-          </div>
-          <div class="post-session-config-row">
-            <p class="post-session-config-label">Voz</p>
-            <div class="post-session-pills" data-group="voice"></div>
-          </div>
-        </div>
+        <p class="post-session-sub">Mañana podría ser otra voz, otro tono, otro motivo. Lo que tu día pida.</p>
 
         <p class="post-session-pre-price">La de hoy fue por <em>nuestra cuenta</em>.</p>
         <button class="s-btn s-btn-dark post-session-cta-primary" onclick="postSessionPrimary('free')">Desbloquear Stillova por €6,99</button>
         <p class="post-session-price-meta">primer mes €6,99 · después €9,99 · cancela cuando quieras</p>
         <button class="post-session-secondary-link" onclick="postSessionSecondary('free')">Ver todos los planes</button>
-        <button class="end-link-btn end-link-btn-dark" onclick="postSessionDismiss('free')">Ahora no</button>
       </div>
 
       <!-- END: guest (sin cuenta) -->
@@ -563,24 +535,12 @@
         <p class="s-eyebrow post-session-eyebrow">SESIÓN COMPLETADA</p>
         <h2 class="post-session-headline">Esto fue una de muchas <em>maneras posibles</em>.</h2>
         <p class="post-session-sub">Tu frase se convirtió en una sesión hecha a medida para el momento que describiste.</p>
-        <p class="post-session-sub">Mañana podría ser más larga, con otra voz, o para soltar algo completamente distinto. Lo que tu momento pida.</p>
-
-        <div class="post-session-config">
-          <div class="post-session-config-row">
-            <p class="post-session-config-label">Duración</p>
-            <div class="post-session-pills" data-group="duration"></div>
-          </div>
-          <div class="post-session-config-row">
-            <p class="post-session-config-label">Voz</p>
-            <div class="post-session-pills" data-group="voice"></div>
-          </div>
-        </div>
+        <p class="post-session-sub">Mañana podría ser otra voz, otro tono, otro motivo. Lo que tu momento pida.</p>
 
         <p class="post-session-pre-price">Esta primera fue por <em>nuestra cuenta</em>.</p>
         <button class="s-btn s-btn-dark post-session-cta-primary" onclick="postSessionPrimary('guest')">Desbloquear Stillova por €6,99</button>
         <p class="post-session-price-meta">primer mes €6,99 · después €9,99 · cancela cuando quieras</p>
         <button class="post-session-secondary-link" onclick="postSessionSecondary('guest')">Ver todos los planes</button>
-        <button class="end-link-btn end-link-btn-dark" onclick="postSessionDismiss('guest')">Ahora no</button>
       </div>
 
     </div>
@@ -1288,13 +1248,19 @@
     let _precheckoutPlan = null;
 
     const PRECHECKOUT_TOTALS = {
-      'essential':         { total: '€9,99',   label: 'Essential', suffix: 'primer mes' },
-      'essential-annual':  { total: '€95,88',  label: 'Essential', suffix: '12 meses', equiv: '€7,99/mes' },
-      'premium':           { total: '€19,99',  label: 'Premium',   suffix: 'primer mes' },
-      'premium-annual':    { total: '€191,88', label: 'Premium',   suffix: '12 meses', equiv: '€15,99/mes' },
-      'studio':            { total: '€39,99',  label: 'Studio',    suffix: 'primer mes' },
-      'studio-annual':     { total: '€383,88', label: 'Studio',    suffix: '12 meses', equiv: '€31,99/mes' },
+      'essential':         { total: '€9,99',   label: 'Essential', stepUp: '€9,99'  },
+      'essential-annual':  { total: '€95,88',  label: 'Essential', equiv: '€7,99/mes' },
+      'premium':           { total: '€19,99',  label: 'Premium',   stepUp: '€19,99' },
+      'premium-annual':    { total: '€191,88', label: 'Premium',   equiv: '€15,99/mes' },
+      'studio':            { total: '€39,99',  label: 'Studio',    stepUp: '€39,99' },
+      'studio-annual':     { total: '€383,88', label: 'Studio',    equiv: '€31,99/mes' },
     };
+
+    const _ES_MONTHS_SHORT = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    function _formatChargeDate(date) {
+      // "26 abr 2027" — formato corto en español
+      return date.getDate() + ' ' + _ES_MONTHS_SHORT[date.getMonth()] + ' ' + date.getFullYear();
+    }
 
     function preCheckoutConfirm(plan) {
       _precheckoutPlan = plan;
@@ -1309,12 +1275,22 @@
 
       // Override €6,99 si hay promo Essential mensual activa (viene de end-guest)
       let total = cfg.total;
-      let suffix = cfg.suffix;
       const isEssentialMonthlyPromo = (plan === 'essential')
         && sessionStorage.getItem('stillova_promo_essential') === '1';
       if (isEssentialMonthlyPromo) total = '€6,99';
 
       const isAnnual = plan.endsWith('-annual');
+
+      // Calcular fecha del próximo cobro
+      const today = new Date();
+      const nextCharge = new Date(today);
+      if (isAnnual) {
+        nextCharge.setFullYear(nextCharge.getFullYear() + 1);
+      } else {
+        nextCharge.setMonth(nextCharge.getMonth() + 1);
+      }
+      const nextChargeStr = _formatChargeDate(nextCharge);
+
       const titleEl  = document.getElementById('precheckout-title');
       const detailEl = document.getElementById('precheckout-detail');
       const fineEl   = document.getElementById('precheckout-fineprint');
@@ -1323,13 +1299,23 @@
       if (titleEl) titleEl.textContent = cfg.label + (isAnnual ? ' · anual' : ' · mensual');
       if (detailEl) {
         detailEl.textContent = isAnnual
-          ? total + ' hoy · ' + cfg.suffix + ' · ' + (cfg.equiv || '') + ' equivalente'
-          : total + ' hoy · ' + suffix;
+          ? total + ' hoy · ' + (cfg.equiv || '') + ' equivalente'
+          : total + ' hoy';
       }
       if (fineEl) {
-        fineEl.textContent = isAnnual
-          ? 'La suscripción no se renueva automáticamente hasta dentro de 12 meses. Puedes cancelar cuando quieras desde tu perfil.'
-          : 'La suscripción se renueva cada mes hasta que la canceles. Puedes cancelar cuando quieras desde tu perfil.';
+        // Reescritura de fineprint con fechas exactas (Ronda 2 · ticket 2)
+        // Tres frases, tres respuestas: cuándo cobran, qué pasa al cancelar, cómo cancelar.
+        if (isAnnual) {
+          fineEl.innerHTML =
+            '<strong>Pago único hoy. Próximo cobro: ' + nextChargeStr + '.</strong><br>' +
+            'Acceso completo durante 12 meses. Si cancelas, mantienes ' + cfg.label + ' hasta el final del periodo.<br>' +
+            '<small>Cancela cuando quieras desde tu perfil.</small>';
+        } else {
+          // Mensual: el step-up es importante (especialmente con promo €6,99 → €9,99)
+          fineEl.innerHTML =
+            '<strong>Próximo cobro: ' + nextChargeStr + ' — ' + cfg.stepUp + '/mes.</strong><br>' +
+            'Cancela en cualquier momento. Mantienes acceso hasta el final del mes ya pagado.';
+        }
       }
       if (ctaEl) ctaEl.textContent = 'Pagar ' + total;
 

@@ -1,62 +1,16 @@
 // Render + handlers de la pantalla post-meditación de conversión.
 // Variants: 'guest' (sin cuenta) y 'free' (cuenta sin créditos).
-
-const POST_SESSION_PILLS = {
-  duration: [
-    { value: '5',  label: '5 min' },
-    { value: '10', label: '10 min' },
-    { value: '15', label: '15 min' },
-    { value: '20', label: '20 min' }
-  ],
-  voice: [
-    { value: 'feminine',  label: 'Femenina' },
-    { value: 'masculine', label: 'Masculina' }
-  ]
-};
-
-const POST_SESSION_CHECK_SVG =
-  '<svg class="post-session-pill-check" viewBox="0 0 11 11" fill="none" aria-hidden="true">' +
-  '<path d="M2 5.5l2.2 2.2L9 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>' +
-  '</svg>';
-
-function _postSessionUsedConfig() {
-  return {
-    duration: String(state.duration || ''),
-    // state.voice puede venir como 'auto' antes de generar; tras generar el backend
-    // resuelve a 'feminine'/'masculine' y se asigna a state.voice.
-    voice: (state.voice && state.voice !== 'auto') ? state.voice : null
-  };
-}
+//
+// Tras la Ronda 2: las pills de duración/voz se eliminaron del HTML
+// (eran display-only y generaban disonancia con los selectores reales del
+// create). El "Ahora no" también se quitó — el dismiss vive ahora en el ×
+// del header del player (ver newMeditation en player.js).
 
 function renderPostSession(variant) {
   const cardId = variant === 'guest' ? 'end-guest' : 'end-upsell';
   const card = document.getElementById(cardId);
   if (!card) return;
-
-  const used = _postSessionUsedConfig();
-
-  card.querySelectorAll('.post-session-pills').forEach(group => {
-    const groupKey = group.dataset.group;
-    const opts = POST_SESSION_PILLS[groupKey] || [];
-    const usedValue = used[groupKey];
-    group.innerHTML = opts.map(opt => {
-      const isUsed = usedValue && usedValue === opt.value;
-      return '<span class="post-session-pill' + (isUsed ? ' post-session-pill--used' : '') + '">'
-           + (isUsed ? POST_SESSION_CHECK_SVG : '')
-           + opt.label
-           + '</span>';
-    }).join('');
-  });
-
   try { track('post_session_screen_shown', { variant }); } catch (_) {}
-}
-
-function _hidePostSessionCards() {
-  const guest = document.getElementById('end-guest');
-  const free  = document.getElementById('end-upsell');
-  if (guest) guest.style.display = 'none';
-  if (free)  free.style.display  = 'none';
-  document.getElementById('screen-player')?.classList.remove('end-active');
 }
 
 async function postSessionPrimary(variant) {
@@ -77,7 +31,6 @@ async function postSessionPrimary(variant) {
     if (clerk) {
       clerk.openSignUp({ afterSignInUrl: window.location.href, afterSignUpUrl: window.location.href });
     } else {
-      // Fallback: abrir auth genérico
       openAuth();
     }
     return;
@@ -98,13 +51,4 @@ function postSessionSecondary(variant) {
   // "Ver todos los planes" — el flag promo ya está, el paywall lo recogerá.
   sessionStorage.setItem('stillova_promo_essential', '1');
   showPaywall();
-}
-
-function postSessionDismiss(variant) {
-  try { track('post_session_dismissed', { variant }); } catch (_) {}
-  // Renunció a la promo en este momento; limpiamos el flag para no contaminar
-  // un paywall futuro abierto desde otro contexto.
-  sessionStorage.removeItem('stillova_promo_essential');
-  _hidePostSessionCards();
-  newMeditation();
 }

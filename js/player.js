@@ -196,6 +196,20 @@ function closeOriginalQuote() {
 }
 
 function newMeditation() {
+  // Si el usuario sale desde el estado post-meditación (end-guest / end-upsell),
+  // contamos eso como dismiss del CTA de conversión. Es el equivalente al antiguo
+  // botón "Ahora no" que ahora vive como × del header.
+  const playerScreen = document.getElementById('screen-player');
+  if (playerScreen?.classList.contains('end-active')) {
+    const variant = document.getElementById('end-guest')?.style.display !== 'none' ? 'guest'
+                  : document.getElementById('end-upsell')?.style.display !== 'none' ? 'free'
+                  : null;
+    if (variant) {
+      try { track('post_session_dismissed', { variant, via: 'player_close' }); } catch (_) {}
+      sessionStorage.removeItem('stillova_promo_essential');
+    }
+  }
+
   state.isPlaying           = false;
   state.inSilence           = false;
   state.currentSec          = 0;
