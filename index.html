@@ -53,7 +53,6 @@
       <div class="ob-dots" id="ob-dots">
         <div class="ob-dot active" id="ob-dot-1"></div>
         <div class="ob-dot" id="ob-dot-2"></div>
-        <div class="ob-dot" id="ob-dot-3"></div>
       </div>
 
       <!-- Back button -->
@@ -83,59 +82,10 @@
         </div>
       </div>
 
-      <!-- ── Paso 2 — Por qué meditas ── -->
+      <!-- ── Paso 2 — Primera sesión ── -->
       <div class="ob-step" id="ob-2">
         <div class="ob-inner">
-          <p class="s-eyebrow ob-step-eyebrow">01 · Qué te trae</p>
-          <h2 class="ob-headline-md">¿Qué te trae <em>aquí</em>?</h2>
-
-          <p class="s-body ob-body-sub">Elige una o varias. Puedes cambiarlo cuando quieras.</p>
-          <div class="ob-option-cards" id="ob-topics">
-            <button class="ob-option-card" data-value="ansiedad" onclick="obCardToggle(this)">
-              <div class="ob-option-info">
-                <div class="ob-option-label">Ansiedad o estrés</div>
-                <div class="ob-option-hint">Soltar tensión del cuerpo</div>
-              </div>
-              <div class="ob-option-check"><div class="ob-check-dot"></div></div>
-            </button>
-            <button class="ob-option-card" data-value="sueno" onclick="obCardToggle(this)">
-              <div class="ob-option-info">
-                <div class="ob-option-label">Dormir mejor</div>
-                <div class="ob-option-hint">Apagar la mente en la cama</div>
-              </div>
-              <div class="ob-option-check"><div class="ob-check-dot"></div></div>
-            </button>
-            <button class="ob-option-card" data-value="enfoque" onclick="obCardToggle(this)">
-              <div class="ob-option-info">
-                <div class="ob-option-label">Concentración</div>
-                <div class="ob-option-hint">Enfocarme sin esfuerzo</div>
-              </div>
-              <div class="ob-option-check"><div class="ob-check-dot"></div></div>
-            </button>
-            <button class="ob-option-card" data-value="reconectar" onclick="obCardToggle(this)">
-              <div class="ob-option-info">
-                <div class="ob-option-label">Reconectar conmigo</div>
-                <div class="ob-option-hint">Una pausa diaria</div>
-              </div>
-              <div class="ob-option-check"><div class="ob-check-dot"></div></div>
-            </button>
-            <button class="ob-option-card" data-value="otro" onclick="obCardToggle(this)">
-              <div class="ob-option-info">
-                <div class="ob-option-label">Aún no lo sé</div>
-                <div class="ob-option-hint">Lo descubriremos contigo</div>
-              </div>
-              <div class="ob-option-check"><div class="ob-check-dot"></div></div>
-            </button>
-          </div>
-          <p id="ob-2-hint" style="display:none;font-size:13px;color:var(--muted);text-align:center;margin-top:4px;transition:opacity 0.3s">Si no eliges, lo descubriremos contigo.</p>
-          <button class="s-btn s-btn-primary ob-cta" onclick="obNext(3)">Continuar</button>
-        </div>
-      </div>
-
-      <!-- ── Paso 3 — Primera sesión ── -->
-      <div class="ob-step" id="ob-3">
-        <div class="ob-inner">
-          <p class="s-eyebrow ob-step-eyebrow">02 · Tu primera sesión</p>
+          <p class="s-eyebrow ob-step-eyebrow">01 · Tu primera sesión</p>
           <h2 class="ob-headline-md">Una, <em>gratis</em>. Sin tarjeta.</h2>
           <p class="s-body ob-body-sub">Escribe cómo te sientes y se compone una meditación de 5 minutos. Si funciona, eliges tu plan.</p>
           <div class="ob-features-card">
@@ -403,7 +353,6 @@
             <button class="s-chip"        data-value="20" onclick="selectPill(this,'grp-duration','duration')">20 min</button>
           </div>
           <div id="credits-info" class="credits-info" style="display:none">
-            <span class="credits-costs">5 min = 1 cr · 10 min = 2 cr · 15 min = 3 cr · 20 min = 4 cr</span>
             <span id="credits-remaining-text" class="credits-remaining"></span>
           </div>
         </div>
@@ -411,7 +360,7 @@
         <!-- Credit strip -->
         <div class="credit-strip" id="credit-strip" style="display:none">
           <div class="credit-strip-info">
-            <div class="credit-strip-title" id="credit-strip-title">Usarás 2 créditos</div>
+            <div class="credit-strip-title" id="credit-strip-title">Usarás 2 sesiones</div>
             <div class="credit-strip-sub" id="credit-strip-sub">Te quedan 8 de 10 este mes</div>
           </div>
           <div class="credit-bars" id="credit-bars"></div>
@@ -584,7 +533,7 @@
         <button class="end-link-btn" onclick="skipSave()">Cerrar sin guardar</button>
       </div>
 
-      <!-- END: upsell (usuario free sin créditos) -->
+      <!-- END: upsell (usuario free sin sesiones disponibles) -->
       <div id="end-upsell" style="display:none" class="post-session-card">
         <p class="s-eyebrow post-session-eyebrow">SESIÓN COMPLETADA</p>
         <h2 class="post-session-headline">Ya sabes cómo se <em>siente</em>.</h2>
@@ -665,7 +614,7 @@
       </div>
       <div class="end-account-save-card" id="end-account-save-card">
         <p class="end-account-save-title">¿Quieres <em>guardarla</em>?</p>
-        <p class="end-account-save-desc">Reescucharla <strong>no cuesta créditos</strong>. Te quedan <span id="end-account-slots">—</span> en tu biblioteca.</p>
+        <p class="end-account-save-desc">Reescucharla <strong>no consume sesiones</strong>. Te quedan <span id="end-account-slots">—</span> en tu biblioteca.</p>
         <div class="end-account-save-actions">
           <button class="end-account-yes-btn" onclick="endAccountSave()">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2h10v10.5l-5-2.5L2 12.5V2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
@@ -676,7 +625,7 @@
       </div>
       <div class="end-account-saved-msg" id="end-account-saved-msg" style="display:none">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 6-7" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Guardada. Reescucharla no te costará créditos.
+        Guardada. Reescucharla no consume sesiones.
       </div>
       <p class="s-eyebrow end-account-feel-eyebrow">¿te ayudó?</p>
       <div class="end-account-feel-chips">
@@ -687,6 +636,47 @@
       <div class="end-account-footer">
         <button class="s-btn s-btn-primary" style="width:100%" onclick="showHome()">Cerrar</button>
       </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       POST-CHECKOUT — primera vez tras pagar
+       Nombre + ¿qué quieres trabajar? (ambos opcionales)
+       ══════════════════════════════════════════ -->
+  <div id="screen-post-checkout" class="screen">
+    <div class="post-checkout-wrap">
+
+      <p class="s-eyebrow post-checkout-eyebrow">bienvenido</p>
+      <h1 class="post-checkout-headline">Personalizamos lo <em>siguiente</em>.</h1>
+      <p class="s-body post-checkout-sub">Dos cosas opcionales. Saltarte cualquiera no afecta tu plan.</p>
+
+      <!-- Sección 1 · Nombre -->
+      <div class="post-checkout-section">
+        <p class="s-eyebrow post-checkout-section-label">¿Cómo te llamas?</p>
+        <p class="post-checkout-section-hint">La próxima podrá decir tu nombre.</p>
+        <input type="text" id="post-checkout-name" class="post-checkout-input" placeholder="Tu nombre" autocomplete="given-name" maxlength="50">
+      </div>
+
+      <div class="post-checkout-divider"></div>
+
+      <!-- Sección 2 · Intent -->
+      <div class="post-checkout-section">
+        <p class="s-eyebrow post-checkout-section-label">¿Qué quieres trabajar?</p>
+        <p class="post-checkout-section-hint">Marca lo que resuene. Lo afinaremos con el tiempo.</p>
+        <div class="post-checkout-chips" id="post-checkout-chips">
+          <button class="s-chip" data-value="ansiedad" onclick="postCheckoutChipToggle(this)">ansiedad</button>
+          <button class="s-chip" data-value="sueno" onclick="postCheckoutChipToggle(this)">dormir mejor</button>
+          <button class="s-chip" data-value="enfoque" onclick="postCheckoutChipToggle(this)">enfocarme</button>
+          <button class="s-chip" data-value="relacion" onclick="postCheckoutChipToggle(this)">relación con uno mismo</button>
+          <button class="s-chip" data-value="duelo" onclick="postCheckoutChipToggle(this)">duelo</button>
+          <button class="s-chip" data-value="creatividad" onclick="postCheckoutChipToggle(this)">creatividad</button>
+        </div>
+        <textarea id="post-checkout-other" class="post-checkout-textarea" placeholder="o algo más concreto…" maxlength="200" rows="2"></textarea>
+      </div>
+
+      <button class="s-btn s-btn-primary post-checkout-cta" onclick="postCheckoutSubmit()">Empezar</button>
+      <button class="post-checkout-skip" onclick="postCheckoutSkip()">Saltar por ahora</button>
+
     </div>
   </div>
 
@@ -814,7 +804,7 @@
           <div class="profile-plan-credit-bar-wrap">
             <div class="profile-plan-credit-bar" id="profile-plan-credit-bar" style="width:0%"></div>
           </div>
-          <div class="profile-plan-credit-info" id="profile-plan-credit-info">0 créditos usados este mes</div>
+          <div class="profile-plan-credit-info" id="profile-plan-credit-info">0 sesiones usadas este mes</div>
         </div>
 
         <!-- Hábitos -->
@@ -948,6 +938,25 @@
   <audio id="lib-audio" preload="none"></audio>
 
   <!-- ══════════════════════════════════════════
+       MODAL — Confirmación pre-Stripe (variante B · blindaje)
+       ══════════════════════════════════════════ -->
+  <div id="precheckout-modal" class="precheckout-overlay" onclick="if(event.target===this)closePrecheckout()">
+    <div class="precheckout-card">
+      <button class="precheckout-close" onclick="closePrecheckout()" aria-label="Cerrar">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M11 3L3 11M3 3l8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <p class="s-eyebrow precheckout-eyebrow">Confirmas tu plan</p>
+      <h3 class="precheckout-title" id="precheckout-title">Premium · anual</h3>
+      <p class="precheckout-detail" id="precheckout-detail">€191,88 hoy · 12 meses · €15,99/mes equivalente</p>
+      <p class="precheckout-fineprint" id="precheckout-fineprint">La suscripción no se renueva automáticamente hasta dentro de 12 meses. Puedes cancelar cuando quieras desde tu perfil.</p>
+      <button class="s-btn s-btn-primary precheckout-cta" id="precheckout-cta" onclick="precheckoutConfirm()">Pagar €191,88</button>
+      <button class="precheckout-back" onclick="closePrecheckout()">← Cambiar plan</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
        MODAL — Frase original del usuario
        ══════════════════════════════════════════ -->
   <div id="original-quote-modal" class="quote-modal-overlay" onclick="if(event.target===this)closeOriginalQuote()">
@@ -975,94 +984,85 @@
         </button>
       </div>
 
-      <p class="s-eyebrow pw-eyebrow">Compara los planes</p>
+      <p class="s-eyebrow pw-eyebrow">Elige tu plan</p>
       <h2 class="pw-headline">Elige el <em>tuyo</em>.</h2>
-      <!-- Toggle mensual / anual -->
-      <div class="pw-toggle-wrap">
-        <div class="pw-toggle-slider" id="pw-toggle-slider"></div>
-        <button class="pw-toggle-btn pw-toggle-active" id="pw-btn-monthly" onclick="pwSetBilling('monthly')">Mensual</button>
-        <button class="pw-toggle-btn" id="pw-btn-annual" onclick="pwSetBilling('annual')">
-          Anual · <span class="pw-save-badge">−20%</span>
-        </button>
+
+      <!-- Breadcrumb promo €6,99 (visible solo si viene de end-guest CTA) -->
+      <div class="pw-promo-banner" id="pw-promo-banner" style="display:none">
+        <div class="pw-promo-text">
+          <span class="s-eyebrow pw-promo-eyebrow">tu oferta</span>
+          <span class="pw-promo-detail">€6,99 primer mes de Essential mensual</span>
+        </div>
+        <div class="pw-promo-actions">
+          <button class="pw-promo-activate" onclick="pwActivatePromo()">Activar</button>
+          <button class="pw-promo-skip" onclick="pwSkipPromo()">Ver otros planes</button>
+        </div>
       </div>
 
-      <!-- Tabla comparativa -->
-      <table class="pw-table">
-        <thead>
-          <tr class="pw-table-head-row">
-            <th></th>
-            <th>
-              <div class="pw-col-header" id="pw-col-essential" onclick="pwSelectPlan('essential')">
-                <div class="pw-col-name">Essential</div>
-                <div class="pw-col-price"><span id="pw-price-essential">€9,99</span></div>
-                <div class="pw-col-cycle" id="pw-cycle-essential">/mes</div>
-              </div>
-            </th>
-            <th>
-              <div class="pw-col-header pw-col-featured" id="pw-col-premium" onclick="pwSelectPlan('premium')">
-                <div class="pw-col-top-badge">TOP</div>
-                <div class="pw-col-name">Premium</div>
-                <div class="pw-col-price"><span id="pw-price-premium">€19,99</span></div>
-                <div class="pw-col-cycle" id="pw-cycle-premium">/mes</div>
-              </div>
-            </th>
-            <th>
-              <div class="pw-col-header" id="pw-col-studio" onclick="pwSelectPlan('studio')">
-                <div class="pw-col-name">Studio</div>
-                <div class="pw-col-price"><span id="pw-price-studio">€39,99</span></div>
-                <div class="pw-col-cycle" id="pw-cycle-studio">/mes</div>
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Créditos / mes</td>
-            <td>10</td>
-            <td class="pw-cell-featured">25</td>
-            <td>60</td>
-          </tr>
-          <tr>
-            <td>1 crédito</td>
-            <td>5 min</td>
-            <td class="pw-cell-featured">5 min</td>
-            <td>5 min</td>
-          </tr>
-          <tr>
-            <td>Duración máx.</td>
-            <td>15 min</td>
-            <td class="pw-cell-featured">20 min</td>
-            <td>20 min</td>
-          </tr>
-          <tr>
-            <td>Voz (H o M)</td>
-            <td><span class="pw-check"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></td>
-            <td class="pw-cell-featured"><span class="pw-check"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></td>
-            <td><span class="pw-check"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></td>
-          </tr>
-          <tr>
-            <td>Dirigirse a ti</td>
-            <td style="font-size:11px">H/M/neutro</td>
-            <td class="pw-cell-featured" style="font-size:11px">H/M/neutro</td>
-            <td style="font-size:11px">H/M/neutro</td>
-          </tr>
-          <tr>
-            <td>Guardar meditaciones</td>
-            <td>5</td>
-            <td class="pw-cell-featured">20</td>
-            <td>Ilimitado</td>
-          </tr>
-          <tr>
-            <td>Reescucha gratis</td>
-            <td><span class="pw-check"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></td>
-            <td class="pw-cell-featured"><span class="pw-check"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></td>
-            <td><span class="pw-check"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Toggle anual / mensual (anual por defecto) -->
+      <div class="pw-toggle-wrap">
+        <div class="pw-toggle-slider" id="pw-toggle-slider"></div>
+        <button class="pw-toggle-btn pw-toggle-active" id="pw-btn-annual" onclick="pwSetBilling('annual')">
+          Anual · <span class="pw-save-badge">−20%</span>
+        </button>
+        <button class="pw-toggle-btn" id="pw-btn-monthly" onclick="pwSetBilling('monthly')">Mensual</button>
+      </div>
+
+      <!-- 3 cards verticales -->
+      <div class="pw-cards">
+
+        <!-- Card 1 · Essential -->
+        <div class="pw-card" id="pw-card-essential" onclick="pwSelectPlan('essential')">
+          <p class="s-eyebrow pw-card-kicker">PARA EMPEZAR</p>
+          <h3 class="pw-card-name">Essential</h3>
+          <div class="pw-card-price-block">
+            <p class="pw-card-price-main"><span id="pw-price-essential">€7,99</span> <span class="pw-card-price-unit">al mes</span></p>
+            <p class="pw-card-price-sub" id="pw-cycle-essential">facturado anualmente · €95,88 hoy</p>
+          </div>
+          <ul class="pw-card-features">
+            <li>10 sesiones al mes</li>
+            <li>hasta 15 minutos</li>
+            <li>voz H/M · neutro o género</li>
+          </ul>
+        </div>
+
+        <!-- Card 2 · Premium (destacada) -->
+        <div class="pw-card pw-card-featured pw-card-selected" id="pw-card-premium" onclick="pwSelectPlan('premium')">
+          <p class="s-eyebrow pw-card-kicker pw-card-kicker-featured">PARA TU PRÁCTICA HABITUAL</p>
+          <span class="pw-card-badge">RECOMENDADO</span>
+          <h3 class="pw-card-name">Premium</h3>
+          <div class="pw-card-price-block">
+            <p class="pw-card-price-main"><span id="pw-price-premium">€15,99</span> <span class="pw-card-price-unit">al mes</span></p>
+            <p class="pw-card-price-sub" id="pw-cycle-premium">facturado anualmente · €191,88 hoy</p>
+          </div>
+          <ul class="pw-card-features">
+            <li>25 sesiones al mes</li>
+            <li>hasta 20 minutos</li>
+            <li>voz H/M · neutro o género</li>
+            <li>20 sesiones guardadas</li>
+          </ul>
+        </div>
+
+        <!-- Card 3 · Studio -->
+        <div class="pw-card" id="pw-card-studio" onclick="pwSelectPlan('studio')">
+          <p class="s-eyebrow pw-card-kicker">PARA QUIEN MEDITA A DIARIO</p>
+          <h3 class="pw-card-name">Studio</h3>
+          <div class="pw-card-price-block">
+            <p class="pw-card-price-main"><span id="pw-price-studio">€31,99</span> <span class="pw-card-price-unit">al mes</span></p>
+            <p class="pw-card-price-sub" id="pw-cycle-studio">facturado anualmente · €383,88 hoy</p>
+          </div>
+          <ul class="pw-card-features">
+            <li>60 sesiones al mes</li>
+            <li>hasta 20 minutos</li>
+            <li>voz H/M · neutro o género</li>
+            <li>sesiones guardadas sin límite</li>
+          </ul>
+          <p class="pw-card-lifestyle">≈ 2 sesiones al día durante 30 días</p>
+        </div>
+      </div>
 
       <button class="s-btn s-btn-primary pw-cta-main" id="pw-cta-btn" onclick="pwProceed()">Empezar con Premium</button>
-      <p class="pw-guarantee">cancela cuando quieras</p>
+      <p class="pw-cta-microcopy" id="pw-cta-microcopy">Hoy se cobran €191,88 · 12 meses de Premium · cancela cuando quieras desde tu perfil</p>
 
     </div>
   </div>
@@ -1113,6 +1113,7 @@
   <script src="js/create.js"></script>
   <script src="js/generation.js"></script>
   <script src="js/post-session.js"></script>
+  <script src="js/post-checkout.js"></script>
   <script src="js/player.js"></script>
   <script src="js/gamification.js"></script>
   <script src="js/auth.js"></script>
@@ -1134,6 +1135,8 @@
     });
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
+        const pc = document.getElementById('precheckout-modal');
+        if (pc && pc.classList.contains('active')) { closePrecheckout(); return; }
         const modal = document.getElementById('paywall-modal');
         if (modal && modal.classList.contains('active')) closePaywall();
         const qm = document.getElementById('original-quote-modal');
@@ -1178,57 +1181,177 @@
     }
 
     // ── Paywall state ─────────────────────────────────────────
-    let _pwCycle = 'monthly';
+    let _pwCycle = 'annual';   // anual por defecto
     let _pwPlan  = 'premium';
 
+    // monthly = precio mensual al mes, annual = precio mensual equivalente al mes (con descuento)
     const PW_PRICES = {
       essential: { monthly: '€9,99',  annual: '€7,99'  },
       premium:   { monthly: '€19,99', annual: '€15,99' },
       studio:    { monthly: '€39,99', annual: '€31,99' },
     };
+    // Total a cobrar HOY (la cifra de blindaje)
+    const PW_TOTAL_TODAY = {
+      essential: { monthly: '€9,99',   annual: '€95,88'  },
+      premium:   { monthly: '€19,99',  annual: '€191,88' },
+      studio:    { monthly: '€39,99',  annual: '€383,88' },
+    };
+    const PW_LABELS = { essential: 'Essential', premium: 'Premium', studio: 'Studio' };
+
+    function _pwBuildSubLine(plan, cycle) {
+      const total = PW_TOTAL_TODAY[plan][cycle];
+      if (cycle === 'annual') return 'facturado anualmente · ' + total + ' hoy';
+      return 'facturado mensualmente · cancela cuando quieras';
+    }
+
+    function _pwBuildMicrocopy(plan, cycle) {
+      const total = PW_TOTAL_TODAY[plan][cycle];
+      const label = PW_LABELS[plan];
+      if (cycle === 'annual') {
+        return 'Hoy se cobran ' + total + ' · 12 meses de ' + label + ' · cancela cuando quieras desde tu perfil';
+      }
+      // Para Essential mensual, si viene de promo, primer mes €6,99
+      if (plan === 'essential' && _pwPromoActive) {
+        return 'Hoy se cobran €6,99 · primer mes de Essential · cancela cuando quieras desde tu perfil';
+      }
+      return 'Hoy se cobran ' + total + ' · primer mes de ' + label + ' · cancela cuando quieras desde tu perfil';
+    }
 
     function pwSetBilling(cycle) {
       _pwCycle = cycle;
       try { track('paywall_billing_changed', { cycle, plan: _pwPlan }); } catch (_) {}
       document.getElementById('pw-btn-monthly').classList.toggle('pw-toggle-active', cycle === 'monthly');
       document.getElementById('pw-btn-annual').classList.toggle('pw-toggle-active', cycle === 'annual');
-      document.getElementById('pw-toggle-slider').style.transform = cycle === 'monthly' ? 'translateX(0)' : 'translateX(100%)';
-      const suffix = '/mes';
+      // Anual primero (izquierda), Mensual segundo (derecha)
+      document.getElementById('pw-toggle-slider').style.transform = cycle === 'annual' ? 'translateX(0)' : 'translateX(100%)';
       ['essential','premium','studio'].forEach(p => {
         const el = document.getElementById('pw-price-' + p);
         if (el) el.textContent = PW_PRICES[p][cycle];
         const cy = document.getElementById('pw-cycle-' + p);
-        if (cy) cy.textContent = suffix;
+        if (cy) cy.textContent = _pwBuildSubLine(p, cycle);
       });
+      // Microcopy de blindaje bajo CTA
+      const mc = document.getElementById('pw-cta-microcopy');
+      if (mc) mc.textContent = _pwBuildMicrocopy(_pwPlan, cycle);
     }
 
     function pwSelectPlan(plan) {
       _pwPlan = plan;
       try { track('paywall_plan_selected', { plan, cycle: _pwCycle }); } catch (_) {}
-      const labels = { essential: 'Essential', premium: 'Premium', studio: 'Studio' };
       const ctaBtn = document.getElementById('pw-cta-btn');
-      if (ctaBtn) ctaBtn.textContent = 'Empezar con ' + labels[plan];
+      if (ctaBtn) ctaBtn.textContent = 'Empezar con ' + PW_LABELS[plan];
       ['essential','premium','studio'].forEach(p => {
-        const col = document.getElementById('pw-col-' + p);
-        if (col) col.classList.toggle('pw-col-selected', p === plan);
+        const card = document.getElementById('pw-card-' + p);
+        if (card) card.classList.toggle('pw-card-selected', p === plan);
       });
-      const table = document.querySelector('.pw-table');
-      if (table) {
-        table.classList.toggle('pw-essential-selected', plan === 'essential');
-        table.classList.toggle('pw-premium-selected', plan === 'premium');
-        table.classList.toggle('pw-studio-selected', plan === 'studio');
-      }
+      const mc = document.getElementById('pw-cta-microcopy');
+      if (mc) mc.textContent = _pwBuildMicrocopy(plan, _pwCycle);
+    }
+
+    // ── Promo €6,99 (Essential mensual, viene de end-guest) ────
+    let _pwPromoActive = false;
+
+    function pwShowPromo() {
+      _pwPromoActive = true;
+      const banner = document.getElementById('pw-promo-banner');
+      if (banner) banner.style.display = '';
+    }
+    function pwHidePromo() {
+      _pwPromoActive = false;
+      const banner = document.getElementById('pw-promo-banner');
+      if (banner) banner.style.display = 'none';
+    }
+    function pwActivatePromo() {
+      try { track('paywall_promo_activated', {}); } catch (_) {}
+      // Promo €6,99: Essential mensual, va directo a checkout
+      closePaywall();
+      sessionStorage.removeItem('stillova_promo_essential');
+      preCheckoutConfirm('essential');
+    }
+    function pwSkipPromo() {
+      try { track('paywall_promo_skipped', {}); } catch (_) {}
+      sessionStorage.removeItem('stillova_promo_essential');
+      pwHidePromo();
     }
 
     function pwProceed() {
       try { track('paywall_cta_clicked', { plan: _pwPlan, cycle: _pwCycle }); } catch (_) {}
       closePaywall();
       const finalPlan = _pwCycle === 'annual' ? _pwPlan + '-annual' : _pwPlan;
-      upgradePlan(finalPlan);
+      preCheckoutConfirm(finalPlan);
     }
 
     // Legacy compat
     function pwGetPlan(name) { return name; }
+
+    // ── Pre-checkout modal (variante B · blindaje contra disputas) ─
+    let _precheckoutPlan = null;
+
+    const PRECHECKOUT_TOTALS = {
+      'essential':         { total: '€9,99',   label: 'Essential', suffix: 'primer mes' },
+      'essential-annual':  { total: '€95,88',  label: 'Essential', suffix: '12 meses', equiv: '€7,99/mes' },
+      'premium':           { total: '€19,99',  label: 'Premium',   suffix: 'primer mes' },
+      'premium-annual':    { total: '€191,88', label: 'Premium',   suffix: '12 meses', equiv: '€15,99/mes' },
+      'studio':            { total: '€39,99',  label: 'Studio',    suffix: 'primer mes' },
+      'studio-annual':     { total: '€383,88', label: 'Studio',    suffix: '12 meses', equiv: '€31,99/mes' },
+    };
+
+    function preCheckoutConfirm(plan) {
+      _precheckoutPlan = plan;
+      try { track('precheckout_modal_shown', { plan }); } catch (_) {}
+
+      const cfg = PRECHECKOUT_TOTALS[plan];
+      if (!cfg) {
+        // Plan desconocido — fallback directo a checkout, no bloqueamos
+        upgradePlan(plan);
+        return;
+      }
+
+      // Override €6,99 si hay promo Essential mensual activa (viene de end-guest)
+      let total = cfg.total;
+      let suffix = cfg.suffix;
+      const isEssentialMonthlyPromo = (plan === 'essential')
+        && sessionStorage.getItem('stillova_promo_essential') === '1';
+      if (isEssentialMonthlyPromo) total = '€6,99';
+
+      const isAnnual = plan.endsWith('-annual');
+      const titleEl  = document.getElementById('precheckout-title');
+      const detailEl = document.getElementById('precheckout-detail');
+      const fineEl   = document.getElementById('precheckout-fineprint');
+      const ctaEl    = document.getElementById('precheckout-cta');
+
+      if (titleEl) titleEl.textContent = cfg.label + (isAnnual ? ' · anual' : ' · mensual');
+      if (detailEl) {
+        detailEl.textContent = isAnnual
+          ? total + ' hoy · ' + cfg.suffix + ' · ' + (cfg.equiv || '') + ' equivalente'
+          : total + ' hoy · ' + suffix;
+      }
+      if (fineEl) {
+        fineEl.textContent = isAnnual
+          ? 'La suscripción no se renueva automáticamente hasta dentro de 12 meses. Puedes cancelar cuando quieras desde tu perfil.'
+          : 'La suscripción se renueva cada mes hasta que la canceles. Puedes cancelar cuando quieras desde tu perfil.';
+      }
+      if (ctaEl) ctaEl.textContent = 'Pagar ' + total;
+
+      const overlay = document.getElementById('precheckout-modal');
+      if (overlay) overlay.classList.add('active');
+    }
+
+    function closePrecheckout() {
+      try { track('precheckout_modal_dismissed', { plan: _precheckoutPlan }); } catch (_) {}
+      const overlay = document.getElementById('precheckout-modal');
+      if (overlay) overlay.classList.remove('active');
+      _precheckoutPlan = null;
+    }
+
+    function precheckoutConfirm() {
+      const plan = _precheckoutPlan;
+      try { track('precheckout_confirmed', { plan }); } catch (_) {}
+      const overlay = document.getElementById('precheckout-modal');
+      if (overlay) overlay.classList.remove('active');
+      _precheckoutPlan = null;
+      if (plan) upgradePlan(plan);
+    }
 
     // ── Buzón ─────────────────────────────────────────────────
     let _buzonCat = 'sugerencia';

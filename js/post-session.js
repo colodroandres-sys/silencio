@@ -62,6 +62,11 @@ function _hidePostSessionCards() {
 async function postSessionPrimary(variant) {
   try { track('post_session_cta_primary_clicked', { variant }); } catch (_) {}
 
+  // El CTA primario ofrece la promo €6,99 (Essential mensual primer mes).
+  // Marcamos el flag para que el paywall — si el usuario lo abre desde signup
+  // o más adelante — muestre el breadcrumb correspondiente.
+  sessionStorage.setItem('stillova_promo_essential', '1');
+
   if (variant === 'guest') {
     // Tras signup, auth.js completa el checkout automáticamente.
     sessionStorage.setItem('pendingCheckout', 'essential');
@@ -78,8 +83,10 @@ async function postSessionPrimary(variant) {
     return;
   }
 
-  // variant === 'free' — usuario autenticado, ir directo a checkout
-  if (typeof upgradePlan === 'function') {
+  // variant === 'free' — usuario autenticado, modal de confirmación + checkout
+  if (typeof preCheckoutConfirm === 'function') {
+    preCheckoutConfirm('essential');
+  } else if (typeof upgradePlan === 'function') {
     upgradePlan('essential');
   } else {
     showPaywall();
@@ -88,11 +95,16 @@ async function postSessionPrimary(variant) {
 
 function postSessionSecondary(variant) {
   try { track('post_session_cta_secondary_clicked', { variant }); } catch (_) {}
+  // "Ver todos los planes" — el flag promo ya está, el paywall lo recogerá.
+  sessionStorage.setItem('stillova_promo_essential', '1');
   showPaywall();
 }
 
 function postSessionDismiss(variant) {
   try { track('post_session_dismissed', { variant }); } catch (_) {}
+  // Renunció a la promo en este momento; limpiamos el flag para no contaminar
+  // un paywall futuro abierto desde otro contexto.
+  sessionStorage.removeItem('stillova_promo_essential');
   _hidePostSessionCards();
   newMeditation();
 }

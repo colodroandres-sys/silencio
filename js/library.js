@@ -69,7 +69,7 @@ function renderLibraryData(data) {
 
   const creditsEl = document.getElementById('lib-credits');
   creditsEl.textContent = (plan !== 'free')
-    ? `${limit - usage} crédito${(limit - usage) !== 1 ? 's' : ''} este mes`
+    ? `${limit - usage} sesi${(limit - usage) !== 1 ? 'ones' : 'ón'} este mes`
     : '';
 
   libAllMeditations = meditations || [];

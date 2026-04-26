@@ -1,5 +1,5 @@
 let obCurrentStep = 1;
-const OB_TOTAL_STEPS = 3;
+const OB_TOTAL_STEPS = 2;
 
 function checkOnboarding() {
   if (!localStorage.getItem('stillova_ob_done')) {
@@ -54,26 +54,7 @@ window.addEventListener('popstate', function(e) {
 });
 
 function obNext(nextStep) {
-  // Guardar selección del paso actual
-  if (obCurrentStep === 2) {
-    const cards = document.querySelectorAll('#ob-topics .ob-option-card');
-    const selected = [...document.querySelectorAll('#ob-topics .ob-option-card.active')]
-      .map(c => c.dataset.value);
-    // Si no eligió nada: mostrar hint, resaltar "Aún no lo sé" y avanzar tras breve pausa
-    if (selected.length === 0 && cards.length > 0) {
-      const hint = document.getElementById('ob-2-hint');
-      if (hint) hint.style.display = '';
-      const lastCard = cards[cards.length - 1];
-      lastCard.classList.add('active');
-      selected.push(lastCard.dataset.value || 'otro');
-      obPrefs.topics = selected;
-      localStorage.setItem('ob_topics', JSON.stringify(selected));
-      setTimeout(() => obGoToStep(nextStep), 700);
-      return;
-    }
-    obPrefs.topics = selected;
-    localStorage.setItem('ob_topics', JSON.stringify(selected));
-  }
+  // OB2 actual ya no recoge topics — eso vive en la pantalla post-checkout.
   obGoToStep(nextStep);
 }
 

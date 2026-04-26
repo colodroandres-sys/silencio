@@ -13,7 +13,7 @@ function showScreen(id) {
 
   const nav = document.getElementById('bottom-nav');
   if (nav) {
-    const hideNav = id === 'screen-loading' || id === 'screen-player' || id === 'screen-onboarding' || id === 'screen-end-account';
+    const hideNav = id === 'screen-loading' || id === 'screen-player' || id === 'screen-onboarding' || id === 'screen-end-account' || id === 'screen-post-checkout';
     nav.classList.toggle('hidden', hideNav);
   }
 
@@ -285,14 +285,14 @@ function updateProfileScreen() {
   const manageBtn = document.getElementById('profile-manage-plan-btn');
   if (manageBtn) manageBtn.textContent = plan === 'free' ? 'ver planes →' : 'gestionar plan →';
 
-  // Barra de créditos
+  // Barra de sesiones del plan
   const creditBar = document.getElementById('profile-plan-credit-bar');
   const creditInfo = document.getElementById('profile-plan-credit-info');
   const totalCr = { essential: 10, premium: 25, studio: 60 };
   const total = totalCr[plan] || 0;
   const used  = state.creditsUsed || (total - (state.creditsRemaining || 0));
   if (creditBar && total > 0) creditBar.style.width = Math.min(100, (used / total) * 100) + '%';
-  if (creditInfo && total > 0) creditInfo.textContent = used + ' de ' + total + ' créditos usados este mes';
+  if (creditInfo && total > 0) creditInfo.textContent = used + ' de ' + total + ' sesiones usadas este mes';
   if (creditInfo && plan === 'free') creditInfo.textContent = 'Plan gratuito';
 
   // Ajustes — mostrar valores actuales

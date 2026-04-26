@@ -74,10 +74,10 @@ async function generateMeditation() {
       return;
     }
 
-    // Verificar créditos localmente antes de llamar a la API.
-    // Evita que un token expirado devuelva 401 cuando el problema real es falta de créditos.
+    // Verificar sesiones disponibles localmente antes de llamar a la API.
+    // Evita que un token expirado devuelva 401 cuando el problema real es falta de sesiones.
     if (!state.userCanGenerate) {
-      showToast('Sin créditos disponibles. Elige un plan para continuar.');
+      showToast('Sin sesiones disponibles. Elige un plan para continuar.');
       setTimeout(() => showPaywall(), 600);
       track('paywall_shown', { trigger: 'no_credits_preflight', plan: state.userPlan });
       return;
@@ -138,7 +138,7 @@ async function generateMeditation() {
   if (err.status === 402) {
     enableGenerateBtn();
     showScreen('screen-create');
-    showToast(err.message || 'Sin créditos disponibles. Elige un plan para continuar.');
+    showToast(err.message || 'Sin sesiones disponibles. Elige un plan para continuar.');
     setTimeout(() => showPaywall(), 900);
     track('paywall_shown', { duration: state.duration });
     return;

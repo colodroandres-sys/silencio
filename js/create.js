@@ -158,7 +158,8 @@ function updateCreditsCostDisplay() {
   const cost = state.durationCredits[state.duration] || 1;
   const rem  = state.creditsRemaining;
   const after = Math.max(0, rem - cost);
-  remText.textContent = `Esta sesión usará ${cost} crédito${cost !== 1 ? 's' : ''} · Te quedan ${rem} (${after} tras esta sesión)`;
+  const sesText = cost === 1 ? '1 sesión corta' : cost + ' sesiones equivalentes';
+  remText.textContent = `Esta meditación cuenta como ${sesText} · Te quedan ${rem} (${after} tras esta)`;
 }
 
 function selectPill(el, groupId, key) {

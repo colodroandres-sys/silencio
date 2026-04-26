@@ -214,7 +214,7 @@ async function fetchUserStatus() {
     }
     if (usageEl) {
       if (plan === 'free') {
-        usageEl.textContent = canGenerate ? 'Meditación gratis disponible' : 'Sin créditos disponibles';
+        usageEl.textContent = canGenerate ? 'Meditación gratis disponible' : 'Sin sesiones disponibles';
       } else {
         const rem = limit - usage;
         usageEl.textContent = `${rem} meditación${rem !== 1 ? 'es' : ''} disponible${rem !== 1 ? 's' : ''}`;
@@ -265,10 +265,17 @@ function checkUrlParams() {
   const params = new URLSearchParams(window.location.search);
   if (params.get('upgraded')) {
     const plan = params.get('upgraded');
-    const planNames = { essential: 'Essential', premium: 'Premium' };
-    showToast(`¡Bienvenido a ${planNames[plan] || plan}! Ya puedes generar más meditaciones.`);
+    const planNames = { essential: 'Essential', premium: 'Premium', studio: 'Studio' };
+    showToast(`¡Bienvenido a ${planNames[plan] || plan}!`);
     window.history.replaceState({}, '', window.location.pathname);
-    fetchUserStatus();
+    // Promo €6,99 ya consumida; limpiamos el flag.
+    sessionStorage.removeItem('stillova_promo_essential');
+    // Refrescar plan + decidir si toca pantalla post-checkout
+    fetchUserStatus().then(() => {
+      if (typeof shouldShowPostCheckout === 'function' && shouldShowPostCheckout()) {
+        showPostCheckout();
+      }
+    }).catch(() => {});
   }
   if (params.get('canceled')) {
     window.history.replaceState({}, '', window.location.pathname);
@@ -276,8 +283,17 @@ function checkUrlParams() {
 }
 
 function showPaywall() {
-  pwSetBilling('monthly');
+  // Anual por defecto + Premium seleccionado por defecto
+  pwSetBilling('annual');
   if (typeof pwSelectPlan === 'function') pwSelectPlan('premium');
+
+  // Banner promo €6,99 si el usuario llegó vía CTA "Desbloquear por €6,99"
+  if (typeof pwShowPromo === 'function' && sessionStorage.getItem('stillova_promo_essential') === '1') {
+    pwShowPromo();
+  } else if (typeof pwHidePromo === 'function') {
+    pwHidePromo();
+  }
+
   const modal = document.getElementById('paywall-modal');
   if (modal) modal.classList.add('active');
   const toast = document.querySelector('.toast');

@@ -113,130 +113,189 @@
   color: var(--canvas);
 }
 
-/* ── Tabla comparativa ─────────────────────── */
-.pw-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin-bottom: 20px;
+/* ── Promo banner €6,99 (visible solo si viene de end-guest) ─ */
+.pw-promo-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--accent-soft, rgba(201,169,110,0.12));
+  border: 1px solid rgba(201,169,110,0.4);
+  margin-bottom: 18px;
+}
+.pw-promo-text { display: flex; flex-direction: column; gap: 2px; }
+.pw-promo-eyebrow { color: var(--accent); }
+.pw-promo-detail {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.4;
+}
+.pw-promo-actions { display: flex; gap: 8px; }
+.pw-promo-activate {
+  flex: 1;
+  height: 38px;
+  border: none;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--canvas);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.pw-promo-skip {
+  padding: 0 14px;
+  height: 38px;
+  border: 1px solid var(--faint);
+  background: transparent;
+  border-radius: 999px;
+  color: var(--muted);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  cursor: pointer;
 }
 
-/* Plan header row */
-.pw-table-head-row th {
-  padding: 0;
-  text-align: center;
-  vertical-align: bottom;
+/* ── 3 cards verticales ──────────────────────── */
+.pw-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 22px;
 }
-.pw-table-head-row th:first-child { text-align: left; width: 35%; }
 
-.pw-col-header {
-  padding: 12px 8px 14px;
-  border-radius: 14px 14px 0 0;
+.pw-card {
   position: relative;
+  padding: 18px 20px 20px;
+  border-radius: 18px;
+  background: var(--surface);
+  border: 1px solid var(--faint);
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, transform 0.12s;
+  color: var(--ink);
 }
-/* pw-col-featured: solo marca que Premium tiene el badge TOP, sin fondo permanente */
-.pw-col-header.pw-col-featured {
-  position: relative;
+.pw-card:hover { border-color: rgba(201,169,110,0.45); }
+.pw-card:active { transform: scale(0.997); }
+
+.pw-card.pw-card-featured {
+  background: var(--ink);
+  color: var(--canvas);
+  border-color: var(--ink);
+  padding-top: 22px;
+  padding-bottom: 22px;
 }
 
-.pw-col-top-badge {
+.pw-card.pw-card-selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+.pw-card.pw-card-featured.pw-card-selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1.5px var(--accent);
+}
+
+.pw-card-kicker {
+  margin-bottom: 8px;
+  display: block;
+  opacity: 0.65;
+}
+.pw-card-kicker-featured {
+  color: var(--canvas);
+  opacity: 0.6;
+}
+
+.pw-card-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
   font-family: var(--font-mono);
   font-size: 9px;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
-  padding: 2px 8px;
+  padding: 3px 9px;
   border-radius: 999px;
   background: var(--accent);
   color: var(--canvas);
-  display: inline-block;
-  margin-bottom: 6px;
 }
-.pw-col-name {
+
+.pw-card-name {
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: 24px;
   font-weight: 400;
   letter-spacing: -0.02em;
-  display: block;
-  margin-bottom: 2px;
+  margin: 0 0 10px;
+  line-height: 1.05;
 }
-.pw-col-price {
+
+.pw-card-price-block {
+  margin-bottom: 14px;
+}
+.pw-card-price-main {
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: 28px;
   font-weight: 400;
-  letter-spacing: -0.03em;
-  display: block;
+  letter-spacing: -0.02em;
+  margin: 0;
   line-height: 1;
 }
-.pw-col-cycle {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  opacity: 0.55;
-  display: block;
-  margin-top: 2px;
+.pw-card-price-unit {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  opacity: 0.65;
+  letter-spacing: 0;
 }
-
-/* Feature rows */
-.pw-table tbody tr td {
-  padding: 11px 8px;
-  font-size: 13px;
-  color: var(--ink);
-  text-align: center;
-  border-bottom: 1px solid var(--faint);
-  vertical-align: middle;
-}
-.pw-table tbody tr:last-child td { border-bottom: none; }
-.pw-table tbody tr td:first-child {
-  text-align: left;
-  color: var(--muted);
-  padding-left: 0;
+.pw-card-price-sub {
+  font-family: var(--font-sans);
   font-size: 12px;
+  opacity: 0.6;
+  margin: 4px 0 0;
+  line-height: 1.4;
 }
 
-/* pw-cell-featured: clase legacy, ya no da fondo oscuro permanente */
-.pw-cell-featured { }
-
-/* Checkmark SVG in table */
-.pw-check {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.pw-card-features {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pw-card-features li {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.45;
+  opacity: 0.85;
+  position: relative;
+  padding-left: 12px;
+}
+.pw-card-features li::before {
+  content: '·';
+  position: absolute;
+  left: 2px;
+  opacity: 0.6;
 }
 
-/* Bottom row cells get rounded corners — handled per plan below */
-
-/* Selected column highlight — el plan seleccionado se pone oscuro */
-.pw-col-header.pw-col-selected {
-  background: var(--ink);
-  color: var(--canvas);
-  border-radius: 14px 14px 0 0;
+.pw-card-lifestyle {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 13px;
+  margin: 12px 0 0;
+  opacity: 0.65;
+  line-height: 1.4;
 }
-
-/* Essential seleccionado */
-.pw-table.pw-essential-selected tbody td:nth-child(2) { background: var(--ink); color: var(--canvas); }
-.pw-table.pw-essential-selected tbody td:nth-child(2) svg path { stroke: var(--canvas); }
-.pw-table.pw-essential-selected tbody tr:last-child td:nth-child(2) { border-radius: 0 0 14px 14px; }
-
-/* Premium seleccionado */
-.pw-table.pw-premium-selected tbody td:nth-child(3) { background: var(--ink); color: var(--canvas); }
-.pw-table.pw-premium-selected tbody td:nth-child(3) svg path { stroke: var(--canvas); }
-.pw-table.pw-premium-selected tbody tr:last-child td:nth-child(3) { border-radius: 0 0 14px 14px; }
-
-/* Studio seleccionado */
-.pw-table.pw-studio-selected tbody td:nth-child(4) { background: var(--ink); color: var(--canvas); }
-.pw-table.pw-studio-selected tbody td:nth-child(4) svg path { stroke: var(--canvas); }
-.pw-table.pw-studio-selected tbody tr:last-child td:nth-child(4) { border-radius: 0 0 14px 14px; }
-
-/* Column header cursor */
-.pw-col-header { cursor: pointer; }
 
 /* CTA main */
-.pw-cta-main { margin-bottom: 12px; }
-.pw-guarantee {
+.pw-cta-main { margin-bottom: 10px; }
+.pw-cta-microcopy {
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: 11.5px;
   color: var(--muted);
   text-align: center;
   line-height: 1.5;
+  padding: 0 8px;
+  margin: 0;
 }
 
 /* ── Plan cards (design v2) ─────────────────── */
@@ -341,6 +400,104 @@
   cursor: pointer;
   padding: 8px 20px;
 }
+
+/* =============================================
+   PRE-CHECKOUT MODAL — variante B (blindaje pre-Stripe)
+   ============================================= */
+.precheckout-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  background: rgba(28, 18, 12, 0.62);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.precheckout-overlay.active {
+  display: flex;
+  animation: precheckoutFadeIn 0.22s ease-out;
+}
+@keyframes precheckoutFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.precheckout-card {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  background: var(--canvas);
+  color: var(--ink);
+  border-radius: 22px;
+  padding: 28px 24px 22px;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.32);
+  text-align: center;
+}
+.precheckout-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--ink);
+  opacity: 0.55;
+  transition: opacity 0.18s ease, background 0.18s ease;
+}
+.precheckout-close:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.04);
+}
+.precheckout-eyebrow {
+  margin-bottom: 12px;
+  display: block;
+  opacity: 0.65;
+}
+.precheckout-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  margin: 0 0 6px;
+  line-height: 1.1;
+}
+.precheckout-detail {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.5;
+  margin: 0 0 14px;
+  opacity: 0.85;
+}
+.precheckout-fineprint {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0 0 18px;
+}
+.precheckout-cta {
+  width: 100%;
+  margin-bottom: 8px;
+}
+.precheckout-back {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 8px 16px;
+}
+.precheckout-back:hover { color: var(--ink); }
 
 /* =============================================
    TOAST
