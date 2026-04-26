@@ -4,6 +4,19 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 const PRICES = { essential: 9.99, premium: 19.99, studio: 39.99 };
 
+// Emails internos del founder — se excluyen de MRR, conversión y listas
+const TEST_EMAILS = new Set([
+  'colodro.andres@gmail.com',
+  'andresinmadrid.creator@gmail.com',
+]);
+const isTestEmail = (email) => {
+  if (!email) return false;
+  const lower = email.toLowerCase();
+  if (TEST_EMAILS.has(lower)) return true;
+  if (lower.startsWith('colodro.andres+')) return true;
+  return false;
+};
+
 module.exports = async (req, res) => {
   if (req.method !== 'GET') return res.status(405).end();
 
@@ -27,9 +40,13 @@ module.exports = async (req, res) => {
       db.from('monthly_usage').select('clerk_id, count').eq('month', month),
     ]);
 
-    const users = usersResult.data || [];
-    const meds  = medsResult.data  || [];
-    const usage = usageResult.data || [];
+    const allUsers = usersResult.data || [];
+    const testClerkIds = new Set(
+      allUsers.filter(u => isTestEmail(u.email)).map(u => u.clerk_id)
+    );
+    const users = allUsers.filter(u => !testClerkIds.has(u.clerk_id));
+    const meds  = (medsResult.data  || []).filter(m => !testClerkIds.has(m.clerk_id));
+    const usage = (usageResult.data || []).filter(u => !testClerkIds.has(u.clerk_id));
 
     // ── Índices ──────────────────────────────────────────────
     const medsByUser = {};
@@ -107,7 +124,7 @@ module.exports = async (req, res) => {
       activeThisWeek,
       activeThisMonth,
       medsTotal:       meds.length,
-      medsThisMonth:   (usageResult.data || []).reduce((s, r) => s + (r.count || 0), 0),
+      medsThisMonth:   usage.reduce((s, r) => s + (r.count || 0), 0),
       medsThisWeek,
       medsToday,
       users:           userList,
