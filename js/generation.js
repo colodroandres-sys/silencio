@@ -143,6 +143,19 @@ async function generateMeditation() {
     track('paywall_shown', { duration: state.duration });
     return;
   }
+
+  // Fail-soft ElevenLabs: la cuenta del proveedor está saturada.
+  // No es culpa del usuario; mensaje educado para no perderlo.
+  if (err.status === 503 && /service_busy/i.test(err.message || '')) {
+    enableGenerateBtn();
+    setLoadingState(
+      'error',
+      'Estamos a tope ahora mismo',
+      'Demasiadas meditaciones componiéndose a la vez. Vuelve en una hora — tu sesión te estará esperando.'
+    );
+    try { track('audio_service_busy', { plan: state.userPlan, isGuest: !clerk?.user }); } catch (_) {}
+    return;
+  }
   if (err.status && err.status < 500 && err.status !== 408) {
     enableGenerateBtn();
     if (err.status === 401) {

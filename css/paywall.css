@@ -300,6 +300,16 @@
   padding: 0 8px;
   margin: 0;
 }
+.pw-legal-disclaimer {
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  color: var(--muted);
+  opacity: 0.65;
+  text-align: center;
+  line-height: 1.5;
+  padding: 12px 8px 0;
+  margin: 0;
+}
 
 /* ── Plan cards (design v2) ─────────────────── */
 .pw-subtext {

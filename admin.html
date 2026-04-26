@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stillova · CEO dashboard</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/base.css">
+  <style>
+    body {
+      background: var(--canvas);
+      font-family: var(--font-sans);
+      color: var(--ink);
+      padding: 24px 16px 80px;
+      min-height: 100vh;
+    }
+    .admin-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .admin-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .admin-title {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      margin: 0;
+    }
+    .admin-title em { font-style: italic; font-weight: 400; color: var(--muted); }
+    .admin-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .admin-refresh-btn {
+      background: var(--ink);
+      color: var(--canvas);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      cursor: pointer;
+    }
+    /* Auth gate */
+    .admin-gate {
+      max-width: 360px;
+      margin: 80px auto;
+      text-align: center;
+    }
+    .admin-gate h2 {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 500;
+      margin: 0 0 16px;
+    }
+    .admin-gate input {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1px solid var(--faint);
+      border-radius: 12px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      color: var(--ink);
+      outline: none;
+      margin-bottom: 12px;
+    }
+    .admin-gate input:focus { border-color: var(--accent); }
+    .admin-gate button {
+      width: 100%;
+      padding: 12px;
+      background: var(--ink);
+      color: var(--canvas);
+      border: none;
+      border-radius: 999px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .admin-error {
+      color: var(--accent);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+    /* KPI grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--faint);
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .kpi-card.kpi-hero {
+      background: var(--ink);
+      color: var(--canvas);
+      grid-column: span 2;
+    }
+    @media (max-width: 480px) {
+      .kpi-card.kpi-hero { grid-column: span 1; }
+    }
+    .kpi-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 6px;
+    }
+    .kpi-card.kpi-hero .kpi-label { color: rgba(243,234,216,0.65); }
+    .kpi-value {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin: 0;
+    }
+    .kpi-card.kpi-hero .kpi-value { font-size: 40px; }
+    .kpi-unit {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+    .kpi-card.kpi-hero .kpi-unit { color: rgba(243,234,216,0.55); }
+    .kpi-sub {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: var(--muted);
+      margin: 6px 0 0;
+    }
+    .kpi-card.kpi-hero .kpi-sub { color: rgba(243,234,216,0.65); }
+    /* Sections */
+    h3.section-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      margin: 32px 0 12px;
+    }
+    /* Plan distribution bar */
+    .plan-dist {
+      background: var(--surface);
+      border: 1px solid var(--faint);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+    .plan-dist-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 0;
+      font-size: 13px;
+    }
+    .plan-dist-row:not(:last-child) { border-bottom: 1px dashed var(--faint); }
+    .plan-dist-name { width: 90px; font-weight: 500; }
+    .plan-dist-bar {
+      flex: 1;
+      height: 6px;
+      background: rgba(0,0,0,0.06);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .plan-dist-bar-fill { height: 100%; background: var(--accent); border-radius: 999px; }
+    .plan-dist-row.is-paid .plan-dist-bar-fill { background: var(--gold); }
+    .plan-dist-count { font-family: var(--font-mono); font-size: 12px; color: var(--muted); width: 40px; text-align: right; }
+    /* External links */
+    .external-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .external-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 14px;
+      background: var(--surface);
+      border: 1px solid var(--faint);
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--ink);
+      font-size: 13px;
+      transition: border-color 0.18s;
+    }
+    .external-link:hover { border-color: var(--accent); }
+    .external-link span { font-weight: 500; }
+    .external-link small { color: var(--muted); display: block; font-size: 11px; margin-top: 2px; }
+    /* Loading state */
+    .loading-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    /* Recent users table */
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .users-table th, .users-table td {
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 13px;
+      border-bottom: 1px solid var(--faint);
+    }
+    .users-table th {
+      background: var(--canvas);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .users-table tr:last-child td { border-bottom: none; }
+    .users-table .plan-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .plan-pill.plan-free { background: var(--faint); color: var(--muted); }
+    .plan-pill.plan-essential { background: var(--accent-soft); color: var(--accent); }
+    .plan-pill.plan-premium { background: var(--gold); color: var(--gold-ink); }
+    .plan-pill.plan-studio { background: var(--ink); color: var(--canvas); }
+  </style>
+</head>
+<body>
+
+  <div class="admin-wrap">
+
+    <!-- AUTH GATE -->
+    <div id="admin-gate" class="admin-gate">
+      <h2>Stillova · <em>CEO</em></h2>
+      <input type="password" id="admin-password" placeholder="Admin password" autofocus>
+      <button onclick="adminLogin()">Entrar</button>
+      <p id="admin-error" class="admin-error" style="display:none"></p>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="admin-dashboard" style="display:none">
+
+      <header class="admin-header">
+        <h1 class="admin-title">Stillova · <em>operación</em></h1>
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+          <span class="admin-meta" id="admin-updated">—</span>
+          <button class="admin-refresh-btn" onclick="loadDashboard()">Refrescar</button>
+        </div>
+      </header>
+
+      <div id="admin-loading" class="loading-state">Cargando…</div>
+
+      <div id="admin-content" style="display:none">
+
+        <!-- KPI principal: MRR -->
+        <div class="kpi-grid">
+          <div class="kpi-card kpi-hero">
+            <p class="kpi-label">MRR estimado</p>
+            <p class="kpi-value">€<span id="kpi-mrr">0</span></p>
+            <p class="kpi-sub"><span id="kpi-paying">0</span> usuarios pagando</p>
+          </div>
+          <div class="kpi-card">
+            <p class="kpi-label">Usuarios totales</p>
+            <p class="kpi-value" id="kpi-total">0</p>
+            <p class="kpi-sub"><span id="kpi-newweek">0</span> nuevos / 7d</p>
+          </div>
+          <div class="kpi-card">
+            <p class="kpi-label">Conversión</p>
+            <p class="kpi-value"><span id="kpi-conversion">0</span><span class="kpi-unit">%</span></p>
+            <p class="kpi-sub">free → pagado</p>
+          </div>
+          <div class="kpi-card">
+            <p class="kpi-label">Activación</p>
+            <p class="kpi-value"><span id="kpi-activation">0</span><span class="kpi-unit">%</span></p>
+            <p class="kpi-sub">usaron crédito gratis</p>
+          </div>
+          <div class="kpi-card">
+            <p class="kpi-label">Activos / 7d</p>
+            <p class="kpi-value" id="kpi-active7">0</p>
+            <p class="kpi-sub"><span id="kpi-active30">0</span> activos / 30d</p>
+          </div>
+          <div class="kpi-card">
+            <p class="kpi-label">Sesiones generadas</p>
+            <p class="kpi-value" id="kpi-medsweek">0</p>
+            <p class="kpi-sub">últimos 7 días · <span id="kpi-medstoday">0</span> hoy</p>
+          </div>
+          <div class="kpi-card">
+            <p class="kpi-label">Total sesiones</p>
+            <p class="kpi-value" id="kpi-medstotal">0</p>
+            <p class="kpi-sub">desde el inicio</p>
+          </div>
+        </div>
+
+        <!-- Distribución de planes -->
+        <h3 class="section-title">Distribución de planes</h3>
+        <div class="plan-dist" id="plan-dist"></div>
+
+        <!-- Atajos a paneles externos -->
+        <h3 class="section-title">Paneles externos</h3>
+        <div class="external-links">
+          <a class="external-link" href="https://eu.i.posthog.com" target="_blank" rel="noopener">
+            <div><span>PostHog</span><small>analítica + funnel</small></div>
+          </a>
+          <a class="external-link" href="https://dashboard.stripe.com" target="_blank" rel="noopener">
+            <div><span>Stripe</span><small>pagos + disputas</small></div>
+          </a>
+          <a class="external-link" href="https://elevenlabs.io" target="_blank" rel="noopener">
+            <div><span>ElevenLabs</span><small>créditos · subir tier</small></div>
+          </a>
+          <a class="external-link" href="https://vercel.com/colodroandres-sys-projects/silencio" target="_blank" rel="noopener">
+            <div><span>Vercel</span><small>logs + errores</small></div>
+          </a>
+          <a class="external-link" href="https://dashboard.clerk.com" target="_blank" rel="noopener">
+            <div><span>Clerk</span><small>usuarios + auth</small></div>
+          </a>
+          <a class="external-link" href="https://supabase.com/dashboard" target="_blank" rel="noopener">
+            <div><span>Supabase</span><small>base de datos</small></div>
+          </a>
+          <a class="external-link" href="https://console.anthropic.com" target="_blank" rel="noopener">
+            <div><span>Anthropic</span><small>uso Claude API</small></div>
+          </a>
+        </div>
+
+        <!-- Últimos usuarios -->
+        <h3 class="section-title">Últimos 30 usuarios</h3>
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Plan</th>
+              <th>Sesiones</th>
+              <th>Última actividad</th>
+              <th>Registrado</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody">
+            <tr><td colspan="5" style="text-align:center; color:var(--muted)">—</td></tr>
+          </tbody>
+        </table>
+
+        <!-- Recordatorio runbook -->
+        <h3 class="section-title">Cuándo escalar</h3>
+        <div class="plan-dist">
+          <p style="font-size:13px; line-height:1.6; margin:0; color:var(--muted)">
+            <strong style="color:var(--ink)">0–50 usuarios:</strong> nada cambia. ~$25/mes.<br>
+            <strong style="color:var(--ink)">50–200:</strong> sube ElevenLabs a Pro $99.<br>
+            <strong style="color:var(--ink)">200–500:</strong> Vercel Pro $20 si pasas 12 functions.<br>
+            <strong style="color:var(--ink)">500–1000:</strong> ElevenLabs Scale $330 + contrata VA.<br>
+            <strong style="color:var(--ink)">1000–3000:</strong> Supabase Pro + Sentry + dev freelance.<br>
+            <strong style="color:var(--ink)">3000+:</strong> equipo formal.
+          </p>
+          <p style="font-size:12px; line-height:1.6; margin:10px 0 0; color:var(--muted); border-top:1px solid var(--faint); padding-top:10px;">
+            Manual completo: <a href="https://github.com/colodroandres-sys/silencio/blob/main/docs/runbook.md" target="_blank" style="color:var(--ink);">docs/runbook.md</a>
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // Auth simple: password en sessionStorage
+    let _adminPassword = sessionStorage.getItem('stillova_admin_password') || '';
+
+    async function adminLogin() {
+      const input = document.getElementById('admin-password');
+      const errEl = document.getElementById('admin-error');
+      const pwd = input.value.trim();
+      if (!pwd) return;
+      _adminPassword = pwd;
+      errEl.style.display = 'none';
+      const ok = await loadDashboard();
+      if (ok) {
+        sessionStorage.setItem('stillova_admin_password', pwd);
+        document.getElementById('admin-gate').style.display = 'none';
+        document.getElementById('admin-dashboard').style.display = '';
+      } else {
+        errEl.textContent = 'Contraseña incorrecta o error del servidor.';
+        errEl.style.display = 'block';
+        _adminPassword = '';
+      }
+    }
+
+    async function loadDashboard() {
+      const loadingEl = document.getElementById('admin-loading');
+      const contentEl = document.getElementById('admin-content');
+      if (loadingEl) loadingEl.style.display = '';
+      if (contentEl) contentEl.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/admin', {
+          headers: { 'x-admin-password': _adminPassword }
+        });
+        if (!res.ok) {
+          if (res.status === 401) return false;
+          throw new Error('Error ' + res.status);
+        }
+        const data = await res.json();
+        renderDashboard(data);
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (contentEl) contentEl.style.display = '';
+        return true;
+      } catch (e) {
+        if (loadingEl) loadingEl.textContent = 'Error: ' + e.message;
+        return false;
+      }
+    }
+
+    function renderDashboard(data) {
+      const setText = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+
+      setText('kpi-mrr', data.mrr.toLocaleString('es-ES', { minimumFractionDigits: 2 }));
+      setText('kpi-paying', data.paying);
+      setText('kpi-total', data.totalUsers);
+      setText('kpi-newweek', data.newThisWeek);
+      setText('kpi-conversion', data.conversionRate);
+      setText('kpi-activation', data.activationRate);
+      setText('kpi-active7', data.activeThisWeek);
+      setText('kpi-active30', data.activeThisMonth);
+      setText('kpi-medsweek', data.medsThisWeek);
+      setText('kpi-medstoday', data.medsToday);
+      setText('kpi-medstotal', data.medsTotal);
+
+      // Plan distribution
+      const distEl = document.getElementById('plan-dist');
+      const order = ['free', 'essential', 'premium', 'studio'];
+      const labels = { free: 'Gratis', essential: 'Essential', premium: 'Premium', studio: 'Studio' };
+      const total = data.totalUsers || 1;
+      distEl.innerHTML = order.map(plan => {
+        const count = data.byPlan[plan] || 0;
+        const pct = (count / total) * 100;
+        const isPaid = plan !== 'free';
+        return `
+          <div class="plan-dist-row${isPaid ? ' is-paid' : ''}">
+            <span class="plan-dist-name">${labels[plan]}</span>
+            <div class="plan-dist-bar"><div class="plan-dist-bar-fill" style="width:${pct.toFixed(1)}%"></div></div>
+            <span class="plan-dist-count">${count}</span>
+          </div>
+        `;
+      }).join('');
+
+      // Users table
+      const tbody = document.getElementById('users-tbody');
+      const recent = (data.users || []).slice(0, 30);
+      if (recent.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--muted)">Sin usuarios todavía.</td></tr>';
+      } else {
+        tbody.innerHTML = recent.map(u => `
+          <tr>
+            <td>${escapeHtml(u.email)}</td>
+            <td><span class="plan-pill plan-${u.plan}">${u.plan}</span></td>
+            <td>${u.total_meds}</td>
+            <td>${u.last_activity ? formatRelative(u.last_activity) : '—'}</td>
+            <td>${formatRelative(u.created_at)}</td>
+          </tr>
+        `).join('');
+      }
+
+      const updEl = document.getElementById('admin-updated');
+      if (updEl) updEl.textContent = 'actualizado · ' + new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function formatRelative(iso) {
+      const d = new Date(iso);
+      const diffMs = Date.now() - d.getTime();
+      const diffMin = Math.round(diffMs / 60000);
+      if (diffMin < 60) return diffMin + ' min';
+      const diffH = Math.round(diffMin / 60);
+      if (diffH < 48) return diffH + ' h';
+      const diffD = Math.round(diffH / 24);
+      if (diffD < 31) return diffD + ' d';
+      return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+    }
+
+    // Auto-login si ya hay password en sesión
+    document.addEventListener('DOMContentLoaded', () => {
+      if (_adminPassword) {
+        loadDashboard().then(ok => {
+          if (ok) {
+            document.getElementById('admin-gate').style.display = 'none';
+            document.getElementById('admin-dashboard').style.display = '';
+          } else {
+            sessionStorage.removeItem('stillova_admin_password');
+          }
+        });
+      }
+      // Submit con Enter en el input password
+      const inp = document.getElementById('admin-password');
+      if (inp) inp.addEventListener('keydown', e => { if (e.key === 'Enter') adminLogin(); });
+    });
+  </script>
+
+</body>
+</html>

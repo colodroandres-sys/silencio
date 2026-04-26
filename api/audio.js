@@ -168,8 +168,31 @@ module.exports = async (req, res) => {
     if (!response.ok) {
       const errText = await response.text().catch(() => '');
       console.error('ElevenLabs API error:', response.status, errText);
+
+      // Fail-soft: detectar si la cuenta de ElevenLabs se quedó sin créditos
+      // y mostrar mensaje educado en vez de error genérico. Críticos en plena
+      // campaña — un usuario que ve "error 502" se va para siempre, uno que ve
+      // "estamos saturados, vuelve en una hora" probablemente vuelve.
+      const lcErr = (errText || '').toLowerCase();
+      const isQuotaError =
+        response.status === 401 && lcErr.includes('quota') ||
+        response.status === 402 ||
+        response.status === 429 ||
+        lcErr.includes('quota_exceeded') ||
+        lcErr.includes('credits') ||
+        lcErr.includes('rate_limit');
+
+      if (isQuotaError) {
+        return res.status(503).json({
+          error: 'service_busy',
+          message: 'Estamos a tope ahora mismo. Vuelve en una hora — tu meditación te estará esperando.',
+          retryAfterMin: 60
+        });
+      }
+
       return res.status(502).json({
-        error: 'Error en ElevenLabs API',
+        error: 'audio_provider_error',
+        message: 'No pudimos componer el audio en este momento. Inténtalo de nuevo en un minuto.',
         status: response.status,
         details: errText.slice(0, 200)
       });

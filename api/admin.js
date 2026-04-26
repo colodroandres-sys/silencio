@@ -2,7 +2,7 @@ const { getSupabase } = require('./_supabase');
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
-const PRICES = { essential: 9.99, premium: 19.99 };
+const PRICES = { essential: 9.99, premium: 19.99, studio: 39.99 };
 
 module.exports = async (req, res) => {
   if (req.method !== 'GET') return res.status(405).end();
@@ -51,7 +51,7 @@ module.exports = async (req, res) => {
 
     // ── Métricas globales ─────────────────────────────────────
     const totalUsers   = users.length;
-    const byPlan       = { free: 0, essential: 0, premium: 0 };
+    const byPlan       = { free: 0, essential: 0, premium: 0, studio: 0 };
     let newThisWeek    = 0;
     let newThisMonth   = 0;
     let usedFreeCredit = 0;
@@ -69,8 +69,12 @@ module.exports = async (req, res) => {
       if (last >= thirtyDaysAgo) activeThisMonth++;
     }
 
-    const paying        = byPlan.essential + byPlan.premium;
-    const mrr           = +((byPlan.essential * PRICES.essential) + (byPlan.premium * PRICES.premium)).toFixed(2);
+    const paying        = byPlan.essential + byPlan.premium + byPlan.studio;
+    const mrr           = +(
+      (byPlan.essential * PRICES.essential) +
+      (byPlan.premium   * PRICES.premium) +
+      (byPlan.studio    * PRICES.studio)
+    ).toFixed(2);
     const conversionRate = totalUsers > 0 ? +((paying / totalUsers) * 100).toFixed(1) : 0;
     const activationRate = totalUsers > 0 ? +((usedFreeCredit / totalUsers) * 100).toFixed(1) : 0;
 
