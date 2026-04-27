@@ -1,21 +1,20 @@
-const Stripe = require('stripe');
 const { verifyAuth } = require('./_auth');
 const { getOrCreateUser } = require('./_limits');
-const { getSupabase } = require('./_supabase');
+const { lsFetch, getStoreId } = require('./_lemonsqueezy');
 
-const PRICE_IDS = {
-  essential:        process.env.STRIPE_ESSENTIAL_PRICE_ID,
-  'essential-annual': process.env.STRIPE_ESSENTIAL_ANNUAL_PRICE_ID,
-  premium:          process.env.STRIPE_PREMIUM_PRICE_ID,
-  'premium-annual': process.env.STRIPE_PREMIUM_ANNUAL_PRICE_ID,
-  studio:           process.env.STRIPE_STUDIO_PRICE_ID,
-  'studio-annual':  process.env.STRIPE_STUDIO_ANNUAL_PRICE_ID,
+const VARIANT_IDS = {
+  essential:           process.env.LEMONSQUEEZY_VARIANT_ESSENTIAL,
+  'essential-annual':  process.env.LEMONSQUEEZY_VARIANT_ESSENTIAL_ANNUAL,
+  premium:             process.env.LEMONSQUEEZY_VARIANT_PREMIUM,
+  'premium-annual':    process.env.LEMONSQUEEZY_VARIANT_PREMIUM_ANNUAL,
+  studio:              process.env.LEMONSQUEEZY_VARIANT_STUDIO,
+  'studio-annual':     process.env.LEMONSQUEEZY_VARIANT_STUDIO_ANNUAL,
 };
 
-const WELCOME_COUPONS = {
-  essential: process.env.STRIPE_COUPON_WELCOME_ESSENTIAL,
-  premium:   process.env.STRIPE_COUPON_WELCOME_PREMIUM,
-  studio:    process.env.STRIPE_COUPON_WELCOME_STUDIO,
+const WELCOME_DISCOUNT_CODES = {
+  essential: process.env.LEMONSQUEEZY_DISCOUNT_WELCOME_ESSENTIAL,
+  premium:   process.env.LEMONSQUEEZY_DISCOUNT_WELCOME_PREMIUM,
+  studio:    process.env.LEMONSQUEEZY_DISCOUNT_WELCOME_STUDIO,
 };
 
 const APP_URL = 'https://stillova.com';
@@ -28,52 +27,62 @@ module.exports = async (req, res) => {
 
   const { plan, email } = req.body || {};
 
-  if (!plan || !PRICE_IDS[plan]) {
+  if (!plan || !VARIANT_IDS[plan]) {
     return res.status(400).json({ error: 'Plan inválido.' });
   }
 
   try {
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-    const user = await getOrCreateUser(clerkId, email);
+    const isAnnual = plan.includes('annual');
+    const basePlan = plan.replace('-annual', '');
 
-    // Crear o recuperar customer de Stripe
-    let customerId = user.stripe_customer_id;
-    if (!customerId) {
-      const customer = await stripe.customers.create({
-        email: email || undefined,
-        metadata: { clerk_id: clerkId }
-      });
-      customerId = customer.id;
-      await getSupabase()
-        .from('users')
-        .update({ stripe_customer_id: customerId })
-        .eq('clerk_id', clerkId);
-    }
+    await getOrCreateUser(clerkId, email);
 
-    const isAnnual   = plan.includes('annual');
-    const basePlan   = plan.replace('-annual', '');
-    const successPlan = basePlan;
+    const checkoutData = {
+      custom: {
+        clerk_id: clerkId,
+        plan: basePlan,
+        billing: isAnnual ? 'annual' : 'monthly'
+      }
+    };
+    if (email) checkoutData.email = email;
 
-    const sessionParams = {
-      customer: customerId,
-      mode: 'subscription',
-      line_items: [{ price: PRICE_IDS[plan], quantity: 1 }],
-      success_url: `${APP_URL}?upgraded=${successPlan}`,
-      cancel_url: `${APP_URL}?canceled=true`,
-      client_reference_id: clerkId,
-      subscription_data: { metadata: { clerk_id: clerkId } }
+    const discountCode = !isAnnual ? WELCOME_DISCOUNT_CODES[basePlan] : null;
+    if (discountCode) checkoutData.discount_code = discountCode;
+
+    const body = {
+      data: {
+        type: 'checkouts',
+        attributes: {
+          checkout_data: checkoutData,
+          product_options: {
+            redirect_url: `${APP_URL}?upgraded=${basePlan}`,
+            receipt_button_text: 'Volver a Stillova',
+            receipt_thank_you_note: 'Bienvenido a Stillova.'
+          },
+          checkout_options: {
+            embed: false,
+            media: false,
+            logo: true
+          }
+        },
+        relationships: {
+          store:   { data: { type: 'stores',   id: getStoreId() } },
+          variant: { data: { type: 'variants', id: String(VARIANT_IDS[plan]) } }
+        }
+      }
     };
 
-    // Descuento bienvenida solo en planes mensuales
-    if (!isAnnual && WELCOME_COUPONS[basePlan]) {
-      sessionParams.discounts = [{ coupon: WELCOME_COUPONS[basePlan] }];
+    const json = await lsFetch('/checkouts', { method: 'POST', body });
+    const url = json?.data?.attributes?.url;
+
+    if (!url) {
+      console.error('[checkout] LS sin URL en respuesta:', json);
+      return res.status(500).json({ error: 'Error al crear la sesión de pago.' });
     }
 
-    const session = await stripe.checkout.sessions.create(sessionParams);
-
-    res.json({ url: session.url });
+    res.json({ url });
   } catch (e) {
-    console.error('[checkout] Error:', e.message);
+    console.error('[checkout] Error:', e.message, e.body || '');
     res.status(500).json({ error: 'Error al crear la sesión de pago.' });
   }
 };

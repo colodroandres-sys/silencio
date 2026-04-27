@@ -11,65 +11,108 @@ Aquí están las cosas que **solo tú puedes hacer** porque yo no tengo acceso (
 
 ## 🔴 Pre-lanzamiento (los 3 míos del plan pre-marketing)
 
-### A. PASO 7 QA — Stripe E2E con tarjeta REAL
+### ✅ C. Verificar Stripe payouts → CERRADO (con pivote a Lemon Squeezy)
 
-- **Por qué:** Stripe está configurado en LIVE pero NUNCA se ha probado el flujo completo con una tarjeta real. Sin esto, lanzar marketing es ruleta rusa con tu dinero.
+**Sesión 2026-04-26.** Al revisar la cuenta Stripe (registrada como "Silencio" en España con cuenta Santander España) descubrimos:
+- La cuenta estaba mal abierta: registrada como "Empresario Individual / Autónomo España" cuando Andrés NO es autónomo (solo estudiante con visado español temporal).
+- Residencia fiscal real: Chile.
+- Stripe pedía NIF español que no podíamos llenar legalmente.
+- Stripe Chile no está disponible para abrir cuenta directa (solo beta por invitación).
+
+**Decisión:** abandonar Stripe directo, migrar a **Lemon Squeezy** (Merchant of Record).
+- Lemon Squeezy es la entidad legal vendedora; Andrés solo declara ingresos como persona natural en Chile.
+- Comisión: 5% + $0.50 por venta (vs 3.6% Stripe). Pagamos 1.4% más por no tener que armar empresa.
+- Cuenta nueva creada: store "Stillova" en lemonsqueezy.com
+  - 2FA activado ✅ (backup codes guardados)
+  - Identity verification enviada (en review, 1-3 días) ✅
+  - Banco chileno conectado ✅
+  - Pendiente: aprobación Stripe Connect (espera) + crear primer producto (lo hago yo en código)
+- Stripe España ("Silencio"): se deja morir. Saldo €0, sin pérdida.
+
+**Lo que falta hacer (yo, en código, ~2-3h):**
+- Migrar integración Stripe → Lemon Squeezy en backend.
+- Cambiar variables de entorno en Vercel.
+- Cambiar webhooks.
+- Re-test E2E con tarjeta real (eso reemplaza al PASO A del plan original).
+
+---
+
+### A1. PASO 7 QA — Pago E2E con tarjeta TEST (vía Lemon Squeezy, test mode)
+
+- **Por qué:** Validar que el flujo técnico funciona end-to-end (Stillova → LS checkout → webhook → plan en Supabase) ANTES de tener acceso a cobrar de verdad.
+- **Cuándo:** apenas yo termine deploy y te avise.
 - **Tiempo:** 10 min.
 
 **Pasos:**
 
-1. [ ] Abre stillova.com en una ventana **incógnito** (importante).
-2. [ ] Sigue el flujo guest: escribe algo en el textarea → genera meditación → escucha al menos 1 min.
-3. [ ] Cuando termine, te aparece end-guest con CTA "Desbloquear Stillova por €6,99".
-4. [ ] Pulsa el CTA → te pide crear cuenta → créala con email nuevo.
-5. [ ] Tras signup llegas al modal pre-Stripe "Confirmas tu plan: Essential mensual · €6,99 hoy".
-6. [ ] Pulsa "Pagar €6,99" → vas a Stripe checkout.
-7. [ ] Mete tu tarjeta REAL.
-8. [ ] Confirma cobro.
-9. [ ] Verifica en tu email + en [Stripe dashboard](https://dashboard.stripe.com) que el cargo apareció.
-10. [ ] Verifica que llegas a la pantalla post-checkout (nombre + qué quieres trabajar).
-11. [ ] Verifica en Supabase / dashboard de admin que tu plan figura como Essential.
-12. [ ] Cancela la suscripción inmediatamente desde Stripe dashboard (o desde tu perfil en la app).
-13. [ ] Confirma que la cancelación funciona y que mantienes acceso hasta fin de periodo.
+1. [ ] Abre stillova.com en ventana **incógnito**.
+2. [ ] Flujo guest: textarea → genera meditación → escucha 1 min.
+3. [ ] End-guest CTA "Desbloquear Stillova por $6.99".
+4. [ ] Crear cuenta con email nuevo.
+5. [ ] Modal pre-checkout "Confirmas tu plan".
+6. [ ] Pagar → vas a checkout de Lemon Squeezy.
+7. [ ] **Tarjeta TEST de Stripe**: `4242 4242 4242 4242` · cualquier fecha futura · CVC `123` · CP `12345`.
+8. [ ] Confirmar pantalla de éxito.
+9. [ ] Verificar en LS dashboard → Orders que aparece la orden test.
+10. [ ] Verificar pantalla post-checkout en la app.
+11. [ ] Verificar plan Essential en stillova.com/admin.html.
+12. [ ] Cancelar suscripción desde tu perfil en la app.
+13. [ ] Confirmar `subscription_status = cancelled` en admin.
 
-**Si falla en cualquier paso:** páralo todo y avísame con screenshot.
+**Si falla:** páralo y avísame con screenshot.
+
+---
+
+### A2. PASO 7 QA — Pago E2E con tarjeta REAL (cuando LS apruebe live mode)
+
+- **Por qué:** Confirmar que tu cuenta LS aprobada cobra de verdad. Sin esto lanzar marketing es ruleta rusa.
+- **Bloqueado hasta:** que LS apruebe tu identity verification (1-3 días desde 2026-04-26). Recibes email de LS.
+- **Tiempo:** 5 min después de A1.
+
+**Pasos cuando llegue el email de aprobación de LS:**
+
+1. [ ] Entra a lemonsqueezy.com → bottom-left toggle "Test mode" → **apágalo**.
+2. [ ] Ventana incógnito → repite el flujo de A1 con tu tarjeta REAL.
+3. [ ] Confirma cobro real en tu app del banco.
+4. [ ] Después: cancela y verifica refund en LS dashboard si quieres recuperar el dinero del test (mensual = $6.99 promo).
+
+---
+
+### A3. ROTAR el API key de Lemon Squeezy
+
+- **Por qué:** El API key se pegó en chat conmigo. Aunque solo accede a tu cuenta LS, es higiene.
+- **Cuándo:** Después de A2 (cuando todo esté funcionando en live).
+- **Tiempo:** 3 min.
+
+**Pasos:**
+
+1. [ ] lemonsqueezy.com → Settings → API → tu API key actual `stillova-prod` → **Revoke**.
+2. [ ] Create new API key, nombre `stillova-prod-2`.
+3. [ ] Copia el token (empieza con `eyJ...`).
+4. [ ] Pásamelo en chat.
+5. [ ] Yo lo cambio en Vercel + redeploy. Te confirmo cuando esté.
 
 ---
 
 ### B. Activar 2FA en TODAS las cuentas críticas
 
-- **Por qué:** Si te hijackean cualquiera de estas cuentas, te quitan el negocio en una tarde. Esto es el seguro de vida del proyecto.
+- **Por qué:** Si te hijackean cualquiera de estas cuentas, te quitan el negocio en una tarde.
 - **Tiempo:** 30 min.
 
 **Cuentas a proteger (en este orden):**
 
-1. [ ] **Stripe** — [dashboard.stripe.com](https://dashboard.stripe.com) → Settings → Team & Security → Two-factor authentication. Usa Google Authenticator o Authy.
-2. [ ] **Vercel** — [vercel.com/account](https://vercel.com/account) → Security → Two-Factor Authentication.
-3. [ ] **Clerk** — [dashboard.clerk.com](https://dashboard.clerk.com) → tu avatar → Account Settings → Two-Factor Authentication.
-4. [ ] **Supabase** — [supabase.com/dashboard/account/security](https://supabase.com/dashboard/account/security) → enable 2FA.
-5. [ ] **ElevenLabs** — [elevenlabs.io](https://elevenlabs.io) → Settings → Security → 2FA.
-6. [ ] **Anthropic** — [console.anthropic.com](https://console.anthropic.com) → Settings → Account → Two-Factor Authentication.
-7. [ ] **Google** (la cuenta del proyecto) — [myaccount.google.com/security](https://myaccount.google.com/security) → 2-Step Verification. Si no está activo, **es la prioridad #1**: protege todos los logins via Google.
+1. [x] ~~Stripe~~ — descartada (ya no usamos Stripe directo, ver C).
+1.5. [x] **Lemon Squeezy** — 2FA activado en sesión 2026-04-26 ✅
+2. [ ] **Google** (colodro.andres@gmail.com) — [myaccount.google.com/security](https://myaccount.google.com/security) → 2-Step Verification. **Prioridad #1**: protege todos los logins via Google.
+3. [ ] **Anthropic** — [console.anthropic.com](https://console.anthropic.com) → Settings → Account → Two-Factor Authentication.
+4. [ ] **Vercel** — [vercel.com/account](https://vercel.com/account) → Security → Two-Factor Authentication.
+5. [ ] **Supabase** — [supabase.com/dashboard/account/security](https://supabase.com/dashboard/account/security) → enable 2FA.
+6. [ ] **ElevenLabs** — [elevenlabs.io](https://elevenlabs.io) → Settings → Security → 2FA.
+7. [ ] **Clerk** — [dashboard.clerk.com](https://dashboard.clerk.com) → tu avatar → Account Settings → Two-Factor Authentication.
 
 **Importante:**
-- Guarda los **códigos de respaldo** que cada servicio te da (en cada activación). Son 10 códigos de un solo uso por si pierdes el móvil. Imprímelos o guárdalos en un password manager (1Password, Bitwarden).
-- Si usas un mismo Authenticator app, asegúrate que está respaldado en iCloud / Google.
-
----
-
-### C. Verificar Stripe payouts a Chile
-
-- **Por qué:** Tu cuenta Stripe puede tener limitaciones por nacionalidad chilena para hacer payouts a tu banco. Si no puedes cobrar, todo lo demás da igual.
-- **Tiempo:** 10 min.
-
-**Pasos:**
-
-1. [ ] Abre [Stripe Dashboard → Settings → Payouts](https://dashboard.stripe.com/settings/payouts).
-2. [ ] Verifica que aparece tu cuenta bancaria chilena conectada.
-3. [ ] Mira si dice "additional information required" o "verification pending" — si sí, completa lo que pidan ahora (puede ser DNI, dirección, formulario W-8BEN si te aplican como no-US).
-4. [ ] Verifica el "payout schedule" — debería ser automático cada X días.
-5. [ ] Si todo está OK, haz un **test payment a tu propia tarjeta** desde el flujo del PASO A: si el cobro entra, los payouts también deberían funcionar.
-6. [ ] Si Stripe pide cualquier cosa adicional, avísame antes de continuar.
+- Guarda los **códigos de respaldo** que cada servicio te da. Son 10 códigos de un solo uso por si pierdes el móvil. En password manager o nota bloqueada con contraseña.
+- App authenticator (Google Authenticator, Authy, app Passwords del iPhone). Asegurate que está respaldada en iCloud/Google.
 
 ---
 

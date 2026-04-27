@@ -276,7 +276,7 @@ function updateProfileScreen() {
 
   // Plan card
   const planNames  = { free: 'Gratis', essential: 'Essential', premium: 'Premium', studio: 'Studio' };
-  const planPrices = { free: '—', essential: '€9,99/mes', premium: '€19,99/mes', studio: '€39,99/mes' };
+  const planPrices = { free: '—', essential: '$9.99/mes', premium: '$19.99/mes', studio: '$39.99/mes' };
   const plan = state.userPlan || 'free';
   setEl('profile-plan-name-display',  planNames[plan]  || plan);
   setEl('profile-plan-price-display', planPrices[plan] || '—');

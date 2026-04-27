@@ -526,8 +526,8 @@
         <p class="post-session-sub">Mañana podría ser otra voz, otro tono, otro motivo. Lo que tu día pida.</p>
 
         <p class="post-session-pre-price">La de hoy fue por <em>nuestra cuenta</em>.</p>
-        <button class="s-btn s-btn-dark post-session-cta-primary" onclick="postSessionPrimary('free')">Desbloquear Stillova por €6,99</button>
-        <p class="post-session-price-meta">primer mes €6,99 · después €9,99 · cancela cuando quieras</p>
+        <button class="s-btn s-btn-dark post-session-cta-primary" onclick="postSessionPrimary('free')">Desbloquear Stillova por $6.99</button>
+        <p class="post-session-price-meta">primer mes $6.99 · después $9.99 · cancela cuando quieras</p>
         <button class="post-session-secondary-link" onclick="postSessionSecondary('free')">Ver todos los planes</button>
       </div>
 
@@ -539,8 +539,8 @@
         <p class="post-session-sub">Mañana podría ser otra voz, otro tono, otro motivo. Lo que tu momento pida.</p>
 
         <p class="post-session-pre-price">Esta primera fue por <em>nuestra cuenta</em>.</p>
-        <button class="s-btn s-btn-dark post-session-cta-primary" onclick="postSessionPrimary('guest')">Desbloquear Stillova por €6,99</button>
-        <p class="post-session-price-meta">primer mes €6,99 · después €9,99 · cancela cuando quieras</p>
+        <button class="s-btn s-btn-dark post-session-cta-primary" onclick="postSessionPrimary('guest')">Desbloquear Stillova por $6.99</button>
+        <p class="post-session-price-meta">primer mes $6.99 · después $9.99 · cancela cuando quieras</p>
         <button class="post-session-secondary-link" onclick="postSessionSecondary('guest')">Ver todos los planes</button>
       </div>
 
@@ -758,7 +758,7 @@
           <div class="profile-plan-card-top">
             <div>
               <div class="profile-plan-name-display" id="profile-plan-name-display">Essential</div>
-              <div class="profile-plan-price-display" id="profile-plan-price-display">€9,99/mes</div>
+              <div class="profile-plan-price-display" id="profile-plan-price-display">$9.99/mes</div>
             </div>
             <button class="profile-manage-plan-btn" id="profile-manage-plan-btn" onclick="showPaywall()">gestionar plan →</button>
           </div>
@@ -899,7 +899,7 @@
   <audio id="lib-audio" preload="none"></audio>
 
   <!-- ══════════════════════════════════════════
-       MODAL — Confirmación pre-Stripe (variante B · blindaje)
+       MODAL — Confirmación pre-checkout (variante B · blindaje)
        ══════════════════════════════════════════ -->
   <div id="precheckout-modal" class="precheckout-overlay" onclick="if(event.target===this)closePrecheckout()">
     <div class="precheckout-card">
@@ -910,9 +910,9 @@
       </button>
       <p class="s-eyebrow precheckout-eyebrow">Confirmas tu plan</p>
       <h3 class="precheckout-title" id="precheckout-title">Premium · anual</h3>
-      <p class="precheckout-detail" id="precheckout-detail">€191,88 hoy · 12 meses · €15,99/mes equivalente</p>
+      <p class="precheckout-detail" id="precheckout-detail">$191.88 hoy · 12 meses · $15.99/mes equivalente</p>
       <p class="precheckout-fineprint" id="precheckout-fineprint">La suscripción no se renueva automáticamente hasta dentro de 12 meses. Puedes cancelar cuando quieras desde tu perfil.</p>
-      <button class="s-btn s-btn-primary precheckout-cta" id="precheckout-cta" onclick="precheckoutConfirm()">Pagar €191,88</button>
+      <button class="s-btn s-btn-primary precheckout-cta" id="precheckout-cta" onclick="precheckoutConfirm()">Pagar $191.88</button>
       <button class="precheckout-back" onclick="closePrecheckout()">← Cambiar plan</button>
     </div>
   </div>
@@ -948,11 +948,11 @@
       <p class="s-eyebrow pw-eyebrow">Elige tu plan</p>
       <h2 class="pw-headline">Elige el <em>tuyo</em>.</h2>
 
-      <!-- Breadcrumb promo €6,99 (visible solo si viene de end-guest CTA) -->
+      <!-- Breadcrumb promo $6.99 (visible solo si viene de end-guest CTA) -->
       <div class="pw-promo-banner" id="pw-promo-banner" style="display:none">
         <div class="pw-promo-text">
           <span class="s-eyebrow pw-promo-eyebrow">tu oferta</span>
-          <span class="pw-promo-detail">€6,99 primer mes de Essential mensual</span>
+          <span class="pw-promo-detail">$6.99 primer mes de Essential mensual</span>
         </div>
         <div class="pw-promo-actions">
           <button class="pw-promo-activate" onclick="pwActivatePromo()">Activar</button>
@@ -977,8 +977,8 @@
           <p class="s-eyebrow pw-card-kicker">PARA EMPEZAR</p>
           <h3 class="pw-card-name">Essential</h3>
           <div class="pw-card-price-block">
-            <p class="pw-card-price-main"><span id="pw-price-essential">€7,99</span> <span class="pw-card-price-unit">al mes</span></p>
-            <p class="pw-card-price-sub" id="pw-cycle-essential">facturado anualmente · €95,88 hoy</p>
+            <p class="pw-card-price-main"><span id="pw-price-essential">$7.99</span> <span class="pw-card-price-unit">al mes</span></p>
+            <p class="pw-card-price-sub" id="pw-cycle-essential">facturado anualmente · $95.88 hoy</p>
           </div>
           <ul class="pw-card-features">
             <li>10 sesiones al mes</li>
@@ -993,8 +993,8 @@
           <span class="pw-card-badge">RECOMENDADO</span>
           <h3 class="pw-card-name">Premium</h3>
           <div class="pw-card-price-block">
-            <p class="pw-card-price-main"><span id="pw-price-premium">€15,99</span> <span class="pw-card-price-unit">al mes</span></p>
-            <p class="pw-card-price-sub" id="pw-cycle-premium">facturado anualmente · €191,88 hoy</p>
+            <p class="pw-card-price-main"><span id="pw-price-premium">$15.99</span> <span class="pw-card-price-unit">al mes</span></p>
+            <p class="pw-card-price-sub" id="pw-cycle-premium">facturado anualmente · $191.88 hoy</p>
           </div>
           <ul class="pw-card-features">
             <li>25 sesiones al mes</li>
@@ -1009,8 +1009,8 @@
           <p class="s-eyebrow pw-card-kicker">PARA QUIEN MEDITA A DIARIO</p>
           <h3 class="pw-card-name">Studio</h3>
           <div class="pw-card-price-block">
-            <p class="pw-card-price-main"><span id="pw-price-studio">€31,99</span> <span class="pw-card-price-unit">al mes</span></p>
-            <p class="pw-card-price-sub" id="pw-cycle-studio">facturado anualmente · €383,88 hoy</p>
+            <p class="pw-card-price-main"><span id="pw-price-studio">$31.99</span> <span class="pw-card-price-unit">al mes</span></p>
+            <p class="pw-card-price-sub" id="pw-cycle-studio">facturado anualmente · $383.88 hoy</p>
           </div>
           <ul class="pw-card-features">
             <li>60 sesiones al mes</li>
@@ -1023,7 +1023,7 @@
       </div>
 
       <button class="s-btn s-btn-primary pw-cta-main" id="pw-cta-btn" onclick="pwProceed()">Empezar con Premium</button>
-      <p class="pw-cta-microcopy" id="pw-cta-microcopy">Hoy se cobran €191,88 · 12 meses de Premium · cancela cuando quieras desde tu perfil</p>
+      <p class="pw-cta-microcopy" id="pw-cta-microcopy">Hoy se cobran $191.88 · 12 meses de Premium · cancela cuando quieras desde tu perfil</p>
       <p class="pw-legal-disclaimer">Herramienta de bienestar. No sustituye terapia profesional ni atención médica.</p>
 
     </div>
@@ -1151,15 +1151,15 @@
 
     // monthly = precio mensual al mes, annual = precio mensual equivalente al mes (con descuento)
     const PW_PRICES = {
-      essential: { monthly: '€9,99',  annual: '€7,99'  },
-      premium:   { monthly: '€19,99', annual: '€15,99' },
-      studio:    { monthly: '€39,99', annual: '€31,99' },
+      essential: { monthly: '$9.99',  annual: '$7.99'  },
+      premium:   { monthly: '$19.99', annual: '$15.99' },
+      studio:    { monthly: '$39.99', annual: '$31.99' },
     };
     // Total a cobrar HOY (la cifra de blindaje)
     const PW_TOTAL_TODAY = {
-      essential: { monthly: '€9,99',   annual: '€95,88'  },
-      premium:   { monthly: '€19,99',  annual: '€191,88' },
-      studio:    { monthly: '€39,99',  annual: '€383,88' },
+      essential: { monthly: '$9.99',   annual: '$95.88'  },
+      premium:   { monthly: '$19.99',  annual: '$191.88' },
+      studio:    { monthly: '$39.99',  annual: '$383.88' },
     };
     const PW_LABELS = { essential: 'Essential', premium: 'Premium', studio: 'Studio' };
 
@@ -1175,9 +1175,9 @@
       if (cycle === 'annual') {
         return 'Hoy se cobran ' + total + ' · 12 meses de ' + label + ' · cancela cuando quieras desde tu perfil';
       }
-      // Para Essential mensual, si viene de promo, primer mes €6,99
+      // Para Essential mensual, si viene de promo, primer mes $6.99
       if (plan === 'essential' && _pwPromoActive) {
-        return 'Hoy se cobran €6,99 · primer mes de Essential · cancela cuando quieras desde tu perfil';
+        return 'Hoy se cobran $6.99 · primer mes de Essential · cancela cuando quieras desde tu perfil';
       }
       return 'Hoy se cobran ' + total + ' · primer mes de ' + label + ' · cancela cuando quieras desde tu perfil';
     }
@@ -1213,7 +1213,7 @@
       if (mc) mc.textContent = _pwBuildMicrocopy(plan, _pwCycle);
     }
 
-    // ── Promo €6,99 (Essential mensual, viene de end-guest) ────
+    // ── Promo $6.99 (Essential mensual, viene de end-guest) ────
     let _pwPromoActive = false;
 
     function pwShowPromo() {
@@ -1228,7 +1228,7 @@
     }
     function pwActivatePromo() {
       try { track('paywall_promo_activated', {}); } catch (_) {}
-      // Promo €6,99: Essential mensual, va directo a checkout
+      // Promo $6.99: Essential mensual, va directo a checkout
       closePaywall();
       sessionStorage.removeItem('stillova_promo_essential');
       preCheckoutConfirm('essential');
@@ -1253,12 +1253,12 @@
     let _precheckoutPlan = null;
 
     const PRECHECKOUT_TOTALS = {
-      'essential':         { total: '€9,99',   label: 'Essential', stepUp: '€9,99'  },
-      'essential-annual':  { total: '€95,88',  label: 'Essential', equiv: '€7,99/mes' },
-      'premium':           { total: '€19,99',  label: 'Premium',   stepUp: '€19,99' },
-      'premium-annual':    { total: '€191,88', label: 'Premium',   equiv: '€15,99/mes' },
-      'studio':            { total: '€39,99',  label: 'Studio',    stepUp: '€39,99' },
-      'studio-annual':     { total: '€383,88', label: 'Studio',    equiv: '€31,99/mes' },
+      'essential':         { total: '$9.99',   label: 'Essential', stepUp: '$9.99'  },
+      'essential-annual':  { total: '$95.88',  label: 'Essential', equiv: '$7.99/mes' },
+      'premium':           { total: '$19.99',  label: 'Premium',   stepUp: '$19.99' },
+      'premium-annual':    { total: '$191.88', label: 'Premium',   equiv: '$15.99/mes' },
+      'studio':            { total: '$39.99',  label: 'Studio',    stepUp: '$39.99' },
+      'studio-annual':     { total: '$383.88', label: 'Studio',    equiv: '$31.99/mes' },
     };
 
     const _ES_MONTHS_SHORT = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
@@ -1278,11 +1278,11 @@
         return;
       }
 
-      // Override €6,99 si hay promo Essential mensual activa (viene de end-guest)
+      // Override $6.99 si hay promo Essential mensual activa (viene de end-guest)
       let total = cfg.total;
       const isEssentialMonthlyPromo = (plan === 'essential')
         && sessionStorage.getItem('stillova_promo_essential') === '1';
-      if (isEssentialMonthlyPromo) total = '€6,99';
+      if (isEssentialMonthlyPromo) total = '$6.99';
 
       const isAnnual = plan.endsWith('-annual');
 
@@ -1316,7 +1316,7 @@
             'Acceso completo durante 12 meses. Si cancelas, mantienes ' + cfg.label + ' hasta el final del periodo.<br>' +
             '<small>Cancela cuando quieras desde tu perfil.</small>';
         } else {
-          // Mensual: el step-up es importante (especialmente con promo €6,99 → €9,99)
+          // Mensual: el step-up es importante (especialmente con promo $6.99 → $9.99)
           fineEl.innerHTML =
             '<strong>Próximo cobro: ' + nextChargeStr + ' — ' + cfg.stepUp + '/mes.</strong><br>' +
             'Cancela en cualquier momento. Mantienes acceso hasta el final del mes ya pagado.';

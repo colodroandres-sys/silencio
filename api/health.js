@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
     supabase: false,
     elevenlabs_key: false,
     clerk_key: false,
-    stripe_key: false,
+    lemonsqueezy_key: false,
     upstash_key: false
   };
 
@@ -25,13 +25,13 @@ module.exports = async (req, res) => {
   // Verificar que las claves de API están configuradas (no exponemos los valores)
   checks.elevenlabs_key = !!process.env.ELEVENLABS_API_KEY;
   checks.clerk_key = !!process.env.CLERK_SECRET_KEY;
-  checks.stripe_key = !!process.env.STRIPE_SECRET_KEY;
+  checks.lemonsqueezy_key = !!process.env.LEMONSQUEEZY_API_KEY;
   checks.upstash_key = !!process.env.UPSTASH_REDIS_REST_URL;
 
   const allOk = checks.supabase &&
     checks.elevenlabs_key &&
     checks.clerk_key &&
-    checks.stripe_key;
+    checks.lemonsqueezy_key;
 
   res.status(allOk ? 200 : 503).json({
     status: allOk ? 'ok' : 'degraded',

@@ -16,7 +16,7 @@ function renderPostSession(variant) {
 async function postSessionPrimary(variant) {
   try { track('post_session_cta_primary_clicked', { variant }); } catch (_) {}
 
-  // El CTA primario ofrece la promo €6,99 (Essential mensual primer mes).
+  // El CTA primario ofrece la promo $6.99 (Essential mensual primer mes).
   // Marcamos el flag para que el paywall — si el usuario lo abre desde signup
   // o más adelante — muestre el breadcrumb correspondiente.
   sessionStorage.setItem('stillova_promo_essential', '1');

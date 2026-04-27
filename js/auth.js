@@ -268,7 +268,7 @@ function checkUrlParams() {
     const planNames = { essential: 'Essential', premium: 'Premium', studio: 'Studio' };
     showToast(`¡Bienvenido a ${planNames[plan] || plan}!`);
     window.history.replaceState({}, '', window.location.pathname);
-    // Promo €6,99 ya consumida; limpiamos el flag.
+    // Promo $6.99 ya consumida; limpiamos el flag.
     sessionStorage.removeItem('stillova_promo_essential');
     // Refrescar plan + decidir si toca pantalla post-checkout
     fetchUserStatus().then(() => {
@@ -287,7 +287,7 @@ function showPaywall() {
   pwSetBilling('annual');
   if (typeof pwSelectPlan === 'function') pwSelectPlan('premium');
 
-  // Banner promo €6,99 si el usuario llegó vía CTA "Desbloquear por €6,99"
+  // Banner promo $6.99 si el usuario llegó vía CTA "Desbloquear por $6.99"
   if (typeof pwShowPromo === 'function' && sessionStorage.getItem('stillova_promo_essential') === '1') {
     pwShowPromo();
   } else if (typeof pwHidePromo === 'function') {

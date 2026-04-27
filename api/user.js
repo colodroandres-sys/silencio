@@ -111,16 +111,16 @@ async function handleDeleteAccount(req, res) {
   try {
     const { data: user } = await db
       .from('users')
-      .select('stripe_subscription_id')
+      .select('lemonsqueezy_subscription_id')
       .eq('clerk_id', clerkId)
       .single();
 
-    // 1. Cancelar suscripción en Stripe (evita cobros futuros)
-    if (user?.stripe_subscription_id) {
+    // 1. Cancelar suscripción en Lemon Squeezy (evita cobros futuros)
+    if (user?.lemonsqueezy_subscription_id) {
       try {
-        const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-        await stripe.subscriptions.cancel(user.stripe_subscription_id);
-      } catch (e) { console.error('[delete] stripe:', e.message); }
+        const { lsFetch } = require('./_lemonsqueezy');
+        await lsFetch(`/subscriptions/${user.lemonsqueezy_subscription_id}`, { method: 'DELETE' });
+      } catch (e) { console.error('[delete] lemonsqueezy:', e.message); }
     }
 
     // 2. Borrar audios guardados en Storage

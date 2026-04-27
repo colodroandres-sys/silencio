@@ -1,5 +1,7 @@
-const Stripe = require('stripe');
 const { getSupabase } = require('./_supabase');
+const { verifyWebhookSignature, getPlanByVariantId } = require('./_lemonsqueezy');
+
+module.exports.config = { api: { bodyParser: false } };
 
 async function trackEvent(event, props = {}) {
   const key = process.env.POSTHOG_SERVER_KEY || process.env.POSTHOG_KEY;
@@ -8,24 +10,14 @@ async function trackEvent(event, props = {}) {
     await fetch('https://eu.i.posthog.com/capture/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ api_key: key, event, distinct_id: props.clerkId || 'webhook', properties: { ...props, source: 'webhook' } })
+      body: JSON.stringify({
+        api_key: key,
+        event,
+        distinct_id: props.clerkId || 'webhook',
+        properties: { ...props, source: 'webhook' }
+      })
     });
-  } catch (e) { /* no bloquear el webhook por fallo de analytics */ }
-}
-
-// Disable Vercel's automatic body parsing so we can access raw body for Stripe signature verification
-module.exports.config = { api: { bodyParser: false } };
-
-function getPlanByPrice(priceId) {
-  if (!priceId) return null;
-  if (priceId === process.env.STRIPE_ESSENTIAL_PRICE_ID) return 'essential';
-  if (priceId === process.env.STRIPE_PREMIUM_PRICE_ID) return 'premium';
-  if (priceId === process.env.STRIPE_STUDIO_PRICE_ID) return 'studio';
-  if (priceId === process.env.STRIPE_ESSENTIAL_ANNUAL_PRICE_ID) return 'essential';
-  if (priceId === process.env.STRIPE_PREMIUM_ANNUAL_PRICE_ID) return 'premium';
-  if (priceId === process.env.STRIPE_STUDIO_ANNUAL_PRICE_ID) return 'studio';
-  console.error(`[webhook] priceId desconocido: ${priceId}`);
-  return null;
+  } catch (_) { /* no bloquear webhook por analytics */ }
 }
 
 async function getRawBody(req) {
@@ -40,111 +32,121 @@ async function getRawBody(req) {
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).end();
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-  if (!webhookSecret) {
-    console.error('[webhook] STRIPE_WEBHOOK_SECRET no configurado — rechazando evento');
+  if (!process.env.LEMONSQUEEZY_WEBHOOK_SECRET) {
+    console.error('[webhook] LEMONSQUEEZY_WEBHOOK_SECRET no configurado — rechazando evento');
     return res.status(503).json({ error: 'Webhook no configurado' });
   }
 
-  const sig = req.headers['stripe-signature'];
   const rawBody = await getRawBody(req);
-  let event;
+  const sig = req.headers['x-signature'];
+
+  let valid;
   try {
-    event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
+    valid = verifyWebhookSignature(rawBody, sig);
   } catch (e) {
-    console.error('[webhook] Firma inválida:', e.message);
-    return res.status(400).json({ error: 'Firma inválida' });
+    console.error('[webhook] Error verificando firma:', e.message);
+    return res.status(500).json({ error: 'Error interno' });
   }
+  if (!valid) {
+    console.error('[webhook] Firma inválida');
+    return res.status(401).json({ error: 'Firma inválida' });
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(rawBody.toString('utf8'));
+  } catch (e) {
+    console.error('[webhook] JSON inválido:', e.message);
+    return res.status(400).json({ error: 'JSON inválido' });
+  }
+
+  const eventName = payload?.meta?.event_name;
+  const custom    = payload?.meta?.custom_data || {};
+  const data      = payload?.data || {};
+  const attrs     = data?.attributes || {};
+  const subId     = data?.type === 'subscriptions' ? data.id : null;
+  const clerkId   = custom.clerk_id;
 
   const db = getSupabase();
 
   try {
-    if (event.type === 'checkout.session.completed') {
-      const sessionId = event.data.object.id;
-      const session = await stripe.checkout.sessions.retrieve(sessionId, {
-        expand: ['line_items']
-      });
+    if (eventName === 'subscription_created' || eventName === 'subscription_updated') {
+      const variantId = attrs.variant_id;
+      const plan = getPlanByVariantId(variantId);
+      const status = attrs.status;
+      const customerId = attrs.customer_id;
 
-      const clerkId = session.client_reference_id;
-      const priceId = session.line_items?.data?.[0]?.price?.id;
-      const plan = getPlanByPrice(priceId);
+      if (!clerkId) {
+        console.warn(`[webhook] ${eventName} sin clerk_id en custom_data — sub ${subId}`);
+        return res.json({ received: true });
+      }
 
-      if (clerkId && plan) {
-        await db.from('users').update({
-          plan,
-          stripe_subscription_id: session.subscription
-        }).eq('clerk_id', clerkId);
-        console.log(`[webhook] Usuario ${clerkId} → plan ${plan}`);
-        await trackEvent('plan_upgraded', { clerkId, plan, billing: session.mode });
+      const update = {};
+      if (plan) update.plan = plan;
+      if (subId) update.lemonsqueezy_subscription_id = String(subId);
+      if (customerId) update.lemonsqueezy_customer_id = String(customerId);
+
+      if (status === 'active' || status === 'on_trial') {
+        update.subscription_status = 'active';
+      } else if (status === 'past_due' || status === 'unpaid') {
+        update.subscription_status = status;
+      } else if (status === 'paused') {
+        update.subscription_status = 'paused';
+      } else if (status === 'cancelled') {
+        update.subscription_status = 'cancelled';
+      } else if (status === 'expired') {
+        update.plan = 'free';
+        update.subscription_status = 'expired';
+        update.lemonsqueezy_subscription_id = null;
+      }
+
+      await db.from('users').update(update).eq('clerk_id', clerkId);
+      console.log(`[webhook] ${eventName} → ${clerkId} plan=${update.plan} status=${update.subscription_status}`);
+
+      if (eventName === 'subscription_created') {
+        await trackEvent('plan_upgraded', { clerkId, plan, status });
       }
     }
 
-    if (event.type === 'customer.subscription.deleted') {
-      const subId = event.data.object.id;
-      const sub = await stripe.subscriptions.retrieve(subId);
-      const clerkId = sub.metadata?.clerk_id;
-
-      if (clerkId && (sub.status === 'canceled' || sub.status === 'unpaid' || sub.status === 'incomplete_expired')) {
-        await db.from('users').update({
-          plan: 'free',
-          stripe_subscription_id: null
-        }).eq('clerk_id', clerkId);
-        console.log(`[webhook] Suscripción cancelada (status: ${sub.status}) → ${clerkId} vuelve a free`);
-        await trackEvent('plan_cancelled', { clerkId, status: sub.status });
-      } else if (clerkId) {
-        console.warn(`[webhook] subscription.deleted recibido pero status es '${sub.status}' — ignorado para ${clerkId}`);
-      }
+    else if (eventName === 'subscription_cancelled') {
+      if (!clerkId) return res.json({ received: true });
+      await db.from('users')
+        .update({ subscription_status: 'cancelled' })
+        .eq('clerk_id', clerkId);
+      console.log(`[webhook] subscription_cancelled → ${clerkId} (acceso hasta ends_at)`);
+      await trackEvent('plan_cancelled', { clerkId, status: 'cancelled' });
     }
 
-    if (event.type === 'customer.subscription.updated') {
-      const subId = event.data.object.id;
-      const sub = await stripe.subscriptions.retrieve(subId);
-      const clerkId = sub.metadata?.clerk_id;
-
-      if (clerkId && sub.status === 'active') {
-        const priceId = sub.items?.data?.[0]?.price?.id;
-        const plan = getPlanByPrice(priceId);
-        if (plan) {
-          await db.from('users').update({ plan, subscription_status: 'active' }).eq('clerk_id', clerkId);
-          console.log(`[webhook] Plan actualizado → ${clerkId}: ${plan}`);
-        }
-      } else if (clerkId && (sub.status === 'past_due' || sub.status === 'unpaid')) {
-        await db.from('users').update({ subscription_status: sub.status }).eq('clerk_id', clerkId);
-        console.log(`[webhook] Suscripción ${sub.status} → ${clerkId}`);
-      }
+    else if (eventName === 'subscription_expired') {
+      if (!clerkId) return res.json({ received: true });
+      await db.from('users').update({
+        plan: 'free',
+        subscription_status: 'expired',
+        lemonsqueezy_subscription_id: null
+      }).eq('clerk_id', clerkId);
+      console.log(`[webhook] subscription_expired → ${clerkId} a free`);
+      await trackEvent('plan_expired', { clerkId });
     }
 
-    if (event.type === 'invoice.payment_failed') {
-      const invoice = event.data.object;
-      const subId = invoice.subscription;
-      if (subId) {
-        const sub = await stripe.subscriptions.retrieve(subId);
-        const clerkId = sub.metadata?.clerk_id;
-        if (clerkId) {
-          await db.from('users').update({ subscription_status: 'past_due' }).eq('clerk_id', clerkId);
-          console.log(`[webhook] Pago fallido → ${clerkId} marcado past_due`);
-        }
-      }
+    else if (eventName === 'subscription_payment_failed') {
+      if (!clerkId) return res.json({ received: true });
+      await db.from('users')
+        .update({ subscription_status: 'past_due' })
+        .eq('clerk_id', clerkId);
+      console.log(`[webhook] payment_failed → ${clerkId} past_due`);
     }
 
-    if (event.type === 'invoice.payment_succeeded') {
-      const invoice = event.data.object;
-      const subId = invoice.subscription;
-      if (subId) {
-        const sub = await stripe.subscriptions.retrieve(subId);
-        const clerkId = sub.metadata?.clerk_id;
-        if (clerkId) {
-          await db.from('users').update({ subscription_status: 'active' }).eq('clerk_id', clerkId);
-          console.log(`[webhook] Pago exitoso → ${clerkId} activo`);
-        }
-      }
+    else if (eventName === 'subscription_payment_success') {
+      if (!clerkId) return res.json({ received: true });
+      await db.from('users')
+        .update({ subscription_status: 'active' })
+        .eq('clerk_id', clerkId);
+      console.log(`[webhook] payment_success → ${clerkId} active`);
     }
 
     res.json({ received: true });
   } catch (e) {
-    console.error('[webhook] Error:', e.message);
+    console.error('[webhook] Error procesando:', e.message);
     res.status(500).json({ error: 'Error procesando webhook' });
   }
 };
