@@ -143,6 +143,7 @@ module.exports = async (req, res) => {
 
     // ── ElevenLabs: créditos en vivo ────────────────────────
     let elevenlabs = null;
+    let elevenlabsError = null;
     if (process.env.ELEVENLABS_API_KEY) {
       try {
         const elRes = await fetch('https://api.elevenlabs.io/v1/user/subscription', {
@@ -163,8 +164,17 @@ module.exports = async (req, res) => {
             tier:               el.tier || '?',
             daysUntilReset:     resetMs != null ? Math.max(0, Math.ceil(resetMs / 86400000)) : null,
           };
+        } else if (elRes.status === 401) {
+          const body = await elRes.text();
+          elevenlabsError = body.includes('missing_permissions')
+            ? 'permission_missing'
+            : 'unauthorized';
+        } else {
+          elevenlabsError = 'http_' + elRes.status;
         }
-      } catch (_) { /* silencioso, queda null */ }
+      } catch (_) { elevenlabsError = 'network'; }
+    } else {
+      elevenlabsError = 'no_key';
     }
 
     // ── Estado de salud (semáforos para el cockpit) ─────────
@@ -181,13 +191,23 @@ module.exports = async (req, res) => {
       {
         key:      'elevenlabs',
         label:    'Créditos ElevenLabs',
-        value:    elevenlabs ? `${elevenlabs.percentRemaining}% restante` : 'no conectado',
+        value:    elevenlabs ? `${elevenlabs.percentRemaining}% restante` : (
+                    elevenlabsError === 'permission_missing' ? 'API key sin permiso user_read'
+                  : elevenlabsError === 'unauthorized'       ? 'API key inválida'
+                  : elevenlabsError === 'no_key'              ? 'sin API key'
+                  : 'sin conexión'
+                ),
         level:    !elevenlabs            ? 'gray'
                 : elevenlabs.percentRemaining < 5  ? 'red'
                 : elevenlabs.percentRemaining < 20 ? 'yellow'
                 : elevenlabs.percentRemaining < 50 ? 'yellow'
                 : 'green',
-        action:   !elevenlabs            ? 'Conexión con ElevenLabs falló. Avísale a Claude.'
+        action:   !elevenlabs ? (
+                    elevenlabsError === 'permission_missing' ? 'Crea una API key NUEVA en elevenlabs.io con permiso user_read activado. Luego escríbeme: "te paso la nueva key de ElevenLabs". Yo la pongo en Vercel.'
+                  : elevenlabsError === 'unauthorized'       ? 'API key inválida o caducada. Regenérala en elevenlabs.io y pásamela.'
+                  : elevenlabsError === 'no_key'              ? 'Falta ELEVENLABS_API_KEY en Vercel. Avísame.'
+                  : 'Conexión con ElevenLabs falló. Avísame.'
+                  )
                 : elevenlabs.percentRemaining < 5  ? 'CRÍTICO. Upgrade Pro $99 YA. Pasos en docs/tareas-andres.md item 2'
                 : elevenlabs.percentRemaining < 20 ? 'Bajo. Planea upgrade en próximos días.'
                 : elevenlabs.percentRemaining < 50 ? `Vigila: ${elevenlabs.daysUntilReset || '?'} días hasta reset.`
