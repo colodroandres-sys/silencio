@@ -40,7 +40,7 @@
     { "src": "/admin", "dest": "/dashboard.html" }
   ],
   "functions": {
-    "api/meditation.js":     { "maxDuration": 60  },
+    "api/meditation.js":     { "maxDuration": 90  },
     "api/audio.js":          { "maxDuration": 90  },
     "api/checkout.js":       { "maxDuration": 30  },
     "api/webhook.js":        { "maxDuration": 30  },

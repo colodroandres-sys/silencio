@@ -5,20 +5,22 @@ const checkRateLimit = require('./_ratelimit');
 const { getOrCreateUser, checkUsageLimit } = require('./_limits');
 
 const WORD_COUNTS = {
-  feminine: { '5': 420, '10': 750, '15': 1200, '20': 1100 },
-  masculine: { '5': 460, '10': 820, '15': 1320, '20': 1700 }
+  feminine: { '5': 420, '10': 750, '15': 1200, '20': 1100, '30': 1650 },
+  masculine: { '5': 460, '10': 820, '15': 1320, '20': 1700, '30': 2200 }
 };
 
 // Silencio máximo por marcador individual (en segundos)
+// 30 min permite chidakasha de hasta 4 minutos como en yoga nidra real
 const MAX_SILENCE_PER_MARKER = {
-  feminine: { '5': 18, '10': 32, '15': 90, '20': 150 },
-  masculine: { '5': 18, '10': 32, '15': 90, '20': 150 }
+  feminine: { '5': 18, '10': 32, '15': 90, '20': 150, '30': 240 },
+  masculine: { '5': 18, '10': 32, '15': 90, '20': 150, '30': 240 }
 };
 // Silencio total máximo en toda la meditación (en segundos)
 // Femenina 20 min más bajo porque la voz es más lenta y necesita menos silencio para llegar a 20 min
+// 30 min: yoga nidra real tiene 18-20 min de silencio + 10-12 min de voz
 const MAX_TOTAL_SILENCE = {
-  feminine: { '5': 185, '10': 360, '15': 520, '20': 560 },
-  masculine: { '5': 185, '10': 360, '15': 520, '20': 640 }
+  feminine: { '5': 185, '10': 360, '15': 520, '20': 560, '30': 1400 },
+  masculine: { '5': 185, '10': 360, '15': 520, '20': 640, '30': 1500 }
 };
 
 // Recorta el texto al límite de palabras en un punto de corte natural (fin de frase)
@@ -110,6 +112,18 @@ PATRONES DE LENGUAJE DE REFERENCIA (usar como modelo de tono y construcción):
 - Cordón a la tierra: visualizar energía que desciende a las profundidades de la tierra para liberar lo que no pertenece al usuario (miedos, opiniones ajenas, tensión acumulada) — efectivo como limpieza antes de cualquier trabajo de claridad o decisión.
 - Luz desde el ombligo: alternativa a la luz desde el pecho — para estados de confianza o autoestima, la luz nace desde el centro del cuerpo (ombligo) y se expande progresivamente hacia afuera.
 - Fase 4 al mínimo: una sola palabra o frase corta repetida con silencio largo. Confiar en el silencio.
+
+TRADICIÓN YOGA NIDRA (aplicar SELECTIVAMENTE en sesiones largas, 20+ min, especialmente cuando el usuario busca relajación profunda, sueño, sanación o exploración interna). Sus técnicas:
+
+- Sankalpa (resolución positiva): una frase corta y positiva en presente que el usuario repite mentalmente 3 veces. Si el input no sugiere uno claro, proponer una alineada con el momento del usuario (ej: "vivo en absoluta paz cada segundo de mi vida", "mi cuerpo y mi mente están en equilibrio", "soy capaz de sostener mi vida con calma"). Repetir IDÉNTICA al inicio Y al final de la sesión.
+
+- Rotación de conciencia extendida: en sesiones largas, llevar la atención por 50+ puntos del cuerpo en orden — lado derecho completo (mano, dedos, palma, dorso, muñeca, antebrazo, codo, brazo, hombro, axila, costado, cintura, cadera, muslo, rodilla, pantorrilla, tobillo, talón, planta, empeine, dedos del pie), lado izquierdo completo, espalda (occipucio, omóplatos, glúteos, columna), frente (cabeza, frente, sienes, cejas, ojos, mejillas, mandíbula, cuello, pecho, abdomen), internas (cerebro, corazón, pulmones, estómago). Velocidad rápida: 1-2s entre puntos.
+
+- Visualización inmersiva con escenario sensorial completo: en lugar de metáforas cortas, construir un escenario completo con 4-5 detalles sensoriales (vista, tacto, temperatura, olor, sonido). Ejemplos: caminar por la orilla del mar con ropa de lino blanca, brisa cálida, sol naciente, sonido de olas; tumbarse sobre la hierba en un oasis con palmeras; estar al pie de una montaña al amanecer; un prado con flores y aire fresco. La escena debe encajar con el estado del usuario.
+
+- Chidakasha: hacia el final, observar el espacio oscuro frente a los ojos cerrados — el 'cielo interno'. 1-2 frases de instrucción, luego silencio puro de 90-150s. Si aparecen formas o luces, son proyecciones del subconsciente — solo observar.
+
+- Despertar gradual sensorial: al cerrar la sesión, reorientar al usuario por etapas — primero sonidos del entorno, luego luz a través de párpados, luego tacto de ropa en la piel, luego respiraciones profundas, luego movimiento suave de dedos de manos y pies, finalmente sugerir mentalmente 3 cosas por las que dar gracias. Solo entonces invitar a abrir los ojos.
 
 COHERENCIA NARRATIVA: La meditación es un arco completo, no una secuencia de frases. El estado del usuario al inicio es el punto de partida — nombrado con claridad en el intro. Las Fases 1-3 son el camino. La Fase 4 es la llegada: el estado opuesto o complementario al del inicio. El Cierre y la frase final deben resonar con el intro — si el intro nombró algo concreto ("la cabeza llena", "el peso del día"), el cierre debe referenciarlo de forma que el usuario sienta que algo cambió. Nunca terminar con una frase genérica de bienestar. Terminar con algo que cierre el arco específico de esta sesión.`;
 
@@ -237,7 +251,49 @@ SECCIÓN 7 — SILENCIO DE PROCESAMIENTO (~25 palabras):
 SECCIÓN 8 — CIERRE (~200 palabras, 18:00-20:00):
 Retorno gradual con movimiento suave (dedos, estiramientos). Reflexión extensa sobre la capacidad del usuario y lo que acaba de experimentar. Instrucción detallada de uso: cómo el usuario puede volver a esta sensación cuando lo necesite fuera de la sesión, en qué momentos aplicarla, qué señal usar para acceder a este estado.
 Silencios: [silencio:8s] a [silencio:12s]. Sin silencio después de la última frase.
-EXCEPCIÓN DORMIR: sin retorno físico. Se disuelve en música.`
+EXCEPCIÓN DORMIR: sin retorno físico. Se disuelve en música.`,
+
+    '30': `
+═══════════════════════════════════════
+ESTRUCTURA PARA ESTA SESIÓN: 30 MINUTOS (1800s total)
+═══════════════════════════════════════
+
+9 secciones. Práctica profunda de yoga nidra adaptada al input del usuario. Si el input describe un estado emocional concreto (no relajación general), las técnicas yoga nidra se combinan con la técnica específica para ese estado — el sankalpa, la rotación de conciencia, la visualización inmersiva y el chidakasha enmarcan la técnica del estado.
+
+SECCIÓN 1 — POSICIONAMIENTO Y ANCLAJE CUERPO-SUELO (~150 palabras, 0:00-2:30):
+Bienvenida que refleja el momento del usuario en 2-3 frases. Sugerir postura: acostado boca arriba si pueden, brazos separados del tronco, palmas hacia arriba, pies separados ligeramente. Llevar atención a los puntos de contacto cuerpo-suelo (talones, glúteos, espalda alta, codos, manos, parte posterior de la cabeza). Difuminar la línea cuerpo-suelo: la sensación táctil se vuelve homogénea, el cuerpo se rinde a la tierra.
+Silencios: [silencio:3s] a [silencio:5s].
+
+SECCIÓN 2 — SANKALPA INICIAL (~100 palabras, 2:30-4:00):
+Introducir el sankalpa: una resolución positiva, corta, en presente, alineada con el momento del usuario. Si el input lo sugiere, formularla específica; si no, proponer una universal. Pedir repetir 3 veces mentalmente con [silencio:8s] entre repeticiones, con intención y sentimiento.
+
+SECCIÓN 3 — ROTACIÓN DE CONCIENCIA EXTENDIDA (~350 palabras, 4:00-12:00):
+Llevar la atención por las partes del cuerpo en orden, RÁPIDO. Lado derecho completo (mano, pulgar, segundo dedo, tercero, cuarto, quinto, palma, dorso, muñeca, antebrazo, codo, brazo, hombro, axila, costado, cintura, cadera, muslo, rodilla, pantorrilla, tobillo, talón, planta, empeine, dedos del pie). Lado izquierdo completo, igual estructura. Espalda (occipucio, omóplatos, glúteos, columna). Frente (parte superior de la cabeza, frente, sienes, cejas, ojos, mejillas, mandíbula, cuello, pecho, abdomen). Internas (cerebro, corazón, pulmones, estómago, intestinos). Todo el cuerpo a la vez al final.
+Silencios entre puntos: [silencio:1s] a [silencio:2s]. Silencios al cambiar de zona: [silencio:5s] a [silencio:8s]. Silencio final tras "todo el cuerpo": [silencio:15s].
+
+SECCIÓN 4 — RESPIRACIÓN CON VISUALIZACIÓN ENERGÉTICA (~200 palabras, 12:00-16:00):
+Visualizar el aire ascendiendo de pies a coronilla al inhalar, descendiendo al exhalar. Tres ciclos completos guiados. Si el estado del usuario lo permite, integrar una luz dorada o cálida que recorre el canal central limpiando y equilibrando. Esta visualización debe hacerse sin esfuerzo.
+Silencios normales: [silencio:14s] a [silencio:22s]. Post-respiración: [silencio:30s] a [silencio:45s]. Cierre con [silencio:60s].
+
+SECCIÓN 5 — TÉCNICA PRINCIPAL CON VISUALIZACIÓN INMERSIVA (~350 palabras, 16:00-22:00):
+Aplicar la técnica específica para el estado del usuario, integrada en una visualización inmersiva con escenario sensorial completo (4-5 detalles: vista, tacto, temperatura, olor, sonido). El escenario debe encajar con el estado: playa con orilla y brisa para calma, prado con hierba y palmeras para sanación, cima de montaña al amanecer para claridad, bosque al atardecer para introspección. Si es tristeza/duelo, integrar luz sanadora desde el sol o el centro del pecho. Si es ansiedad/agitación, integrar el mar calmándose. Si es decisión, integrar las dos puertas en el escenario natural. Si es burnout, integrar el árbol con copa agitada y raíces firmes.
+Silencios: [silencio:20s] a [silencio:35s]. Post-respiración: [silencio:40s] a [silencio:60s]. Cierre con [silencio:90s] antes del chidakasha.
+
+SECCIÓN 6 — CHIDAKASHA / SILENCIO DE PROCESAMIENTO (~50 palabras, 22:00-26:00):
+Invitar a observar el espacio oscuro frente a los ojos cerrados, a la altura de la frente — el 'cielo interno', el espacio infinito. 1-2 frases máximo. Si aparecen formas o luces, son proyecciones del subconsciente — solo observar sin investigar.
+Silencio puro: usar 2 marcadores consecutivos, primero [silencio:200s] y después una frase muy corta de re-anclaje ("Mantente aquí." / "Solo observa.") seguida de [silencio:200s]. Este silencio es el corazón de la práctica.
+
+SECCIÓN 7 — SANKALPA FINAL (~80 palabras, 26:00-27:30):
+Repetir EXACTAMENTE el mismo sankalpa del inicio, 3 veces, con [silencio:8s] entre repeticiones. Recordar al usuario que ahora la mente está más receptiva — la semilla se planta más profundo.
+
+SECCIÓN 8 — DESPERTAR SENSORIAL GRADUAL (~150 palabras, 27:30-29:30):
+Reorientar por capas: 1) sonidos del entorno, 2) luz a través de los párpados, 3) tacto de la ropa en la piel, 4) respiraciones profundas y refrescantes, 5) movimiento suave de los dedos de manos y pies, 6) sugerir mentalmente 3 cosas por las que dar gracias.
+Silencios: [silencio:5s] a [silencio:10s].
+
+SECCIÓN 9 — CIERRE FINAL (~50 palabras, 29:30-30:00):
+Reflexión breve sobre la práctica que cierre el arco con el inicio. Invitar a llevarse el sankalpa al día. Frase final memorable. Sin silencio después.
+
+EXCEPCIÓN DORMIR: omitir secciones 7, 8 y 9. La práctica se disuelve en chidakasha (sección 6) — el silencio prolongado se mantiene hasta el final, sin retorno.`
   };
 
   return blocks[duration] || '';
@@ -316,8 +372,8 @@ module.exports = async (req, res) => {
     return res.status(400).json({ error: 'El texto no puede estar vacío.' });
   }
 
-  if (!['5', '10', '15', '20'].includes(duration)) {
-    return res.status(400).json({ error: 'Duración no válida. Debe ser 5, 10, 15 o 20 minutos.' });
+  if (!['5', '10', '15', '20', '30'].includes(duration)) {
+    return res.status(400).json({ error: 'Duración no válida. Debe ser 5, 10, 15, 20 o 30 minutos.' });
   }
 
   // Guests y plan free: solo meditaciones de 5 minutos
@@ -326,8 +382,13 @@ module.exports = async (req, res) => {
   }
 
   // Essential: máximo 15 minutos
-  if (limitCheck.plan === 'essential' && duration === '20') {
+  if (limitCheck.plan === 'essential' && (duration === '20' || duration === '30')) {
     return res.status(403).json({ error: 'Tu plan Essential permite meditaciones de hasta 15 minutos.' });
+  }
+
+  // Premium: máximo 20 minutos (30 min es exclusivo de Studio)
+  if (limitCheck.plan === 'premium' && duration === '30') {
+    return res.status(403).json({ error: 'Las sesiones de 30 minutos son exclusivas del plan Studio.' });
   }
 
   // Log guest en Supabase (fail silently — la tabla puede no existir aún)
@@ -386,7 +447,7 @@ Elementos clave a incorporar durante toda la meditación: ${userInput.slice(0, 1
 
 Contexto de la sesión:
 - Duración: ${duration} minutos
-- Longitud MÁXIMA ESTRICTA: ${targetWords} palabras. No superar este límite bajo ninguna circunstancia, independientemente de la longitud o complejidad de la descripción del usuario. La descripción del usuario es contexto, no define la cantidad de palabras.
+- Longitud OBJETIVO: ${targetWords} palabras (rango aceptable: ${Math.round(targetWords * 0.92)}-${targetWords}). Esta es la longitud que la sesión NECESITA para llenar la duración solicitada. NO te quedes corta — si tu draft sale por debajo del rango aceptable, EXPANDE las secciones de visualización inmersiva y rotación de conciencia con más detalles sensoriales y descriptivos antes de devolver el resultado. La descripción del usuario es contexto, no define la cantidad de palabras.
 - Voz: ${voiceContext}
 - Género gramatical: ${genderContext}${userName ? `\n- Forma como el usuario quiere que nos refiramos a él/ella: "${userName}". Úsalo de forma natural en la intro o durante la meditación si encaja orgánicamente. Puede ser un nombre, un nombre compuesto o un mote — respétalo tal cual lo escribió. NUNCA como primera palabra de la meditación. Nunca de forma forzada o repetitiva. Máximo 2 menciones en toda la sesión: una en la intro y opcionalmente una en transición media-sesión si fluye natural. Nunca al cierre.` : ''}
 ${getDurationBlock(duration)}
@@ -398,20 +459,22 @@ El campo "title" debe capturar en pocas palabras la esencia de esta sesión (ej:
 El campo "text" debe contener solo el texto de la meditación, sin títulos ni explicaciones.`;
 
   try {
-    // Timeout: maxDuration de la función es 60s, cortamos el fetch a 55s para
-    // que Vercel no cierre la conexión mid-stream y se pierda la respuesta.
+    // Timeout: maxDuration Vercel = 60s (Hobby) / 90s para meditation. Cortamos
+    // el fetch a 55s para sesiones cortas y a 85s para 30 min (Opus es más lento).
+    const fetchTimeout = duration === '30' ? 85000 : 55000;
+    const maxTokens = duration === '30' ? 8000 : 4000;
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      signal: AbortSignal.timeout(55000),
+      signal: AbortSignal.timeout(fetchTimeout),
       headers: {
         'x-api-key': process.env.ANTHROPIC_API_KEY,
         'anthropic-version': '2023-06-01',
         'content-type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
-        max_tokens: 4000,
-        // Prompt caching: el system prompt (~3500 tokens) es idéntico entre llamadas.
+        model: 'claude-opus-4-7',
+        max_tokens: maxTokens,
+        // Prompt caching: el system prompt (~4000 tokens) es idéntico entre llamadas.
         // Claude lo cachea 5 min → ~50% menos coste de input tokens tras primer hit.
         system: [
           { type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }

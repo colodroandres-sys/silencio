@@ -109,16 +109,25 @@ function applyAllLocks() {
   const isPremium   = state.userPlan === 'premium';
   const isStudio    = state.userPlan === 'studio';
   const canUse20    = isPremium || isStudio;
+  const canUse30    = isStudio;
 
   document.querySelectorAll('#grp-duration .s-chip').forEach(pill => {
     const val = pill.dataset.value;
-    if (val === '20') {
+    if (val === '30') {
+      setPillLock(pill, !canUse30);
+    } else if (val === '20') {
       setPillLock(pill, !canUse20);
     } else {
       setPillLock(pill, isFree && val !== '5');
     }
   });
 
+  if (!canUse30 && state.duration === '30') {
+    document.querySelectorAll('#grp-duration .s-chip').forEach(p => p.classList.remove('active'));
+    const target = canUse20 ? '20' : (isFree ? '5' : '15');
+    document.querySelector(`#grp-duration .s-chip[data-value="${target}"]`)?.classList.add('active');
+    state.duration = target;
+  }
   if (!canUse20 && state.duration === '20') {
     document.querySelectorAll('#grp-duration .s-chip').forEach(p => p.classList.remove('active'));
     document.querySelector('#grp-duration .s-chip[data-value="15"]')?.classList.add('active');

@@ -13,7 +13,8 @@ const DURATION_CREDITS = {
   '5': 1,
   '10': 2,
   '15': 3,
-  '20': 4
+  '20': 4,
+  '30': 6
 };
 
 function getCurrentMonth() {
