@@ -142,12 +142,15 @@ module.exports = async (req, res) => {
     };
 
     // ── ElevenLabs: créditos en vivo ────────────────────────
+    // Preferimos ELEVENLABS_ADMIN_KEY (read-only con user_read).
+    // Fallback a ELEVENLABS_API_KEY si la admin no existe.
     let elevenlabs = null;
     let elevenlabsError = null;
-    if (process.env.ELEVENLABS_API_KEY) {
+    const elKey = process.env.ELEVENLABS_ADMIN_KEY || process.env.ELEVENLABS_API_KEY;
+    if (elKey) {
       try {
         const elRes = await fetch('https://api.elevenlabs.io/v1/user/subscription', {
-          headers: { 'xi-api-key': process.env.ELEVENLABS_API_KEY },
+          headers: { 'xi-api-key': elKey },
           signal: AbortSignal.timeout(5000),
         });
         if (elRes.ok) {
