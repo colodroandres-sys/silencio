@@ -218,7 +218,7 @@ Tres documentos vivos que te explican cómo operar Stillova solo (con Claude). N
 - [`docs/playbook-escala.md`](playbook-escala.md) — termómetros + acción exacta para cada threshold (ElevenLabs, Vercel, Anthropic, Supabase, Clerk, churn, chargebacks, etc). 18 termómetros con 3 niveles cada uno.
 - [`docs/manual-operativo-ceo.md`](manual-operativo-ceo.md) — tu día/semana/mes, decisiones que solo tú tomas vs. que Claude toma, templates de soporte cliente, escenarios "qué pasa si" (10 escenarios), milestones de hiring por MRR.
 - [`docs/automation-claude-max.md`](automation-claude-max.md) — plan en 7 fases para sacar 100% al $200/mes de Claude (cron jobs, alertas push, dashboard, slash commands, soporte auto, guardián de seguridad, agente de growth).
-- [`docs/dia-tipo-lanzamiento.md`](dia-tipo-lanzamiento.md) — **léelo la noche antes del lanzamiento.** Guion paso a paso del día 0 (hora por hora), días 1-3, días 4-7, mes 2-3. Mentalidad, qué hacer, qué NO hacer, tu día perfecto, tu peor día, cómo usar este documento.
+- [`docs/manual-uso-diario.md`](manual-uso-diario.md) — **EL DOCUMENTO PRINCIPAL.** Qué links abres, qué números miras, qué pasa cuando algo está raro, cómo me escribes. Sin metáforas, sin horarios, sin teoría. El único doc que abres a diario.
 
 **Cuándo leerlos**: el playbook lo abres cuando algo se siente raro. El manual operativo lo lees una vez completo, luego solo consultas escenarios cuando aplique. Automation lo revisamos cuando arranquemos esa sesión específica.
 
