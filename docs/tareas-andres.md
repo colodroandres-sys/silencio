@@ -94,6 +94,31 @@ Aquí están las cosas que **solo tú puedes hacer** porque yo no tengo acceso (
 
 ---
 
+### D. Validar visualmente la app en producción + nueva feature de nombre
+
+- **Por qué:** Los últimos cambios (Ronda 1+2 + USD + feature "¿cómo refiriros a ti?") están en producción pero nadie los ha visto en un browser real. Si hay un bug visual, lo amplificas con marketing.
+- **Tiempo:** 15 min.
+- **Cuándo:** antes de lanzar la campaña.
+
+**Pasos:**
+
+1. [ ] **Ventana incógnito** → stillova.com.
+2. [ ] Pasa onboarding: debe ser **2 pasos** (welcome + primera sesión).
+3. [ ] En home guest: aparece input nuevo *"¿Cómo quieres que nos refiramos a ti?"* sobre el textarea.
+4. [ ] Escribe tu nombre + algo en el textarea (ej: "ansioso por entrevista mañana") + genera.
+5. [ ] **Escucha la meditación**: la voz debe decir tu nombre en intro o transición media (nunca al cierre). Si no lo dice o suena forzado → screenshot/avísame.
+6. [ ] Ventana incógnito nueva → stillova.com → en home guest debe aparecer **"Hola, [Tu nombre]." + botón "cambiar"** en lugar del input. (Si abriste otra ventana incógnito separada, el localStorage es nuevo — usa la misma para el test 2).
+7. [ ] Continúa hasta el paywall (NO intentes pagar — el checkout falla técnicamente hasta que LS apruebe). Verifica que veas:
+   - 3 cards verticales (Essential / Premium / Studio)
+   - Anual seleccionado por defecto
+   - Microcopy "Hoy se cobran $X · 12 meses · cancela cuando quieras"
+   - Precios en **dólares** (`$9.99`, `$19.99`, `$39.99` mensuales)
+8. [ ] Click en un plan → **modal pre-checkout** debe aparecer con monto explícito.
+
+Si todo OK → escríbeme "validación visual ok". Si encuentras algo raro → screenshot.
+
+---
+
 ### B. ✅ 2FA en cuentas críticas — CERRADO
 
 Andrés se loguea con Google a todas las cuentas (Anthropic, Vercel, Supabase, ElevenLabs, Clerk, Lemon Squeezy). Google tiene 2FA activo → toda la cadena protegida.
@@ -181,6 +206,20 @@ Andrés se loguea con Google a todas las cuentas (Anthropic, Vercel, Supabase, E
 **Notas:**
 - En cada paso, **no revoques la clave vieja antes de confirmar que la nueva ya está deployada** en Vercel. Si revocas antes, la app deja de funcionar entre 1-3 minutos hasta que el nuevo deploy se propague.
 - Yo controlo el deploy y te confirmo "ya quedó". Solo entonces revocas la vieja.
+
+---
+
+---
+
+## 📘 Documentos de operación (referencia para CEO)
+
+Tres documentos vivos que te explican cómo operar Stillova solo (con Claude). No son "tareas" — son tus manuales:
+
+- [`docs/playbook-escala.md`](playbook-escala.md) — termómetros + acción exacta para cada threshold (ElevenLabs, Vercel, Anthropic, Supabase, Clerk, churn, chargebacks, etc). 18 termómetros con 3 niveles cada uno.
+- [`docs/manual-operativo-ceo.md`](manual-operativo-ceo.md) — tu día/semana/mes, decisiones que solo tú tomas vs. que Claude toma, templates de soporte cliente, escenarios "qué pasa si" (10 escenarios), milestones de hiring por MRR.
+- [`docs/automation-claude-max.md`](automation-claude-max.md) — plan en 7 fases para sacar 100% al $200/mes de Claude (cron jobs, alertas push, dashboard, slash commands, soporte auto, guardián de seguridad, agente de growth).
+
+**Cuándo leerlos**: el playbook lo abres cuando algo se siente raro. El manual operativo lo lees una vez completo, luego solo consultas escenarios cuando aplique. Automation lo revisamos cuando arranquemos esa sesión específica.
 
 ---
 
