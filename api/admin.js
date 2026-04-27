@@ -151,13 +151,13 @@ module.exports = async (req, res) => {
           'Accept': 'application/vnd.api+json',
         };
         const storeId = process.env.LEMONSQUEEZY_STORE_ID;
-        const since30 = new Date(Date.now() - 30 * 86400000).toISOString();
+        const since30Ms = Date.now() - 30 * 86400000;
 
         const [subsRes, ordersRes] = await Promise.all([
           fetch(`https://api.lemonsqueezy.com/v1/subscriptions?filter[store_id]=${storeId}&page[size]=100`, {
             headers: lsHeaders, signal: AbortSignal.timeout(7000),
           }),
-          fetch(`https://api.lemonsqueezy.com/v1/orders?filter[store_id]=${storeId}&filter[created_at_after]=${since30}&page[size]=100&sort=-created_at`, {
+          fetch(`https://api.lemonsqueezy.com/v1/orders?filter[store_id]=${storeId}&page[size]=100`, {
             headers: lsHeaders, signal: AbortSignal.timeout(7000),
           }),
         ]);
@@ -175,7 +175,12 @@ module.exports = async (req, res) => {
             subsByStatus[st] = (subsByStatus[st] || 0) + 1;
           }
 
-          const orders = ordersData.data || [];
+          // Filtrar orders de últimos 30d en el cliente (LS API no soporta rango)
+          const allOrders = ordersData.data || [];
+          const orders = allOrders.filter(o => {
+            const created = new Date(o.attributes?.created_at || 0).getTime();
+            return created >= since30Ms;
+          });
           let revenue30d = 0;
           let refundCount30d = 0;
           let testOrdersCount = 0;
@@ -310,7 +315,7 @@ module.exports = async (req, res) => {
       {
         key:      'refunds',
         label:    'Refunds / chargebacks 30d',
-        value:    !lemonSqueezy ? 'no configurado'
+        value:    !lemonSqueezy ? (lsError === 'no_key_or_store' ? 'no configurado' : 'sin conexión')
                 : lemonSqueezy.totalOrders30d === 0 ? '0 órdenes 30d'
                 : `${lemonSqueezy.refundCount30d} (${lemonSqueezy.refundRate}%)`,
         level:    !lemonSqueezy ? 'gray'
@@ -318,7 +323,7 @@ module.exports = async (req, res) => {
                 : lemonSqueezy.refundRate > 2 ? 'red'
                 : lemonSqueezy.refundRate > 0.5 ? 'yellow'
                 : 'green',
-        action:   !lemonSqueezy ? 'Conecta API LS para ver esto.'
+        action:   !lemonSqueezy ? (lsError === 'no_key_or_store' ? 'Conecta API LS para ver esto.' : `Falló: ${lsError}. Avísame.`)
                 : lemonSqueezy.totalOrders30d === 0 ? 'Aún no hay ventas. Cuando empiecen, este semáforo se activa.'
                 : lemonSqueezy.refundRate > 2 ? 'CRÍTICO. >2% pone en riesgo tu cuenta LS. Pausa nuevos signups y avísame.'
                 : lemonSqueezy.refundRate > 0.5 ? 'Subiendo. Revisa motivos en LS y mejora copy del checkout.'
