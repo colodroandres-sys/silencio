@@ -216,7 +216,9 @@ async function attemptGeneration(signal) {
       duration:  state.duration,
       voice:     state.voice,
       gender:    state.gender,
-      intent:    state.intent
+      intent:    state.intent,
+      userHour:  new Date().getHours(),
+      userTimezone: (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (_) { return ''; } })()
     })
   });
 
