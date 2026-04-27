@@ -54,8 +54,20 @@ function cancelGeneration() {
 
 async function generateMeditation() {
   if (!clerk || !clerk.user) {
-    const guestName = document.getElementById('pref-name')?.value.trim().slice(0, 50);
-    if (guestName) state.userName = guestName;
+    // Lee de input de home guest, fallback a localStorage si el input está oculto (saludo personalizado)
+    const guestName = (
+      document.getElementById('home-guest-referred-as')?.value ||
+      localStorage.getItem('stillova_referred_as') ||
+      document.getElementById('pref-name')?.value ||
+      ''
+    ).trim().slice(0, 50);
+    if (guestName) {
+      state.userName = guestName;
+      try { localStorage.setItem('stillova_referred_as', guestName); } catch (_) {}
+      try { track('home_guest_name_filled', { length: guestName.length }); } catch (_) {}
+    } else {
+      try { track('home_guest_name_skipped', {}); } catch (_) {}
+    }
 
     if (localStorage.getItem('stillova_guest_used')) {
       pendingGeneration = true;
@@ -65,7 +77,11 @@ async function generateMeditation() {
     }
   } else {
     pendingGeneration = false;
-    if (!state.userName) state.userName = (clerk.user.firstName || '').trim().slice(0, 50);
+    if (!state.userName) {
+      const fromClerk = (clerk.user.firstName || '').trim().slice(0, 50);
+      const fromStorage = (localStorage.getItem('stillova_referred_as') || '').trim().slice(0, 50);
+      state.userName = fromClerk || fromStorage;
+    }
 
     // Verificar sesión activa antes de continuar
     if (!clerk.session) {

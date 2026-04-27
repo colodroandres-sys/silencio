@@ -322,6 +322,63 @@
 }
 .home-insight-text em { font-style: italic; font-weight: 300; }
 
+/* Home Guest — "¿Cómo refiriros a ti?" input */
+.home-guest-referred-row {
+  margin-bottom: 10px;
+}
+.home-guest-referred-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--faint);
+  outline: none;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  padding: 8px 2px;
+  transition: border-color 0.2s ease;
+}
+.home-guest-referred-input:focus {
+  border-bottom-color: var(--ink);
+}
+.home-guest-referred-input::placeholder {
+  color: var(--muted);
+  opacity: 0.55;
+  font-style: italic;
+}
+
+.home-guest-personal-greeting {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 18px;
+  color: var(--ink);
+  margin: 0 0 14px 0;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.home-guest-personal-greeting em {
+  font-style: italic;
+  font-weight: 400;
+}
+.home-guest-greeting-edit {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+}
+.home-guest-greeting-edit:hover { opacity: 1; }
+
 /* Home Guest Textarea */
 .home-guest-input-card {
   background: var(--surface);

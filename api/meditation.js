@@ -388,7 +388,7 @@ Contexto de la sesión:
 - Duración: ${duration} minutos
 - Longitud MÁXIMA ESTRICTA: ${targetWords} palabras. No superar este límite bajo ninguna circunstancia, independientemente de la longitud o complejidad de la descripción del usuario. La descripción del usuario es contexto, no define la cantidad de palabras.
 - Voz: ${voiceContext}
-- Género gramatical: ${genderContext}${userName ? `\n- Nombre del usuario: ${userName}. Intégralo de forma natural en la intro o durante la meditación si encaja orgánicamente. NUNCA como primera palabra de la meditación. Nunca de forma forzada o repetitiva.` : ''}
+- Género gramatical: ${genderContext}${userName ? `\n- Forma como el usuario quiere que nos refiramos a él/ella: "${userName}". Úsalo de forma natural en la intro o durante la meditación si encaja orgánicamente. Puede ser un nombre, un nombre compuesto o un mote — respétalo tal cual lo escribió. NUNCA como primera palabra de la meditación. Nunca de forma forzada o repetitiva. Máximo 2 menciones en toda la sesión: una en la intro y opcionalmente una en transición media-sesión si fluye natural. Nunca al cierre.` : ''}
 ${getDurationBlock(duration)}
 
 Devuelve únicamente un objeto JSON válido con este formato exacto (sin texto adicional antes ni después):

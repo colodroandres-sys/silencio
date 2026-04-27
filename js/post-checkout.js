@@ -22,6 +22,12 @@ function shouldShowPostCheckout() {
   if (!clerk?.user) return false;
   if (state.userPlan === 'free' || !state.userPlan) return false;
   if (localStorage.getItem(POST_CHECKOUT_DONE_KEY) === '1') return false;
+
+  // Si ya tenemos referred_as Y no hay nada más por preguntar (intent topics), saltar entera
+  const hasName = !!(clerk?.user?.firstName || localStorage.getItem('stillova_referred_as'));
+  const hasTopics = !!localStorage.getItem('ob_topics');
+  if (hasName && hasTopics) return false;
+
   return true;
 }
 
@@ -29,15 +35,34 @@ function showPostCheckout() {
   // Reset state UI
   _postCheckoutSelected = new Set();
   const nameEl = document.getElementById('post-checkout-name');
-  if (nameEl) nameEl.value = clerk?.user?.firstName || '';
+  const referredAs = localStorage.getItem('stillova_referred_as') || '';
+  const existingName = clerk?.user?.firstName || referredAs || '';
+  if (nameEl) nameEl.value = existingName;
   const otherEl = document.getElementById('post-checkout-other');
   if (otherEl) otherEl.value = '';
   document.querySelectorAll('#post-checkout-chips .s-chip').forEach(c => c.classList.remove('active'));
 
-  try { track('post_checkout_screen_shown', {}); } catch (_) {}
+  // Si ya tenemos nombre (Clerk firstName o referred_as de home guest), ocultar la sección entera
+  const nameSection = document.getElementById('post-checkout-name-section');
+  const divider = document.getElementById('post-checkout-divider');
+  if (existingName) {
+    if (nameSection) nameSection.style.display = 'none';
+    if (divider) divider.style.display = 'none';
+  } else {
+    if (nameSection) nameSection.style.display = '';
+    if (divider) divider.style.display = '';
+  }
+
+  try { track('post_checkout_screen_shown', { hasNamePrefilled: !!existingName }); } catch (_) {}
   showScreen('screen-post-checkout');
-  // Foco al nombre tras una pequeña pausa para que la transición no lo robe
-  setTimeout(() => nameEl?.focus(), 350);
+  // Foco al primer campo visible
+  setTimeout(() => {
+    if (existingName) {
+      document.getElementById('post-checkout-other')?.focus();
+    } else {
+      nameEl?.focus();
+    }
+  }, 350);
 }
 
 async function postCheckoutSubmit() {
@@ -58,6 +83,11 @@ async function postCheckoutSubmit() {
     }
   } else if (name) {
     state.userName = name;
+  }
+
+  // Sincronizar con referred_as (la fuente que usa home guest y el prompt de meditación)
+  if (name) {
+    try { localStorage.setItem('stillova_referred_as', name); } catch (_) {}
   }
 
   // Persistir topics en obPrefs + localStorage

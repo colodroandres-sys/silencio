@@ -374,6 +374,7 @@ function updateHomeDisplay() {
     if (userBar)   userBar.style.display   = 'none';
     if (guestBody) guestBody.style.display = '';
     if (userBody)  userBody.style.display  = 'none';
+    _initHomeGuestReferred();
     try { track('home_guest_viewed', { hasUsedFree: !!localStorage.getItem('stillova_guest_used') }); } catch (_) {}
   } else {
     if (guestBar)  guestBar.style.display  = 'none';
@@ -385,6 +386,57 @@ function updateHomeDisplay() {
 
   // Fecha/hora en ambas vistas
   _updateTimeGreeting();
+}
+
+// "¿Cómo refiriros a ti?" — input opcional en home guest
+const REFERRED_AS_KEY = 'stillova_referred_as';
+
+function _sanitizeReferredAs(raw) {
+  if (!raw) return '';
+  // Solo letras (incluye acentos comunes y ñ) + espacios. Nada de números ni símbolos.
+  const cleaned = String(raw)
+    .replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜüÀÈÌÒÙàèìòù\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 40);
+  return cleaned;
+}
+
+function _initHomeGuestReferred() {
+  const stored = (localStorage.getItem(REFERRED_AS_KEY) || '').trim();
+  const inputRow  = document.getElementById('home-guest-referred-row');
+  const greeting  = document.getElementById('home-guest-personal-greeting');
+  const greetName = document.getElementById('home-guest-personal-name');
+  const input     = document.getElementById('home-guest-referred-as');
+
+  if (stored) {
+    if (inputRow)  inputRow.style.display  = 'none';
+    if (greeting)  greeting.style.display  = '';
+    if (greetName) greetName.textContent   = stored;
+    if (input)     input.value             = stored;
+  } else {
+    if (inputRow)  inputRow.style.display  = '';
+    if (greeting)  greeting.style.display  = 'none';
+    if (input)     input.value             = '';
+  }
+}
+
+function homeGuestReferredInput() {
+  const input = document.getElementById('home-guest-referred-as');
+  if (!input) return;
+  const cleaned = _sanitizeReferredAs(input.value);
+  if (cleaned !== input.value) input.value = cleaned;
+  // No persistir hasta que tenga al menos 2 chars (evita guardar tecleos accidentales)
+  if (cleaned.length >= 2) {
+    try { localStorage.setItem(REFERRED_AS_KEY, cleaned); } catch (_) {}
+  }
+}
+
+function homeGuestEditReferred() {
+  // Permite al usuario cambiar el nombre persistido
+  try { localStorage.removeItem(REFERRED_AS_KEY); } catch (_) {}
+  _initHomeGuestReferred();
+  setTimeout(() => document.getElementById('home-guest-referred-as')?.focus(), 50);
 }
 
 function _updateTimeGreeting() {

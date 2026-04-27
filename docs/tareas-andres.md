@@ -94,25 +94,11 @@ Aquí están las cosas que **solo tú puedes hacer** porque yo no tengo acceso (
 
 ---
 
-### B. Activar 2FA en TODAS las cuentas críticas
+### B. ✅ 2FA en cuentas críticas — CERRADO
 
-- **Por qué:** Si te hijackean cualquiera de estas cuentas, te quitan el negocio en una tarde.
-- **Tiempo:** 30 min.
+Andrés se loguea con Google a todas las cuentas (Anthropic, Vercel, Supabase, ElevenLabs, Clerk, Lemon Squeezy). Google tiene 2FA activo → toda la cadena protegida.
 
-**Cuentas a proteger (en este orden):**
-
-1. [x] ~~Stripe~~ — descartada (ya no usamos Stripe directo, ver C).
-1.5. [x] **Lemon Squeezy** — 2FA activado en sesión 2026-04-26 ✅
-2. [ ] **Google** (colodro.andres@gmail.com) — [myaccount.google.com/security](https://myaccount.google.com/security) → 2-Step Verification. **Prioridad #1**: protege todos los logins via Google.
-3. [ ] **Anthropic** — [console.anthropic.com](https://console.anthropic.com) → Settings → Account → Two-Factor Authentication.
-4. [ ] **Vercel** — [vercel.com/account](https://vercel.com/account) → Security → Two-Factor Authentication.
-5. [ ] **Supabase** — [supabase.com/dashboard/account/security](https://supabase.com/dashboard/account/security) → enable 2FA.
-6. [ ] **ElevenLabs** — [elevenlabs.io](https://elevenlabs.io) → Settings → Security → 2FA.
-7. [ ] **Clerk** — [dashboard.clerk.com](https://dashboard.clerk.com) → tu avatar → Account Settings → Two-Factor Authentication.
-
-**Importante:**
-- Guarda los **códigos de respaldo** que cada servicio te da. Son 10 códigos de un solo uso por si pierdes el móvil. En password manager o nota bloqueada con contraseña.
-- App authenticator (Google Authenticator, Authy, app Passwords del iPhone). Asegurate que está respaldada en iCloud/Google.
+**Upgrade pendiente** cuando haya tracción ($MRR consistente): **Google Advanced Protection Program**. Reemplaza códigos del móvil por **llaves físicas USB** (YubiKey o Google Titan, ~€50 cada una × 2). Lo que usan founders/periodistas. Bloquea phishing avanzado y SIM-swap. Activarlo cuando valga la pena defender la cuenta — mucho antes de $10k MRR.
 
 ---
 

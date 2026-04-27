@@ -171,6 +171,25 @@
         <h1 class="home-headline">Hola. <em>¿Cómo estás?</em> <span class="home-headline-faded">De verdad.</span></h1>
         <p class="s-body home-sub">Escribe una palabra, una frase o un párrafo. Tu meditación se compone al momento.</p>
 
+        <!-- "¿Cómo quieres que nos refiramos a ti?" — opcional, persiste en localStorage -->
+        <div class="home-guest-referred-row" id="home-guest-referred-row">
+          <input
+            type="text"
+            id="home-guest-referred-as"
+            class="home-guest-referred-input"
+            placeholder="¿Cómo quieres que nos refiramos a ti?"
+            maxlength="40"
+            autocomplete="given-name"
+            oninput="homeGuestReferredInput()"
+          />
+        </div>
+
+        <!-- Saludo personalizado en visitas siguientes (sustituye al input cuando ya hay nombre) -->
+        <p class="home-guest-personal-greeting" id="home-guest-personal-greeting" style="display:none">
+          Hola, <em id="home-guest-personal-name"></em>.
+          <button class="home-guest-greeting-edit" type="button" onclick="homeGuestEditReferred()" aria-label="Cambiar nombre">cambiar</button>
+        </p>
+
         <!-- Inline textarea card -->
         <div class="home-guest-input-card">
           <textarea
@@ -611,14 +630,14 @@
       <h1 class="post-checkout-headline">Personalizamos lo <em>siguiente</em>.</h1>
       <p class="s-body post-checkout-sub">Dos cosas opcionales. Saltarte cualquiera no afecta tu plan.</p>
 
-      <!-- Sección 1 · Nombre -->
-      <div class="post-checkout-section">
-        <p class="s-eyebrow post-checkout-section-label">¿Cómo te llamas?</p>
-        <p class="post-checkout-section-hint">La próxima podrá decir tu nombre.</p>
-        <input type="text" id="post-checkout-name" class="post-checkout-input" placeholder="Tu nombre" autocomplete="given-name" maxlength="50">
+      <!-- Sección 1 · Nombre (se oculta si ya tenemos referred_as desde home guest) -->
+      <div class="post-checkout-section" id="post-checkout-name-section">
+        <p class="s-eyebrow post-checkout-section-label">¿Cómo quieres que nos refiramos a ti?</p>
+        <p class="post-checkout-section-hint">La próxima sesión podrá llamarte así.</p>
+        <input type="text" id="post-checkout-name" class="post-checkout-input" placeholder="Juan · Ana María · Jota..." autocomplete="given-name" maxlength="50">
       </div>
 
-      <div class="post-checkout-divider"></div>
+      <div class="post-checkout-divider" id="post-checkout-divider"></div>
 
       <!-- Sección 2 · Intent -->
       <div class="post-checkout-section">
