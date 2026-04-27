@@ -171,6 +171,26 @@
 | $50-100K | **Ingeniero contractor** | Yo + Claude no escalamos en horas humanas (revisión de PRs, code review, decisiones técnicas profundas) | $4000-8000/mes |
 | $100K+ | **Cofundador técnico / Head of Engineering** | Tú ya no puedes liderar tech sin ayuda. Equity + salario | depende |
 
+### Sitios concretos para encontrar gente
+
+| Rol | Sitios donde buscar | Tarifa típica |
+|-----|---------------------|---------------|
+| **VA** (soporte cliente) | [OnlineJobs.ph](https://onlinejobs.ph) (filipinos, inglés perfecto) · [Workana](https://workana.com) (LATAM, español nativo) · [Upwork](https://upwork.com) (global) | $4-15/h |
+| **Developer freelance** | [Toptal](https://toptal.com) (caro pero curado) · [Upwork](https://upwork.com) (variable) · [LinkedIn](https://linkedin.com) (busca "freelance fullstack JavaScript Spain/LatAm") | $20-80/h |
+| **Growth marketer** | [LinkedIn](https://linkedin.com) · [Upwork](https://upwork.com) · referidos de founders | base + comisión 10-20% sobre revenue |
+
+**Cómo entrevistar a un VA en 4 pasos:**
+1. Job post claro: "Customer support for AI meditation app. Spanish + English. 10h/week."
+2. Pide a 3-5 candidatos que escriban 1 párrafo respondiendo a "user pidió reembolso, qué le digo" basado en tu política
+3. Los que respondan con empatía + claridad pasan a entrevista de 15 min
+4. Pruébalos 1 semana con 5h pagadas, ves cómo responden a buzón real
+
+**Lo que el VA NO puede tocar nunca**:
+- Lemon Squeezy dashboard
+- Vercel
+- Código (GitHub)
+- API keys
+
 ### Antes de contratar (cualquier rol), pregúntate:
 
 1. **¿Esta tarea se puede automatizar con Claude?** Si sí, no contrates aún.
@@ -250,6 +270,19 @@
 2. ⏰ Define "kill switch": si en 60 días no pasas X de MRR, pivotas o cierras
 3. 💼 Decisión: vender / fundraise / consultoría temporal mientras Stillova crece
 4. 🤐 No hagas público que tienes problemas — perderás credibilidad ante usuarios y partners
+
+### Escenario K · Te demandan / amenazan con demanda por consejo de salud mental
+**Por qué puede pasar**: Stillova trabaja en un terreno emocionalmente sensible (ansiedad, sueño, etc.). Aunque tienes disclaimers, alguien podría intentarlo.
+
+1. **NO respondas tú directo. Nunca.**
+2. Tienes 3 capas de protección activas:
+   - Disclaimer "no sustituye terapia" en footer + welcome + paywall
+   - T&C explícitos: "Stillova es herramienta de bienestar, no producto médico"
+   - Política privacy aceptada al pagar
+3. Contacta abogado especializado en tech/wellness:
+   - **España**: NicoLuengo, GyR Abogados
+   - **Chile**: Carey, Cariola
+4. Mándame el caso para que recopile evidencia (logs, T&C aceptados).
 
 ### Escenario J · Ola masiva de feedback negativo (Twitter / TikTok thread)
 1. ⏸️ Espera 1 hora antes de responder. **Siempre**.

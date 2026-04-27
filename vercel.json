@@ -11,7 +11,7 @@
       ]
     },
     {
-      "source": "/(|index\\.html|dashboard\\.html|privacy\\.html|terms\\.html)",
+      "source": "/(|index\\.html|admin\\.html|privacy\\.html|terms\\.html)",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
       ]
@@ -37,7 +37,7 @@
     }
   ],
   "routes": [
-    { "src": "/admin", "dest": "/dashboard.html" }
+    { "src": "/admin", "dest": "/admin.html" }
   ],
   "functions": {
     "api/meditation.js":     { "maxDuration": 90  },
