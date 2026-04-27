@@ -374,16 +374,11 @@ module.exports = async (req, res) => {
 
   const { userInput: rawUserInput, userName: rawUserName, duration, voice, gender, userHour: rawUserHour, userTimezone: rawTz } = req.body || {};
 
-  // Defensa: si el frontend manda algo que parece email residual (sin @ porque el
-  // sanitizer lo quitó pero deja "anacanvacom"), ignorarlo. La meditación queda
-  // sin nombre, mejor que decir basura. Heurística simple: si contiene patrones
-  // de TLD pegados (com|net|org|gmail|hotmail|yahoo|outlook).
-  let userName = rawUserName;
-  if (typeof userName === 'string') {
-    const lower = userName.toLowerCase();
-    const looksLikeEmailResidue = /(com|net|org|gmail|hotmail|yahoo|outlook|icloud)$/i.test(lower) || /@/.test(lower);
-    if (looksLikeEmailResidue) userName = '';
-  }
+  // Validación estricta del nombre: solo aceptar si está en la whitelist de
+  // ~500 nombres comunes en español. Si no, meditación sin nombre (mejor
+  // genérico que basura — bug de "canva" reportado 28-abril).
+  const { validateUserName } = require('./_namesWhitelist');
+  const userName = validateUserName(rawUserName);
 
   if (!rawUserInput || !duration) {
     return res.status(400).json({ error: 'Faltan campos requeridos: userInput, duration' });
