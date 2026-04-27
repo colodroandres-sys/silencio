@@ -1,4 +1,4 @@
-const CACHE = 'stillova-v14';
+const CACHE = 'stillova-v15';
 const PRECACHE = [
   '/',
   '/index.html',

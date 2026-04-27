@@ -391,8 +391,12 @@ const REFERRED_AS_KEY = 'stillova_referred_as';
 
 function _sanitizeReferredAs(raw) {
   if (!raw) return '';
+  const str = String(raw);
+  // Si parece un email (contiene @), no lo aceptamos como nombre — el sanitizer
+  // strip-everything dejaba "anacanvacom" que TTS pronunciaba mal.
+  if (str.includes('@')) return '';
   // Solo letras (incluye acentos comunes y ñ) + espacios. Nada de números ni símbolos.
-  const cleaned = String(raw)
+  const cleaned = str
     .replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñÜüÀÈÌÒÙàèìòù\s]/g, '')
     .replace(/\s+/g, ' ')
     .trim()
@@ -422,8 +426,15 @@ function _initHomeGuestReferred() {
 function homeGuestReferredInput() {
   const input = document.getElementById('home-guest-referred-as');
   if (!input) return;
+  const looksLikeEmail = input.value.includes('@');
   const cleaned = _sanitizeReferredAs(input.value);
   if (cleaned !== input.value) input.value = cleaned;
+  // Si parece email, mostrar placeholder distinto un momento para guiar al usuario
+  if (looksLikeEmail) {
+    const original = input.placeholder;
+    input.placeholder = 'Solo tu nombre — sin email';
+    setTimeout(() => { if (input) input.placeholder = original; }, 3000);
+  }
   // No persistir hasta que tenga al menos 2 chars (evita guardar tecleos accidentales)
   if (cleaned.length >= 2) {
     try { localStorage.setItem(REFERRED_AS_KEY, cleaned); } catch (_) {}
