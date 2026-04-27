@@ -59,6 +59,7 @@ Home → Create → Loading → Player → End states
 | `profile.js` | `submitProfile()`, `skipProfile()` — bonus meditación post-sesión |
 | `library.js` | Carga y renderiza meditaciones guardadas, filtros por emoción y duración |
 | `init.js` | Inicialización: carga estado del usuario, muestra pantalla correcta al arrancar, registra service worker |
+| `pricing.js` | Single source of truth de precios. Lee `/pricing.json` con fallback embebido. Helpers: `getPlanLabel`, `getDisplayMonthly`, `getTotalToday`, `getProfilePrice`, `getEssentialFirstMonthPromo` |
 
 ---
 
