@@ -1,0 +1,37 @@
+{
+  "version": "2026-04-28",
+  "currency": "USD",
+  "plans": {
+    "free": {
+      "label": "Gratis",
+      "monthly": null,
+      "annualEquiv": null,
+      "monthlyTotal": null,
+      "annualTotal": null
+    },
+    "essential": {
+      "label": "Essential",
+      "monthly": "$9.99",
+      "annualEquiv": "$7.99",
+      "monthlyTotal": "$9.99",
+      "annualTotal": "$95.88"
+    },
+    "premium": {
+      "label": "Premium",
+      "monthly": "$19.99",
+      "annualEquiv": "$15.99",
+      "monthlyTotal": "$19.99",
+      "annualTotal": "$191.88"
+    },
+    "studio": {
+      "label": "Studio",
+      "monthly": "$39.99",
+      "annualEquiv": "$31.99",
+      "monthlyTotal": "$39.99",
+      "annualTotal": "$383.88"
+    }
+  },
+  "promos": {
+    "essentialMonthlyFirstMonth": "$6.99"
+  }
+}

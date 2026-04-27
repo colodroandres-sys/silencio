@@ -10,6 +10,15 @@ function renderPostSession(variant) {
   const cardId = variant === 'guest' ? 'end-guest' : 'end-upsell';
   const card = document.getElementById(cardId);
   if (!card) return;
+
+  // Hidratar precios desde window.PRICING (single source of truth).
+  const promo = (typeof getEssentialFirstMonthPromo === 'function') ? getEssentialFirstMonthPromo() : '$6.99';
+  const fullEssential = (window.PRICING?.plans?.essential?.monthly) || '$9.99';
+  const ctaEl  = document.getElementById(cardId + '-cta');
+  const metaEl = document.getElementById(cardId + '-meta');
+  if (ctaEl)  ctaEl.textContent  = 'Desbloquear Stillova por ' + promo;
+  if (metaEl) metaEl.textContent = 'primer mes ' + promo + ' · después ' + fullEssential + ' · cancela cuando quieras';
+
   try { track('post_session_screen_shown', { variant }); } catch (_) {}
 }
 

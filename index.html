@@ -546,8 +546,8 @@
         <p class="post-session-sub">Mañana podría ser otra voz, otro tono, otro motivo. Lo que tu día pida.</p>
 
         <p class="post-session-pre-price">La de hoy fue por <em>nuestra cuenta</em>.</p>
-        <button class="s-btn s-btn-dark post-session-cta-primary" onclick="postSessionPrimary('free')">Desbloquear Stillova por $6.99</button>
-        <p class="post-session-price-meta">primer mes $6.99 · después $9.99 · cancela cuando quieras</p>
+        <button class="s-btn s-btn-dark post-session-cta-primary" id="end-upsell-cta" onclick="postSessionPrimary('free')">Desbloquear Stillova por $6.99</button>
+        <p class="post-session-price-meta" id="end-upsell-meta">primer mes $6.99 · después $9.99 · cancela cuando quieras</p>
         <button class="post-session-secondary-link" onclick="postSessionSecondary('free')">Ver todos los planes</button>
       </div>
 
@@ -559,8 +559,8 @@
         <p class="post-session-sub">Mañana podría ser otra voz, otro tono, otro motivo. Lo que tu momento pida.</p>
 
         <p class="post-session-pre-price">Esta primera fue por <em>nuestra cuenta</em>.</p>
-        <button class="s-btn s-btn-dark post-session-cta-primary" onclick="postSessionPrimary('guest')">Desbloquear Stillova por $6.99</button>
-        <p class="post-session-price-meta">primer mes $6.99 · después $9.99 · cancela cuando quieras</p>
+        <button class="s-btn s-btn-dark post-session-cta-primary" id="end-guest-cta" onclick="postSessionPrimary('guest')">Desbloquear Stillova por $6.99</button>
+        <p class="post-session-price-meta" id="end-guest-meta">primer mes $6.99 · después $9.99 · cancela cuando quieras</p>
         <button class="post-session-secondary-link" onclick="postSessionSecondary('guest')">Ver todos los planes</button>
       </div>
 
@@ -1089,6 +1089,7 @@
   </footer>
 
   <script src="js/library.js"></script>
+  <script src="js/pricing.js"></script>
   <script src="js/state.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/analytics.js"></script>
@@ -1169,35 +1170,21 @@
     let _pwCycle = 'annual';   // anual por defecto
     let _pwPlan  = 'premium';
 
-    // monthly = precio mensual al mes, annual = precio mensual equivalente al mes (con descuento)
-    const PW_PRICES = {
-      essential: { monthly: '$9.99',  annual: '$7.99'  },
-      premium:   { monthly: '$19.99', annual: '$15.99' },
-      studio:    { monthly: '$39.99', annual: '$31.99' },
-    };
-    // Total a cobrar HOY (la cifra de blindaje)
-    const PW_TOTAL_TODAY = {
-      essential: { monthly: '$9.99',   annual: '$95.88'  },
-      premium:   { monthly: '$19.99',  annual: '$191.88' },
-      studio:    { monthly: '$39.99',  annual: '$383.88' },
-    };
-    const PW_LABELS = { essential: 'Essential', premium: 'Premium', studio: 'Studio' };
-
     function _pwBuildSubLine(plan, cycle) {
-      const total = PW_TOTAL_TODAY[plan][cycle];
+      const total = getTotalToday(plan, cycle);
       if (cycle === 'annual') return 'facturado anualmente · ' + total + ' hoy';
       return 'facturado mensualmente · cancela cuando quieras';
     }
 
     function _pwBuildMicrocopy(plan, cycle) {
-      const total = PW_TOTAL_TODAY[plan][cycle];
-      const label = PW_LABELS[plan];
+      const total = getTotalToday(plan, cycle);
+      const label = getPlanLabel(plan);
       if (cycle === 'annual') {
         return 'Hoy se cobran ' + total + ' · 12 meses de ' + label + ' · cancela cuando quieras desde tu perfil';
       }
-      // Para Essential mensual, si viene de promo, primer mes $6.99
+      // Para Essential mensual, si viene de promo, primer mes con precio promocional
       if (plan === 'essential' && _pwPromoActive) {
-        return 'Hoy se cobran $6.99 · primer mes de Essential · cancela cuando quieras desde tu perfil';
+        return 'Hoy se cobran ' + getEssentialFirstMonthPromo() + ' · primer mes de Essential · cancela cuando quieras desde tu perfil';
       }
       return 'Hoy se cobran ' + total + ' · primer mes de ' + label + ' · cancela cuando quieras desde tu perfil';
     }
@@ -1211,7 +1198,7 @@
       document.getElementById('pw-toggle-slider').style.transform = cycle === 'annual' ? 'translateX(0)' : 'translateX(100%)';
       ['essential','premium','studio'].forEach(p => {
         const el = document.getElementById('pw-price-' + p);
-        if (el) el.textContent = PW_PRICES[p][cycle];
+        if (el) el.textContent = getDisplayMonthly(p, cycle);
         const cy = document.getElementById('pw-cycle-' + p);
         if (cy) cy.textContent = _pwBuildSubLine(p, cycle);
       });
@@ -1224,7 +1211,7 @@
       _pwPlan = plan;
       try { track('paywall_plan_selected', { plan, cycle: _pwCycle }); } catch (_) {}
       const ctaBtn = document.getElementById('pw-cta-btn');
-      if (ctaBtn) ctaBtn.textContent = 'Empezar con ' + PW_LABELS[plan];
+      if (ctaBtn) ctaBtn.textContent = 'Empezar con ' + getPlanLabel(plan);
       ['essential','premium','studio'].forEach(p => {
         const card = document.getElementById('pw-card-' + p);
         if (card) card.classList.toggle('pw-card-selected', p === plan);
@@ -1272,14 +1259,17 @@
     // ── Pre-checkout modal (variante B · blindaje contra disputas) ─
     let _precheckoutPlan = null;
 
-    const PRECHECKOUT_TOTALS = {
-      'essential':         { total: '$9.99',   label: 'Essential', stepUp: '$9.99'  },
-      'essential-annual':  { total: '$95.88',  label: 'Essential', equiv: '$7.99/mes' },
-      'premium':           { total: '$19.99',  label: 'Premium',   stepUp: '$19.99' },
-      'premium-annual':    { total: '$191.88', label: 'Premium',   equiv: '$15.99/mes' },
-      'studio':            { total: '$39.99',  label: 'Studio',    stepUp: '$39.99' },
-      'studio-annual':     { total: '$383.88', label: 'Studio',    equiv: '$31.99/mes' },
-    };
+    function _precheckoutCfg(plan) {
+      // Construye config dinámicamente desde window.PRICING — single source of truth.
+      const isAnnual = plan.endsWith('-annual');
+      const basePlan = isAnnual ? plan.slice(0, -'-annual'.length) : plan;
+      const data = (window.PRICING && window.PRICING.plans && window.PRICING.plans[basePlan]);
+      if (!data || !data.monthly) return null;
+      if (isAnnual) {
+        return { total: data.annualTotal, label: data.label, equiv: data.annualEquiv + '/mes' };
+      }
+      return { total: data.monthlyTotal, label: data.label, stepUp: data.monthly };
+    }
 
     const _ES_MONTHS_SHORT = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
     function _formatChargeDate(date) {
@@ -1291,7 +1281,7 @@
       _precheckoutPlan = plan;
       try { track('precheckout_modal_shown', { plan }); } catch (_) {}
 
-      const cfg = PRECHECKOUT_TOTALS[plan];
+      const cfg = _precheckoutCfg(plan);
       if (!cfg) {
         // Plan desconocido — fallback directo a checkout, no bloqueamos
         upgradePlan(plan);
@@ -1302,7 +1292,7 @@
       let total = cfg.total;
       const isEssentialMonthlyPromo = (plan === 'essential')
         && sessionStorage.getItem('stillova_promo_essential') === '1';
-      if (isEssentialMonthlyPromo) total = '$6.99';
+      if (isEssentialMonthlyPromo) total = getEssentialFirstMonthPromo();
 
       const isAnnual = plan.endsWith('-annual');
 

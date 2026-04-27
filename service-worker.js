@@ -1,7 +1,8 @@
-const CACHE = 'stillova-v12';
+const CACHE = 'stillova-v13';
 const PRECACHE = [
   '/',
   '/index.html',
+  '/pricing.json',
   '/css/base.css',
   '/css/layout.css',
   '/css/player.css',
@@ -9,6 +10,7 @@ const PRECACHE = [
   '/css/dashboard.css',
   '/css/onboarding.css',
   '/css/responsive.css',
+  '/js/pricing.js',
   '/js/state.js',
   '/js/utils.js',
   '/js/analytics.js',
