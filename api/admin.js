@@ -141,6 +141,73 @@ module.exports = async (req, res) => {
       })),
     };
 
+    // ── Lemon Squeezy: ventas, suscripciones, refunds ───────
+    let lemonSqueezy = null;
+    let lsError = null;
+    if (process.env.LEMONSQUEEZY_API_KEY && process.env.LEMONSQUEEZY_STORE_ID) {
+      try {
+        const lsHeaders = {
+          'Authorization': `Bearer ${process.env.LEMONSQUEEZY_API_KEY}`,
+          'Accept': 'application/vnd.api+json',
+        };
+        const storeId = process.env.LEMONSQUEEZY_STORE_ID;
+        const since30 = new Date(Date.now() - 30 * 86400000).toISOString();
+
+        const [subsRes, ordersRes] = await Promise.all([
+          fetch(`https://api.lemonsqueezy.com/v1/subscriptions?filter[store_id]=${storeId}&page[size]=100`, {
+            headers: lsHeaders, signal: AbortSignal.timeout(7000),
+          }),
+          fetch(`https://api.lemonsqueezy.com/v1/orders?filter[store_id]=${storeId}&filter[created_at_after]=${since30}&page[size]=100&sort=-created_at`, {
+            headers: lsHeaders, signal: AbortSignal.timeout(7000),
+          }),
+        ]);
+
+        if (!subsRes.ok || !ordersRes.ok) {
+          lsError = `subs:${subsRes.status} orders:${ordersRes.status}`;
+        } else {
+          const subsData = await subsRes.json();
+          const ordersData = await ordersRes.json();
+
+          const subs = subsData.data || [];
+          const subsByStatus = { active: 0, cancelled: 0, on_trial: 0, paused: 0, expired: 0, past_due: 0 };
+          for (const s of subs) {
+            const st = s.attributes?.status || 'unknown';
+            subsByStatus[st] = (subsByStatus[st] || 0) + 1;
+          }
+
+          const orders = ordersData.data || [];
+          let revenue30d = 0;
+          let refundCount30d = 0;
+          let testOrdersCount = 0;
+          for (const o of orders) {
+            const a = o.attributes || {};
+            if (a.test_mode) testOrdersCount++;
+            if (a.refunded) refundCount30d++;
+            // total in cents
+            revenue30d += (a.total || 0) / 100;
+          }
+
+          const totalOrders30d = orders.length;
+          const refundRate = totalOrders30d > 0 ? (refundCount30d / totalOrders30d) * 100 : 0;
+
+          lemonSqueezy = {
+            testMode:       (subs[0]?.attributes?.test_mode ?? null) || (orders[0]?.attributes?.test_mode ?? false),
+            subsActive:     subsByStatus.active,
+            subsCancelled:  subsByStatus.cancelled,
+            subsOnTrial:    subsByStatus.on_trial,
+            subsPastDue:    subsByStatus.past_due,
+            totalOrders30d,
+            revenue30d:     Math.round(revenue30d * 100) / 100,
+            refundCount30d,
+            refundRate:     Math.round(refundRate * 10) / 10,
+            testOrdersCount,
+          };
+        }
+      } catch (e) { lsError = 'network: ' + (e.message || 'unknown').slice(0, 80); }
+    } else {
+      lsError = 'no_key_or_store';
+    }
+
     // ── ElevenLabs: créditos en vivo ────────────────────────
     // Preferimos ELEVENLABS_ADMIN_KEY (read-only con user_read).
     // Fallback a ELEVENLABS_API_KEY si la admin no existe.
@@ -228,11 +295,34 @@ module.exports = async (req, res) => {
                 : 'Todo bien',
       },
       {
-        key:      'churn',
-        label:    'Tasa de cancelación / mes',
-        value:    paying > 0 ? `~ pendiente conexión LS` : 'sin pagados',
-        level:    'gray',
-        action:   'Conexión con Lemon Squeezy aún no integrada. Mira manualmente en LS dashboard.',
+        key:      'ls_subs',
+        label:    'Suscripciones activas (LS)',
+        value:    !lemonSqueezy ? (lsError === 'no_key_or_store' ? 'no configurado' : 'sin conexión')
+                : `${lemonSqueezy.subsActive} activas${lemonSqueezy.testMode ? ' (test mode)' : ''}`,
+        level:    !lemonSqueezy ? 'gray'
+                : lemonSqueezy.subsPastDue > 0 ? 'yellow'
+                : 'green',
+        action:   !lemonSqueezy ? (lsError === 'no_key_or_store' ? 'Falta LEMONSQUEEZY_API_KEY o STORE_ID en Vercel.' : `Falló: ${lsError}. Avísame.`)
+                : lemonSqueezy.testMode ? 'Cuenta LS sigue en TEST MODE. Cuando aprueben live, esto pasa a real.'
+                : lemonSqueezy.subsPastDue > 0 ? `${lemonSqueezy.subsPastDue} con pago pendiente. Revisa en LS.`
+                : `${lemonSqueezy.subsCancelled} canceladas históricas · ${lemonSqueezy.totalOrders30d} órdenes 30d · $${lemonSqueezy.revenue30d}`,
+      },
+      {
+        key:      'refunds',
+        label:    'Refunds / chargebacks 30d',
+        value:    !lemonSqueezy ? 'no configurado'
+                : lemonSqueezy.totalOrders30d === 0 ? '0 órdenes 30d'
+                : `${lemonSqueezy.refundCount30d} (${lemonSqueezy.refundRate}%)`,
+        level:    !lemonSqueezy ? 'gray'
+                : lemonSqueezy.totalOrders30d === 0 ? 'gray'
+                : lemonSqueezy.refundRate > 2 ? 'red'
+                : lemonSqueezy.refundRate > 0.5 ? 'yellow'
+                : 'green',
+        action:   !lemonSqueezy ? 'Conecta API LS para ver esto.'
+                : lemonSqueezy.totalOrders30d === 0 ? 'Aún no hay ventas. Cuando empiecen, este semáforo se activa.'
+                : lemonSqueezy.refundRate > 2 ? 'CRÍTICO. >2% pone en riesgo tu cuenta LS. Pausa nuevos signups y avísame.'
+                : lemonSqueezy.refundRate > 0.5 ? 'Subiendo. Revisa motivos en LS y mejora copy del checkout.'
+                : 'Todo bien',
       },
       {
         key:      'buzon',
@@ -266,6 +356,7 @@ module.exports = async (req, res) => {
       buzonStats,
       errorStats,
       elevenlabs,
+      lemonSqueezy,
       healthChecks,
     });
   } catch (e) {
