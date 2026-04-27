@@ -252,6 +252,163 @@
     .plan-pill.plan-essential { background: var(--accent-soft); color: var(--accent); }
     .plan-pill.plan-premium { background: var(--gold); color: var(--gold-ink); }
     .plan-pill.plan-studio { background: var(--ink); color: var(--canvas); }
+
+    /* Estado de salud (cockpit) */
+    .health-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .health-card {
+      background: var(--surface);
+      border: 1px solid var(--faint);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .health-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+    .health-dot.green  { background: #5b9c6e; }
+    .health-dot.yellow { background: #d4a04a; }
+    .health-dot.red    { background: #c54040; animation: pulse 1.5s infinite; }
+    .health-dot.gray   { background: var(--faint); }
+    @keyframes pulse {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .health-body { flex: 1; min-width: 0; }
+    .health-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 4px;
+    }
+    .health-value {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--ink);
+      margin: 0 0 4px;
+    }
+    .health-action {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+      margin: 0;
+    }
+    .health-card.red .health-action  { color: #c54040; font-weight: 500; }
+    .health-card.yellow .health-action { color: var(--ink); }
+
+    /* Buzón embebido */
+    .buzon-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+    .buzon-item {
+      background: var(--surface);
+      border: 1px solid var(--faint);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .buzon-meta {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+    .buzon-cat {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: var(--faint);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    .buzon-msg { font-size: 13px; line-height: 1.5; color: var(--ink); margin: 0; }
+    .buzon-empty { color: var(--muted); font-style: italic; padding: 16px; text-align: center; }
+
+    /* Errores */
+    .err-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .err-item {
+      background: rgba(197,64,64,0.06);
+      border: 1px solid rgba(197,64,64,0.2);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: var(--ink);
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      font-family: var(--font-mono);
+    }
+    .err-status {
+      background: #c54040;
+      color: #fff;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+    .err-empty { color: var(--muted); font-style: italic; font-size: 13px; padding: 8px; }
+
+    /* Acciones rápidas */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .quick-action {
+      background: var(--surface);
+      border: 1px solid var(--faint);
+      border-radius: 10px;
+      padding: 14px;
+      text-decoration: none;
+      color: var(--ink);
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .quick-action:hover { border-color: var(--ink); transform: translateY(-1px); }
+    .quick-action-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin: 0 0 4px;
+    }
+    .quick-action-hint {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.4;
+      margin: 0;
+    }
+
+    /* Helper para "qué decirle a Claude" */
+    .claude-hint {
+      background: var(--ink);
+      color: var(--canvas);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 8px 0 16px;
+    }
+    .claude-hint strong { font-weight: 500; }
+    .claude-hint code {
+      font-family: var(--font-mono);
+      background: rgba(255,255,255,0.1);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
   </style>
 </head>
 <body>
@@ -280,6 +437,10 @@
       <div id="admin-loading" class="loading-state">Cargando…</div>
 
       <div id="admin-content" style="display:none">
+
+        <!-- Estado de salud (cockpit) -->
+        <h3 class="section-title" style="margin-top:0;">Salud de la operación</h3>
+        <div class="health-grid" id="health-grid"></div>
 
         <!-- KPI principal: MRR -->
         <div class="kpi-grid">
@@ -366,6 +527,49 @@
             <tr><td colspan="5" style="text-align:center; color:var(--muted)">—</td></tr>
           </tbody>
         </table>
+
+        <!-- Buzón embebido -->
+        <h3 class="section-title">Buzón de feedback <span style="font-size:12px; color:var(--muted); font-weight:400; letter-spacing:0; text-transform:none;">— últimos 10 mensajes</span></h3>
+        <div class="buzon-list" id="buzon-list"></div>
+        <div class="claude-hint" id="buzon-claude-hint" style="display:none;">
+          <strong>¿Cómo responder?</strong> Abre <code>docs/manual-operativo-ceo.md</code> sección "Templates de soporte cliente". Copia el template T1 (refund), T2 (bug), T5/T6 (FAQ) o T7 (queja) según aplique. Si no entiendes el mensaje, captúralo y escríbeme: <code>"este mensaje del buzón, ¿qué hago?"</code>
+        </div>
+
+        <!-- Errores 5xx -->
+        <h3 class="section-title">Errores recientes (24h)</h3>
+        <div class="err-list" id="err-list"></div>
+        <div class="claude-hint" id="err-claude-hint" style="display:none;">
+          <strong>¿Qué hago con esto?</strong> Captura el error de arriba (botón derecho → "Copiar imagen" o screenshot) y escríbeme: <code>"veo este error en admin, ¿qué pasa?"</code>. Yo investigo en logs y te confirmo si es bug nuevo o algo conocido.
+        </div>
+
+        <!-- Acciones rápidas -->
+        <h3 class="section-title">Abrir paneles externos</h3>
+        <div class="quick-actions">
+          <a href="https://app.lemonsqueezy.com" target="_blank" class="quick-action">
+            <p class="quick-action-title">Lemon Squeezy →</p>
+            <p class="quick-action-hint">Pagos, suscripciones, refunds. Mira "Sales" + "Subscriptions".</p>
+          </a>
+          <a href="https://elevenlabs.io/subscription" target="_blank" class="quick-action">
+            <p class="quick-action-title">ElevenLabs →</p>
+            <p class="quick-action-hint">Créditos restantes y plan actual.</p>
+          </a>
+          <a href="https://supabase.com/dashboard/project/drkfsqppgnbzkumresjr/editor" target="_blank" class="quick-action">
+            <p class="quick-action-title">Supabase (datos) →</p>
+            <p class="quick-action-hint">Tablas: users, meditations, buzon_messages, error_log.</p>
+          </a>
+          <a href="https://vercel.com/colodroandres-sys-projects/silencio/logs" target="_blank" class="quick-action">
+            <p class="quick-action-title">Vercel logs →</p>
+            <p class="quick-action-hint">Logs en vivo. Si la app va lenta o algo raro, mira aquí.</p>
+          </a>
+          <a href="https://console.anthropic.com/settings/usage" target="_blank" class="quick-action">
+            <p class="quick-action-title">Anthropic (gasto Claude) →</p>
+            <p class="quick-action-hint">Cuánto se gasta en generar meditaciones. Mensual.</p>
+          </a>
+          <a href="https://dashboard.clerk.com" target="_blank" class="quick-action">
+            <p class="quick-action-title">Clerk (cuentas) →</p>
+            <p class="quick-action-hint">Solo si problemas de login. MAU está en este admin.</p>
+          </a>
+        </div>
 
         <!-- Recordatorio runbook -->
         <h3 class="section-title">Cuándo escalar</h3>
@@ -484,6 +688,66 @@
             <td>${formatRelative(u.created_at)}</td>
           </tr>
         `).join('');
+      }
+
+      // Salud (semáforos)
+      const healthEl = document.getElementById('health-grid');
+      if (healthEl && Array.isArray(data.healthChecks)) {
+        healthEl.innerHTML = data.healthChecks.map(h => `
+          <div class="health-card ${h.level}">
+            <div class="health-dot ${h.level}"></div>
+            <div class="health-body">
+              <p class="health-label">${escapeHtml(h.label)}</p>
+              <p class="health-value">${escapeHtml(String(h.value))}</p>
+              <p class="health-action">${escapeHtml(h.action)}</p>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Buzón
+      const buzonEl = document.getElementById('buzon-list');
+      const buzonHint = document.getElementById('buzon-claude-hint');
+      const recentBuzon = (data.buzonStats?.recent || []);
+      if (buzonEl) {
+        if (recentBuzon.length === 0) {
+          buzonEl.innerHTML = '<div class="buzon-empty">Sin mensajes del buzón. Cuando llegue uno, aparece aquí.</div>';
+          if (buzonHint) buzonHint.style.display = 'none';
+        } else {
+          buzonEl.innerHTML = recentBuzon.map(b => `
+            <div class="buzon-item">
+              <div class="buzon-meta">
+                <span class="buzon-cat">${escapeHtml(b.category)}</span>
+                <span>${escapeHtml(b.email)}</span>
+                <span>· ${formatRelative(b.created_at)}</span>
+              </div>
+              <p class="buzon-msg">${escapeHtml(b.message)}</p>
+            </div>
+          `).join('');
+          if (buzonHint) buzonHint.style.display = '';
+        }
+      }
+
+      // Errores 5xx
+      const errEl = document.getElementById('err-list');
+      const errHint = document.getElementById('err-claude-hint');
+      const recentErr = (data.errorStats?.recent || []);
+      if (errEl) {
+        if (recentErr.length === 0) {
+          errEl.innerHTML = '<div class="err-empty">Sin errores en últimas 24h. Todo bien.</div>';
+          if (errHint) errHint.style.display = 'none';
+        } else {
+          errEl.innerHTML = recentErr.map(e => `
+            <div class="err-item">
+              <span class="err-status">${e.status}</span>
+              <div style="flex:1; min-width:0;">
+                <div style="word-break:break-word;">${escapeHtml(e.endpoint)} · ${escapeHtml(e.message)}</div>
+                <div style="color:var(--muted); margin-top:2px; font-size:11px;">${formatRelative(e.created_at)}</div>
+              </div>
+            </div>
+          `).join('');
+          if (errHint) errHint.style.display = '';
+        }
       }
 
       const updEl = document.getElementById('admin-updated');

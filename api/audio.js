@@ -274,11 +274,14 @@ module.exports = async (req, res) => {
     return res.status(200).json({ audioBase64, silenceMap, totalDuration, meditationId });
 
   } catch (err) {
+    const { logError } = require('./_logError');
     if (err?.name === 'TimeoutError' || err?.name === 'AbortError') {
       console.error('[audio] Timeout llamando a ElevenLabs API');
+      logError('/api/audio', 504, 'Timeout ElevenLabs API', {});
       return res.status(504).json({ error: 'La generación de audio tardó demasiado. Inténtalo de nuevo.' });
     }
     console.error('Error interno en /api/audio:', err);
+    logError('/api/audio', 500, err?.message || String(err), {});
     return res.status(500).json({ error: 'Error interno del servidor' });
   }
 };

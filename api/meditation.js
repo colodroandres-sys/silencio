@@ -550,11 +550,14 @@ El campo "text" debe contener solo el texto de la meditación, sin títulos ni e
     return res.status(200).json({ title, text, targetWords, silenceTotal: totalSilence, resolvedVoice });
 
   } catch (err) {
+    const { logError } = require('./_logError');
     if (err?.name === 'TimeoutError' || err?.name === 'AbortError') {
       console.error('[meditation] Timeout llamando a Claude API');
+      logError('/api/meditation', 504, 'Timeout Claude API', { duration, plan: limitCheck?.plan });
       return res.status(504).json({ error: 'La generación tardó demasiado. Inténtalo de nuevo.' });
     }
     console.error('Error interno en /api/meditation:', err);
+    logError('/api/meditation', 500, err?.message || String(err), { duration, plan: limitCheck?.plan });
     return res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
