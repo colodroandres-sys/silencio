@@ -66,7 +66,8 @@ Home → Create → Loading → Player → End states
 | `navigation.js` | `showHome()`, `showCreate()`, `openLibrary()`, `openProfile()` — navegación entre pantallas |
 | `onboarding.js` | `obNext()`, `obBack()`, `obChipToggle()`, `obSelectGoal()`, `obSkipToFree()` |
 | `create.js` | `convoRevealConfig()`, `selectPill()`, `goToGenerate()`, `onInputChange()` |
-| `generation.js` | Llama a `/api/meditation` (Claude) y `/api/audio` (ElevenLabs). Envía `userHour` + `userTimezone` para personalización por hora |
+| `generation.js` | Llama a `/api/meditation` (Claude) y `/api/audio` (ElevenLabs). Envía `userHour` + `userTimezone` para personalización por hora. Tras éxito guarda meditación pendiente en LS via `pending-meditation.js` |
+| `pending-meditation.js` | Recuperación de meditación generada pero no escuchada (24h en localStorage). Banner home guest+user con CTA "Escuchar". Limpia LS tras 30s escuchados |
 | `player.js` | `togglePlay()`, `seekTo()`, `handleEnd()`, `newMeditation()`, timer countdown |
 | `gamification.js` | Racha, minutos semanales, nivel del usuario |
 | `auth.js` | Clerk: `openAuth()`, `signOut()`, detección de sesión activa |
@@ -209,4 +210,4 @@ Source of truth: `pricing.json` en raíz + fallback en `js/pricing.js`. **NO har
 
 ## Service worker
 
-`service-worker.js` v14 — precachea `/`, `index.html`, `pricing.json`, todos los CSS, todos los JS principales, `apple-touch-icon.png`, `favicon.svg`. Bumpear versión cada vez que se cambia algo en assets cacheados.
+`service-worker.js` v16 — precachea `/`, `index.html`, `pricing.json`, todos los CSS, todos los JS principales (incluido `pending-meditation.js`), `apple-touch-icon.png`, `favicon.svg`. Bumpear versión cada vez que se cambia algo en assets cacheados.
