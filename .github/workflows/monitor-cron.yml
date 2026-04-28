@@ -1,0 +1,33 @@
+name: Stillova Monitor Cron
+
+# Dispara el endpoint /api/monitor cada hora.
+# El monitor evalúa 4 checks (5xx, calidad LLM-judge, ElevenLabs, refunds LS)
+# y manda alertas a Telegram si algún threshold se cruza.
+#
+# Coste: $0 (GitHub Actions tier free, este job es <30s).
+# Limitación: GitHub puede retrasar el cron hasta 30 min en horas pico (es OK
+# para alertas no críticas en tiempo real). Si necesitamos sub-minuto, mover
+# a Vercel Cron Jobs (requiere Pro $20).
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Cada hora en el minuto 0 (UTC)
+  workflow_dispatch:      # Permite disparo manual desde GitHub UI
+
+jobs:
+  ping-monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Trigger Stillova Monitor
+        run: |
+          STATUS=$(curl -s -o /tmp/resp.json -w "%{http_code}" \
+            -X POST "https://www.stillova.com/api/monitor" \
+            -H "x-monitor-secret: ${{ secrets.MONITOR_SECRET }}" \
+            -H "Content-Type: application/json")
+          echo "HTTP $STATUS"
+          cat /tmp/resp.json | head -c 2000 || true
+          if [ "$STATUS" != "200" ]; then
+            echo "::error::Monitor returned HTTP $STATUS"
+            exit 1
+          fi

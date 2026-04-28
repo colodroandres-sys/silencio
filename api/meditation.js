@@ -4,6 +4,30 @@
 const checkRateLimit = require('./_ratelimit');
 const { getOrCreateUser, checkUsageLimit } = require('./_limits');
 
+const { Redis } = (() => { try { return require('@upstash/redis'); } catch(e) { return {}; } })();
+let _judgeRedis;
+function _getJudgeRedis() {
+  if (!_judgeRedis && Redis && process.env.UPSTASH_REDIS_REST_URL) {
+    _judgeRedis = new Redis({ url: process.env.UPSTASH_REDIS_REST_URL, token: process.env.UPSTASH_REDIS_REST_TOKEN });
+  }
+  return _judgeRedis;
+}
+
+// Sampling para LLM-judge: con probabilidad SAMPLE_RATE guarda meditación
+// completa (texto + input + meta) en Redis con TTL 7d. El monitor las lee
+// cada hora, las evalúa con Claude Sonnet y detecta patrones malos.
+const JUDGE_SAMPLE_RATE = 0.2;
+const JUDGE_TTL_SECONDS = 7 * 24 * 60 * 60;
+async function saveJudgeSample(sample) {
+  try {
+    if (Math.random() >= JUDGE_SAMPLE_RATE) return;
+    const r = _getJudgeRedis();
+    if (!r) return;
+    const id = Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    await r.set(`judge:pending:${id}`, JSON.stringify({ ...sample, id, ts: new Date().toISOString() }), { ex: JUDGE_TTL_SECONDS });
+  } catch (_) { /* sampling falla silenciosamente, nunca bloquea al user */ }
+}
+
 const WORD_COUNTS = {
   feminine: { '5': 420, '10': 750, '15': 1200, '20': 1100, '30': 1650 },
   masculine: { '5': 460, '10': 820, '15': 1320, '20': 1700, '30': 2200 }
@@ -552,6 +576,23 @@ El campo "text" debe contener solo el texto de la meditación, sin títulos ni e
       return grant > 0 ? `[silencio:${grant}s]` : '';
     });
     console.log(`[meditation] Silencio total: ${totalSilence}s / límite: ${maxTotalSil}s`);
+
+    // Sampling para LLM-judge (post-éxito, no bloquea al user)
+    saveJudgeSample({
+      isGuest,
+      plan: limitCheck?.plan || 'guest',
+      duration,
+      voice: resolvedVoice,
+      gender: gender || 'neutro',
+      intent: req.body?.intent || null,
+      emotionTag: req.body?.emotionTag || null,
+      userInput,
+      userName,
+      title,
+      text,
+      targetWords,
+      silenceTotal: totalSilence
+    });
 
     return res.status(200).json({ title, text, targetWords, silenceTotal: totalSilence, resolvedVoice });
 
