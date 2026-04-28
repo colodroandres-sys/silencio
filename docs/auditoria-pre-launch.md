@@ -159,15 +159,17 @@ Una nota de ambient muy sutil durante la espera reduce ansiedad y pre-suaviza al
 
 ## Plan de acción priorizado
 
-### Antes de lanzar campaña ($5K) — ~3-5h de mi trabajo
-1. ~~P0-1: Banner PWA solo en home~~ ✅ HECHO
-2. P0-2: Paywall headline (5 min copy + 5 min impl)
-3. P0-3: Paywall lista features con copy emocional (30 min)
-4. P0-4: Value prop comparativa vs Calm/Headspace (1h)
-5. P0-5: Micro-copy tranquilidad en paywall (15 min)
-6. P0-6: Onboarding ob-step2 — quitar "1 voz neutra" (10 min)
+### Antes de lanzar campaña ($5K) — TODOS LOS P0 CERRADOS ✅
+1. ~~P0-1: Banner PWA solo en home~~ ✅ HECHO (commit `a52d1ce`)
+2. ~~P0-2: Paywall headline~~ ✅ HECHO (commit `71437ee`)
+3. ~~P0-3: Paywall lista features con copy emocional~~ ✅ HECHO (commit `71437ee`) + bug oculto Studio "20→30 min" arreglado
+4. ~~P0-4: Value prop comparativa SIN nombrar competidores~~ ✅ HECHO (rol legal aplicado)
+5. ~~P0-5: Micro-copy tranquilidad en paywall~~ ✅ HECHO
+6. ~~P0-6: Onboarding ob-step2 reescrito~~ ✅ HECHO (5/0/0 — minutos/palabras pregrabadas/tarjetas)
 
-**Total bloque P0**: ~2-3h trabajo + 30 min testing/screenshots.
+**Bonus aplicado en esta tanda** (cambio de producto autorizado por Andrés):
+- Voz y género ABIERTOS en plan free para maximizar efecto wow primera meditación.
+- Lock duración (5min), créditos (1) y biblioteca siguen activos.
 
 ### Cuando esté el creative del ad (con la profesora)
 - P1-3: Landing alternativa `/start` (3-4h)
