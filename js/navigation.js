@@ -17,6 +17,11 @@ function showScreen(id) {
     nav.classList.toggle('hidden', hideNav);
   }
 
+  // Banner PWA install solo en home — ocultar en loading/player/etc para no
+  // robar atención durante la experiencia inmersiva de la meditación.
+  const pwaBanner = document.getElementById('pwa-install-banner');
+  if (pwaBanner && id !== 'screen-home') pwaBanner.style.display = 'none';
+
   const footer = document.querySelector('.site-footer');
   if (footer) footer.style.display = (id === 'screen-home') ? '' : 'none';
 
