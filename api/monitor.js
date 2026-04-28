@@ -312,6 +312,16 @@ module.exports = async (req, res) => {
     return res.status(401).json({ error: 'unauthorized' });
   }
 
+  // Ping mode: ?ping=1 envía un mensaje de test al bot con el token de Vercel
+  // y devuelve fingerprint del token (primeros 8 chars) para diagnóstico.
+  // No ejecuta los checks. Solo verifica que TELEGRAM_BOT_TOKEN funciona end-to-end.
+  if (req.query?.ping === '1' || req.url?.includes('ping=1')) {
+    const token = (process.env.TELEGRAM_BOT_TOKEN || '').trim();
+    const tokenFingerprint = token ? `${token.slice(0, 12)}...${token.slice(-4)}` : '(empty)';
+    const result = await sendTelegramAlert(`🔧 *Ping desde Vercel servidor*\n_Token fingerprint: \`${tokenFingerprint}\`_\n${new Date().toISOString()}`);
+    return res.status(200).json({ ok: true, mode: 'ping', telegramResult: result, tokenFingerprint });
+  }
+
   const startedAt = Date.now();
 
   // Ejecuta los 4 checks en paralelo
