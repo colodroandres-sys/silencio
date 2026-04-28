@@ -68,6 +68,7 @@ Home → Create → Loading → Player → End states
 | `create.js` | `convoRevealConfig()`, `selectPill()`, `goToGenerate()`, `onInputChange()` |
 | `generation.js` | Llama a `/api/meditation` (Claude) y `/api/audio` (ElevenLabs). Envía `userHour` + `userTimezone` para personalización por hora. Tras éxito guarda meditación pendiente en LS via `pending-meditation.js` |
 | `pending-meditation.js` | Recuperación de meditación generada pero no escuchada (24h en localStorage). Banner home guest+user con CTA "Escuchar". Limpia LS tras 30s escuchados |
+| `pwa-install.js` | Banner "Añadir Stillova al inicio" mobile-only. Captura `beforeinstallprompt` (Android), modal con pasos visuales (iOS). Aparece tras 2+ visitas a home si no instalada |
 | `player.js` | `togglePlay()`, `seekTo()`, `handleEnd()`, `newMeditation()`, timer countdown |
 | `gamification.js` | Racha, minutos semanales, nivel del usuario |
 | `auth.js` | Clerk: `openAuth()`, `signOut()`, detección de sesión activa |
@@ -95,11 +96,11 @@ Home → Create → Loading → Player → End states
 
 ## API routes — `api/` (serverless en Vercel)
 
-**11/12 functions activas (límite Hobby = 12).**
+**12/12 functions activas (límite Hobby = 12 — agotado).** Próxima function nueva fuerza salto a Vercel Pro $20/mes.
 
 | Archivo | Función |
 |---------|---------|
-| `meditation.js` | Genera el texto de la meditación con Claude (Opus 4.7). Acepta `userHour` + `userTimezone` para contexto situacional débil |
+| `meditation.js` | Genera el texto de la meditación con Claude (Opus 4.7). Acepta `userHour` + `userTimezone` para contexto situacional débil. Sample 20% de generaciones a Redis para LLM-judge |
 | `audio.js` | Genera audio con ElevenLabs |
 | `checkout.js` | Crea sesión de checkout en Lemon Squeezy |
 | `webhook.js` | Recibe eventos de Lemon Squeezy (pago completado, cancelación, refund) con verificación HMAC |
@@ -110,6 +111,7 @@ Home → Create → Loading → Player → End states
 | `health.js` | Health check público |
 | `logs.js` | Logs de meditaciones generadas en Upstash Redis (gate admin) |
 | `buzon.js` | Recibe feedback del usuario. Auth opcional, rate limit 5/IP/hora |
+| `monitor.js` | **Monitor automático.** 4 checks (5xx, calidad LLM-judge, ElevenLabs, refunds LS) ejecutados cada hora por GitHub Actions cron. Alertas → Telegram bot. Gate por `x-monitor-secret` |
 
 ### Helpers internos (no son functions)
 
@@ -119,8 +121,10 @@ Home → Create → Loading → Player → End states
 | `_lemonsqueezy.js` | Helpers Lemon Squeezy (verificar webhook HMAC, etc.) |
 | `_limits.js` | Verificar límites de créditos por plan |
 | `_logError.js` | **Registrar errores 5xx en tabla `error_log`.** Nunca throw |
+| `_namesWhitelist.js` | Validación de userName en 2 capas: whitelist ~730 nombres ES + heurísticas anti-basura |
 | `_ratelimit.js` | Rate limiting con Upstash Redis |
 | `_supabase.js` | Cliente Supabase con service_role |
+| `_telegram.js` | Helper `sendTelegramAlert(text)` para enviar alertas a @stillova_alerts_bot |
 
 ---
 
@@ -210,4 +214,10 @@ Source of truth: `pricing.json` en raíz + fallback en `js/pricing.js`. **NO har
 
 ## Service worker
 
-`service-worker.js` v16 — precachea `/`, `index.html`, `pricing.json`, todos los CSS, todos los JS principales (incluido `pending-meditation.js`), `apple-touch-icon.png`, `favicon.svg`. Bumpear versión cada vez que se cambia algo en assets cacheados.
+`service-worker.js` v17 — precachea `/`, `index.html`, `pricing.json`, todos los CSS, todos los JS principales (incluido `pending-meditation.js` y `pwa-install.js`), `apple-touch-icon.png`, `favicon.svg`. Bumpear versión cada vez que se cambia algo en assets cacheados.
+
+## Observabilidad automática
+
+- `.github/workflows/monitor-cron.yml` — cron horario que dispara `/api/monitor`. Coste $0 (GitHub Actions tier free).
+- Bot Telegram `@stillova_alerts_bot` — alertas para Andrés cuando errores/calidad/ElevenLabs/LS cruzan thresholds.
+- Variables sensitive en Vercel: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `MONITOR_SECRET`.
