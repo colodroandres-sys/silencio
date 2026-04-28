@@ -2,7 +2,7 @@ const state = {
   userInput:   '',
   userName:    '',
   duration:    '5',
-  voice:       'auto',
+  voice:       'feminine',
   music:       'auto',
   gender:      'neutro',
   intent:      null,

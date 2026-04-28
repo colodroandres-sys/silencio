@@ -139,23 +139,18 @@ function applyAllLocks() {
     state.duration = '5';
   }
 
+  // Voz y género ABIERTOS también en free para maximizar el efecto wow de la
+  // primera meditación. Lo único que sigue locked en free: duración (5min),
+  // créditos (1), biblioteca (no save). Decisión Andrés 28-abril 2026.
   document.querySelectorAll('#grp-voice .s-chip').forEach(pill => {
-    setPillLock(pill, isFree);
+    setPillLock(pill, false);
   });
   document.querySelectorAll('#grp-gender .s-chip').forEach(pill => {
-    setPillLock(pill, isFree && pill.dataset.value !== 'neutro');
+    setPillLock(pill, false);
   });
 
-  if (isFree) {
-    if (state.voice !== 'auto') {
-      state.voice = 'auto';
-    }
-    if (state.gender !== 'neutro') {
-      document.querySelectorAll('#grp-gender .s-chip').forEach(p => p.classList.remove('active'));
-      document.querySelector('#grp-gender .s-chip[data-value="neutro"]')?.classList.add('active');
-      state.gender = 'neutro';
-    }
-  }
+  // Si el state estaba en 'auto' por la versión vieja, dejamos que el user elija
+  // (no forzamos cambio — si nunca toca los chips, el default de la UI gana).
   if (state.music !== 'auto') state.music = 'auto';
 }
 
