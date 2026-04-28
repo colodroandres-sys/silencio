@@ -19,15 +19,19 @@ async function sendTelegramAlert(text, opts = {}) {
   const safeText = String(text).slice(0, 3900);
 
   try {
+    const body = {
+      chat_id: chatId,
+      text: safeText,
+      disable_web_page_preview: true
+    };
+    // parseMode === '' explícitamente desactiva formato; undefined cae en Markdown.
+    if (opts.parseMode !== '') {
+      body.parse_mode = opts.parseMode || 'Markdown';
+    }
     const res = await fetch(`${TELEGRAM_API}/bot${token}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: safeText,
-        parse_mode: opts.parseMode || 'Markdown',
-        disable_web_page_preview: true
-      })
+      body: JSON.stringify(body)
     });
     if (!res.ok) {
       const err = await res.text().catch(() => '');
