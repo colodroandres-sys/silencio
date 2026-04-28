@@ -304,9 +304,11 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Auth: header secreto compartido con el cron externo
-  const secret = req.headers['x-monitor-secret'];
-  if (!secret || secret !== process.env.MONITOR_SECRET) {
+  // Auth: header secreto compartido con el cron externo.
+  // Trim defensivo contra corrupción \n conocida de `vercel env add` con echo.
+  const secret   = (req.headers['x-monitor-secret'] || '').trim();
+  const expected = (process.env.MONITOR_SECRET || '').trim();
+  if (!secret || !expected || secret !== expected) {
     return res.status(401).json({ error: 'unauthorized' });
   }
 
