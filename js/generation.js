@@ -278,6 +278,25 @@ async function attemptGeneration(signal) {
   state.totalSec            = Math.round(audioData.totalDuration || parseInt(state.duration) * 60);
   state.silenceOffset       = 0;
 
+  // Guardar como meditación pendiente (24h) para que el user pueda reanudar
+  // si abandona antes de escucharla. Best-effort: si LS no tiene quota, falla silencioso.
+  try {
+    if (typeof savePendingMeditation === 'function') {
+      savePendingMeditation(audioData.audioBase64, {
+        title,
+        duration: state.duration,
+        voice: state.voice,
+        intent: state.intent,
+        emotionTag: state.emotionTag,
+        userInput: state.userInput,
+        userName: state.userName,
+        totalSec: state.totalSec,
+        silenceMap: audioData.silenceMap || []
+      });
+      if (typeof _resetPendingListenedFlag === 'function') _resetPendingListenedFlag();
+    }
+  } catch (_) {}
+
   document.getElementById('time-end').textContent = formatTime(state.totalSec);
   document.getElementById('time-now').textContent = '0:00';
   const cd = document.getElementById('time-countdown');

@@ -69,6 +69,11 @@ function connectAudio(url) {
     if (!state.isPlaying || state.inSilence) return;
     state.currentSec = Math.round(audio.currentTime + state.silenceOffset);
     updateProgress();
+    // Tras 30s escuchados, marcamos la meditación pendiente como consumida
+    // (libera localStorage y oculta el banner al volver a home).
+    if (typeof markPendingAsListenedIfApplicable === 'function') {
+      markPendingAsListenedIfApplicable(state.currentSec);
+    }
   };
 }
 

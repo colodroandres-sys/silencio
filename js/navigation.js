@@ -384,6 +384,9 @@ function updateHomeDisplay() {
 
   // Fecha/hora en ambas vistas
   _updateTimeGreeting();
+
+  // Banner meditación pendiente (si la generó pero no la escuchó, hasta 24h)
+  if (typeof renderPendingBanner === 'function') renderPendingBanner();
 }
 
 // "¿Cómo refiriros a ti?" — input opcional en home guest

@@ -1,6 +1,9 @@
 // Whitelist de nombres comunes en español (España + LATAM).
-// 250 masculinos + 250 femeninos. Si el userName no coincide con esta lista,
-// la meditación se genera sin nombre (genérico) en lugar de pronunciar basura.
+// ~340 masculinos + ~390 femeninos. Estrategia en 2 capas:
+//   1. Si la primera palabra está en whitelist → seguro, usar tal cual (95% casos comunes).
+//   2. Si NO está en whitelist pero pasa heurísticas anti-basura → permitir
+//      (cubre Jack, Yak, Wei, Sunita, transliteraciones, regionales).
+//   3. Si tiene basura típica de email residual o ruido → fallback genérico.
 //
 // Comparación: lowercase + sin acentos + primera palabra del input
 // (ej: "Juan Carlos" → check "juan" → match).
@@ -108,10 +111,20 @@ function _normalize(s) {
     .trim();
 }
 
+// Patrones de basura típica de email residual o copy-paste accidentales.
+// Si la primera palabra contiene cualquiera de estos, NO la dejamos pasar.
+const EMAIL_DOMAINS = ['gmail', 'yahoo', 'hotmail', 'outlook', 'icloud', 'msn', 'aol', 'protonmail', 'canva'];
+// TLDs que aparecen al final cuando el sanitizer dejó "anacanvacom" residual.
+const TLD_SUFFIXES  = ['com', 'net', 'org', 'edu', 'gov', 'info', 'biz', 'app'];
+
 /**
  * Decide si un userName es seguro de inyectar en el prompt.
- * Compara la primera palabra del input contra la whitelist (sin acentos, lowercase).
- * Si NO matchea, devuelve string vacío → el prompt no usa nombre.
+ *
+ * Capa 1: si la primera palabra está en whitelist → usar tal cual.
+ * Capa 2: si no está en whitelist pero pasa heurísticas anti-basura → permitir
+ *         (cubre Jack→"Yak", Wei, Sunita, transliteraciones que el usuario
+ *         escribe a propósito para que ElevenLabs las pronuncie bien).
+ * Capa 3: si parece email residual o ruido → '' (meditación genérica).
  */
 function validateUserName(raw) {
   if (!raw || typeof raw !== 'string') return '';
@@ -126,8 +139,25 @@ function validateUserName(raw) {
   const normalized = _normalize(firstWord);
 
   if (normalized.length < 2 || normalized.length > 25) return '';
-  if (!ALL_NAMES.has(normalized)) return '';
 
+  // Capa 1: whitelist match — caso común seguro
+  if (ALL_NAMES.has(normalized)) return trimmed.slice(0, 50);
+
+  // Capa 2: heurísticas anti-basura para nombres no listados
+  // Longitud razonable de un nombre real (>14 sospechoso)
+  if (normalized.length > 14) return '';
+
+  // Email/dominio residual (cubre el caso "anacanvacom")
+  if (EMAIL_DOMAINS.some(d => normalized.includes(d))) return '';
+
+  // TLD al final, solo si la palabra es claramente más larga que el TLD
+  // (evita falsos positivos como "Tom" que termina en "om", o "Edu" propio nombre)
+  if (TLD_SUFFIXES.some(t => normalized.length > t.length + 2 && normalized.endsWith(t))) return '';
+
+  // 4+ consonantes seguidas → typing accidental o basura
+  if (/[bcdfghjklmnpqrstvwxyz]{4,}/.test(normalized)) return '';
+
+  // Pasa heurísticas → permitir el nombre tal cual
   return trimmed.slice(0, 50);
 }
 

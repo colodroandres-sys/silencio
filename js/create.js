@@ -180,5 +180,9 @@ function selectPill(el, groupId, key) {
   document.querySelectorAll(`#${groupId} .s-chip`).forEach(p => p.classList.remove('active'));
   el.classList.add('active');
   state[key] = el.dataset.value;
-  if (key === 'duration') updateCreditsCostDisplay();
+  if (key === 'duration') {
+    updateCreditsCostDisplay();
+    const warnMin = document.getElementById('create-warning-min');
+    if (warnMin) warnMin.textContent = el.dataset.value;
+  }
 }
