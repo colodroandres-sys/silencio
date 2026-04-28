@@ -1117,6 +1117,67 @@
     </div>
   </footer>
 
+  <!-- ══════════════════════════════════════════
+       BANNER — Añadir Stillova al inicio (PWA install)
+       Solo aparece en mobile, no instalada, ≥2 visitas a home
+       ══════════════════════════════════════════ -->
+  <div id="pwa-install-banner" class="pwa-install-banner" style="display:none">
+    <button class="pwa-banner-close" onclick="dismissPwaBanner()" aria-label="Cerrar">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M11 3L3 11M3 3l8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <div class="pwa-banner-icon" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <rect x="4" y="2" width="14" height="18" rx="3" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M11 9v6m-3-3h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="pwa-banner-text">
+      <p class="pwa-banner-title">Añade Stillova a tu inicio</p>
+      <p class="pwa-banner-sub" id="pwa-banner-sub">Acceso rápido sin App Store. Toca para instalar.</p>
+    </div>
+    <button class="pwa-banner-cta" onclick="handlePwaInstallClick()">Instalar</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       MODAL iOS — Pasos para "Añadir a pantalla de inicio"
+       ══════════════════════════════════════════ -->
+  <div id="pwa-ios-modal" class="pwa-ios-modal-overlay" onclick="if(event.target===this)closePwaIosModal()">
+    <div class="pwa-ios-modal-card">
+      <button class="pwa-ios-modal-close" onclick="closePwaIosModal()" aria-label="Cerrar">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M11 3L3 11M3 3l8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <h3 class="pwa-ios-modal-title">Añadir Stillova a tu inicio</h3>
+      <p class="pwa-ios-modal-sub">Tendrás Stillova como una app, sin pasar por la App Store.</p>
+
+      <ol class="pwa-ios-steps">
+        <li>
+          <div class="pwa-ios-step-num">1</div>
+          <div class="pwa-ios-step-text">
+            Toca el icono <strong>Compartir</strong>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="vertical-align:middle;margin:0 2px">
+              <path d="M8 2v9M5 5l3-3 3 3M3 9v3a1 1 0 001 1h8a1 1 0 001-1V9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            en la barra inferior de Safari.
+          </div>
+        </li>
+        <li>
+          <div class="pwa-ios-step-num">2</div>
+          <div class="pwa-ios-step-text">Desplázate y toca <strong>"Añadir a pantalla de inicio"</strong>.</div>
+        </li>
+        <li>
+          <div class="pwa-ios-step-num">3</div>
+          <div class="pwa-ios-step-text">Toca <strong>"Añadir"</strong> arriba a la derecha.</div>
+        </li>
+      </ol>
+
+      <p class="pwa-ios-modal-foot">Stillova aparecerá en tu pantalla de inicio como cualquier app.</p>
+    </div>
+  </div>
+
   <script src="js/library.js"></script>
   <script src="js/pricing.js"></script>
   <script src="js/state.js"></script>
@@ -1128,6 +1189,7 @@
   <script src="js/create.js"></script>
   <script src="js/generation.js"></script>
   <script src="js/pending-meditation.js"></script>
+  <script src="js/pwa-install.js"></script>
   <script src="js/post-session.js"></script>
   <script src="js/post-checkout.js"></script>
   <script src="js/player.js"></script>

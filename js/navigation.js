@@ -387,6 +387,9 @@ function updateHomeDisplay() {
 
   // Banner meditación pendiente (si la generó pero no la escuchó, hasta 24h)
   if (typeof renderPendingBanner === 'function') renderPendingBanner();
+
+  // Banner PWA "Añadir al inicio" (mobile + ≥2 visitas + no instalada)
+  if (typeof maybeShowPwaBanner === 'function') maybeShowPwaBanner();
 }
 
 // "¿Cómo refiriros a ti?" — input opcional en home guest

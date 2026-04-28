@@ -322,6 +322,178 @@
 }
 .home-insight-text em { font-style: italic; font-weight: 300; }
 
+/* PWA install banner — fixed bottom, mobile only, slide-up animation */
+.pwa-install-banner {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 76px);
+  left: 16px;
+  right: 16px;
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--ink);
+  color: var(--canvas);
+  border-radius: 14px;
+  box-shadow: 0 10px 36px rgba(0,0,0,0.18);
+  z-index: 80;
+  animation: pwa-banner-slide-up 0.35s ease-out;
+}
+@keyframes pwa-banner-slide-up {
+  from { transform: translateY(120%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.pwa-banner-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: var(--canvas);
+  opacity: 0.6;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pwa-banner-close:hover { opacity: 1; }
+.pwa-banner-icon {
+  flex-shrink: 0;
+  color: var(--canvas);
+  display: flex;
+  align-items: center;
+}
+.pwa-banner-text { flex: 1; min-width: 0; padding-right: 8px; }
+.pwa-banner-title {
+  font-family: var(--font-display);
+  font-size: 14.5px;
+  font-weight: 500;
+  margin: 0 0 2px;
+  letter-spacing: -0.01em;
+}
+.pwa-banner-sub {
+  font-family: var(--font-text);
+  font-size: 12px;
+  margin: 0;
+  opacity: 0.8;
+  line-height: 1.4;
+}
+.pwa-banner-cta {
+  flex-shrink: 0;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--canvas);
+  border: none;
+  padding: 8px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+@media (min-width: 821px) {
+  .pwa-install-banner { display: none !important; }
+}
+
+/* PWA iOS instructions modal */
+.pwa-ios-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.pwa-ios-modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.pwa-ios-modal-card {
+  background: var(--canvas);
+  border-radius: 18px;
+  padding: 28px 24px;
+  max-width: 360px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+}
+.pwa-ios-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  padding: 6px;
+  cursor: pointer;
+}
+.pwa-ios-modal-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  margin: 0 0 8px;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.pwa-ios-modal-sub {
+  font-family: var(--font-text);
+  font-size: 13.5px;
+  color: var(--muted);
+  margin: 0 0 22px;
+  line-height: 1.45;
+}
+.pwa-ios-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.pwa-ios-steps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.pwa-ios-step-num {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--canvas);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-text);
+  font-size: 13px;
+  font-weight: 500;
+}
+.pwa-ios-step-text {
+  font-family: var(--font-text);
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.5;
+  padding-top: 2px;
+}
+.pwa-ios-step-text strong { font-weight: 600; }
+.pwa-ios-modal-foot {
+  font-family: var(--font-text);
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 0;
+  text-align: center;
+  font-style: italic;
+}
+
 /* Pending meditation banner — meditación generada y no escuchada (<24h) */
 .pending-banner {
   display: flex;

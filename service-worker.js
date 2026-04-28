@@ -1,4 +1,4 @@
-const CACHE = 'stillova-v16';
+const CACHE = 'stillova-v17';
 const PRECACHE = [
   '/',
   '/index.html',
@@ -19,6 +19,7 @@ const PRECACHE = [
   '/js/create.js',
   '/js/generation.js',
   '/js/pending-meditation.js',
+  '/js/pwa-install.js',
   '/js/post-session.js',
   '/js/player.js',
   '/js/gamification.js',
